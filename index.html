@@ -85,8 +85,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Outfit',
 const LEVELS=[
   {name:"Leucémie",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/1_fond_sain_leucemie.jpg",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/1_cible_leucemie.png",mission:"Viser les blastes (en mauve).",size:.38,x:.32,y:.38,blur:2,speed:1,color:'#C084FC'},
   {name:"Cancer colo",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/2_fond_sain_cancer_colo.png",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/2_cible_cancer_colo.png",mission:"Viser les polypes (en rouge).",size:.32,x:.62,y:.34,blur:1.5,speed:1.2,color:'#F43F5E'},
-  {name:"Cancer prostate",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/3_fond_sain_cancer_prostate.png",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/3_cible_cancer_prostate.png",mission:"Viser la tumeur (en bleu).",size:.26,x:.30,y:.44,blur:1,speed:1.4,color:'#06B6D4'},
-  {name:"Alzheimer",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/4_fond_sain_Alzheimer.png",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/4_cible_Alzheimer.png",mission:"Viser l'amas Tau (en rouge).",size:.20,x:.66,y:.40,blur:0,speed:1.65,color:'#F97316'},
+  {name:"Cancer prostate",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/3_fond_sain_cancer_prostate.png",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/3_cible_cancer_prostate.png",mission:"Viser la tumeur (en gris).",size:.26,x:.30,y:.44,blur:1,speed:1.4,color:'#06B6D4'},
+  {name:"Alzheimer",fond:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/4_fond_sain_Alzheimer.png",cible:"https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/images/4_cible_Alzheimer.png",mission:"Viser l'amas de protéines Tau (en rouge).",size:.20,x:.66,y:.40,blur:0,speed:1.65,color:'#F97316'},
 ];
 
 /* ===== SONS ===== */
@@ -97,6 +97,7 @@ const SOUNDS={
   multi:new Audio("https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/sons/multiball.wav"),
   pass:new Audio("https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/sons/passage_niveau.wav"),
   lost:new Audio("https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/sons/perdu.wav"),
+  applause:new Audio("https://raw.githubusercontent.com/pierreg78-maker/casse-briques_sante/main/sons/applause.wav"),
 };
 Object.values(SOUNDS).forEach(a=>{a.crossOrigin="anonymous";a.preload="auto";});
 let muted=true;
@@ -507,6 +508,7 @@ function winLevel(){
     showOverlay('Niveau '+(levelIdx+1)+' nettoy\u00e9 !','On passe au niveau '+(levelIdx+2)+' \u2014 '+LEVELS[levelIdx+1].name,
       ()=>{hideOverlay();loadLevel(levelIdx+1);running=true;last=performance.now();});
   }else{
+    play('applause');
     showOverlay('Bravo, collection termin\u00e9e !','Tu as gu\u00e9ri les 4 maladies ! Score final : '+score,
       ()=>{hideOverlay();levelIdx=0;score=0;vies=5;document.getElementById('score').textContent=0;updateVies();loadLevel(0);running=true;last=performance.now();});
   }
