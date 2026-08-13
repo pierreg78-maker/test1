@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier Mémo</title>
+    <title>Memory</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #12100e;
-            --bg-warm: #1a1714;
             --fg: #f0e8db;
             --muted: #7d7162;
             --accent: #c9a04e;
             --accent-light: #dfc07a;
-            --accent-dim: rgba(201,160,78,0.15);
-            --card-dark: #1e1812;
-            --card-mid: #2a2218;
-            --card-light: #362c1f;
             --border: rgba(201,160,78,0.18);
         }
 
@@ -96,12 +91,12 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 580px;
+            max-width: 640px;
             padding: 2.2rem 1.5rem 3rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.6rem;
+            gap: 1.5rem;
         }
 
         /* ===== En-tête ===== */
@@ -110,7 +105,7 @@
         .header h1 {
             font-family: 'Playfair Display', serif;
             font-weight: 900;
-            font-size: 3rem;
+            font-size: 3.2rem;
             letter-spacing: -0.01em;
             line-height: 1.1;
             color: var(--fg);
@@ -161,13 +156,10 @@
             border-radius: 100px;
             cursor: pointer;
             transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-            position: relative;
             white-space: nowrap;
         }
 
-        .diff-btn:hover {
-            color: var(--fg);
-        }
+        .diff-btn:hover { color: var(--fg); }
 
         .diff-btn.active {
             color: var(--bg);
@@ -210,7 +202,7 @@
             color: var(--accent);
             font-weight: 700;
             font-size: 1.1rem;
-            min-width: 2.5ch;
+            min-width: 3ch;
             text-align: center;
             font-variant-numeric: tabular-nums;
         }
@@ -218,16 +210,14 @@
         /* ===== Grille de cartes ===== */
         .grid {
             display: grid;
-            gap: 11px;
+            gap: 10px;
             width: 100%;
-            max-width: 460px;
             perspective: 1000px;
         }
 
-        /* Colonnes selon difficulté */
-        .grid.cols-3 { grid-template-columns: repeat(3, 1fr); max-width: 340px; }
-        .grid.cols-4 { grid-template-columns: repeat(4, 1fr); max-width: 460px; }
-        .grid.cols-5 { grid-template-columns: repeat(5, 1fr); max-width: 520px; }
+        .grid.cols-4 { grid-template-columns: repeat(4, 1fr); max-width: 400px; }
+        .grid.cols-5 { grid-template-columns: repeat(5, 1fr); max-width: 460px; }
+        .grid.cols-6 { grid-template-columns: repeat(6, 1fr); max-width: 520px; }
 
         /* ===== Carte individuelle ===== */
         .card {
@@ -235,12 +225,12 @@
             cursor: pointer;
             position: relative;
             opacity: 0;
-            animation: cardEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: cardEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             outline: none;
         }
 
         @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(24px) scale(0.88); }
+            from { opacity: 0; transform: translateY(20px) scale(0.88); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
@@ -262,7 +252,7 @@
             inset: 0;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -320,50 +310,36 @@
         .card-back::after {
             content: '';
             position: absolute;
-            inset: 7px;
+            inset: 6px;
             border: 1px solid rgba(201,160,78,0.10);
-            border-radius: 9px;
+            border-radius: 8px;
             pointer-events: none;
         }
 
-        /* Texte "Atelier Mémo" au dos */
+        /* Texte "Memory" au dos */
         .card-back-text {
             position: relative;
             z-index: 1;
-            text-align: center;
-            line-height: 1.35;
             pointer-events: none;
+            text-align: center;
         }
 
-        .card-back-text .line1,
-        .card-back-text .line2 {
-            display: block;
+        .card-back-text .logo {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
             color: var(--accent);
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .card-back-text .line1 {
-            font-size: 0.62rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            opacity: 0.6;
-        }
-
-        .card-back-text .line2 {
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
             opacity: 0.85;
-            margin-top: 1px;
         }
 
         .card-back-text .ornament {
             display: block;
-            width: 16px;
+            width: 20px;
             height: 2px;
-            margin: 4px auto 0;
+            margin: 5px auto 0;
             position: relative;
         }
 
@@ -376,12 +352,19 @@
             border-radius: 1px;
         }
 
-        /* Tailles réduites pour le texte au dos en mode difficile (cartes plus petites) */
-        .grid.cols-5 .card-back-text .line1 { font-size: 0.48rem; }
-        .grid.cols-5 .card-back-text .line2 { font-size: 0.6rem; }
-        .grid.cols-5 .card-back-text .ornament { width: 12px; margin-top: 3px; }
-        .grid.cols-5 .card-back::after { inset: 5px; }
+        /* Tailles adaptées pour 5 colonnes */
+        .grid.cols-5 .card-back-text .logo { font-size: 0.68rem; }
+        .grid.cols-5 .card-back-text .ornament { width: 14px; }
+        .grid.cols-5 .card-back::after { inset: 4px; }
         .grid.cols-5 .card-front .emoji { font-size: 1.8rem; }
+        .grid.cols-5 .card-face { border-radius: 10px; }
+
+        /* Tailles adaptées pour 6 colonnes */
+        .grid.cols-6 .card-back-text .logo { font-size: 0.56rem; letter-spacing: 0.1em; }
+        .grid.cols-6 .card-back-text .ornament { width: 10px; margin-top: 3px; }
+        .grid.cols-6 .card-back::after { inset: 3px; border-radius: 6px; }
+        .grid.cols-6 .card-front .emoji { font-size: 1.4rem; }
+        .grid.cols-6 .card-face { border-radius: 9px; }
 
         /* ===== FACE DE CARTE ===== */
         .card-front {
@@ -397,11 +380,14 @@
         }
 
         .card-front .emoji {
-            font-size: 2.6rem;
+            font-size: 2.4rem;
             line-height: 1;
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
             transition: transform 0.3s ease;
         }
+
+        /* Taille emoji pour 4 colonnes */
+        .grid.cols-4 .card-front .emoji { font-size: 2.4rem; }
 
         /* ===== État : paire trouvée ===== */
         .card.matched .card-front {
@@ -634,36 +620,36 @@
         }
 
         /* ===== Responsive ===== */
-        @media (max-width: 560px) {
+        @media (max-width: 580px) {
             .container {
                 padding: 1.5rem 1rem 2.5rem;
                 gap: 1.2rem;
             }
-            .header h1 { font-size: 2.2rem; }
-            .grid { gap: 8px; }
-            .grid.cols-3 { max-width: 270px; }
-            .grid.cols-4 { max-width: 340px; }
-            .grid.cols-5 { max-width: 380px; }
-            .card-front .emoji { font-size: 2rem; }
-            .grid.cols-5 .card-front .emoji { font-size: 1.5rem; }
-            .card-back-text .line1 { font-size: 0.5rem; }
-            .card-back-text .line2 { font-size: 0.65rem; }
-            .card-back-text .ornament { width: 12px; }
-            .grid.cols-5 .card-back-text .line1 { font-size: 0.4rem; }
-            .grid.cols-5 .card-back-text .line2 { font-size: 0.48rem; }
-            .grid.cols-5 .card-back-text .ornament { width: 8px; }
+            .header h1 { font-size: 2.4rem; }
+            .grid { gap: 7px; }
+            .grid.cols-4 { max-width: 290px; }
+            .grid.cols-5 { max-width: 340px; }
+            .grid.cols-6 { max-width: 380px; }
+            .grid.cols-4 .card-front .emoji { font-size: 1.8rem; }
+            .grid.cols-5 .card-front .emoji { font-size: 1.4rem; }
+            .grid.cols-6 .card-front .emoji { font-size: 1.1rem; }
+            .grid.cols-5 .card-back-text .logo { font-size: 0.55rem; }
+            .grid.cols-6 .card-back-text .logo { font-size: 0.44rem; letter-spacing: 0.06em; }
             .stats-bar { padding: 0.5rem 1.2rem; gap: 1.2rem; }
             .stat { font-size: 0.8rem; }
-            .stat-value { font-size: 1rem; }
-            .diff-btn { font-size: 0.68rem; padding: 0.45rem 1rem; }
+            .stat-value { font-size: 1rem; min-width: 3.5ch; }
+            .diff-btn { font-size: 0.65rem; padding: 0.4rem 0.9rem; }
         }
 
         @media (max-width: 400px) {
-            .grid { gap: 6px; }
-            .grid.cols-5 { gap: 5px; }
-            .card-front .emoji { font-size: 1.6rem; }
-            .grid.cols-5 .card-front .emoji { font-size: 1.2rem; }
-            .card-back::after { inset: 4px; border-radius: 7px; }
+            .grid { gap: 5px; }
+            .grid.cols-4 { max-width: 250px; }
+            .grid.cols-5 { max-width: 290px; }
+            .grid.cols-6 { max-width: 320px; }
+            .grid.cols-4 .card-front .emoji { font-size: 1.5rem; }
+            .grid.cols-5 .card-front .emoji { font-size: 1.15rem; }
+            .grid.cols-6 .card-front .emoji { font-size: 0.95rem; }
+            .card-back::after { inset: 3px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -687,15 +673,14 @@
 
     <main class="container">
         <header class="header">
-            <h1>Atelier <span class="gold">Mémo</span></h1>
-            <p class="tagline">Jeu de mémoire</p>
+            <h1><span class="gold">Memory</span></h1>
+            <p class="tagline">Retrouvez les paires</p>
             <div class="rule" aria-hidden="true"></div>
         </header>
 
-        <!-- Sélecteur de difficulté -->
         <nav class="difficulty-selector" role="tablist" aria-label="Niveau de difficulté">
-            <button class="diff-btn" role="tab" data-level="easy" aria-selected="false">Facile</button>
-            <button class="diff-btn active" role="tab" data-level="medium" aria-selected="true">Moyen</button>
+            <button class="diff-btn active" role="tab" data-level="easy" aria-selected="true">Facile</button>
+            <button class="diff-btn" role="tab" data-level="medium" aria-selected="false">Moyen</button>
             <button class="diff-btn" role="tab" data-level="hard" aria-selected="false">Difficile</button>
         </nav>
 
@@ -706,7 +691,7 @@
             </div>
             <div class="stat">
                 <span class="stat-label">Paires</span>
-                <span class="stat-value" id="pairs">0/8</span>
+                <span class="stat-value" id="pairs">0/6</span>
             </div>
         </div>
 
@@ -735,22 +720,26 @@
     </div>
 
     <script>
-        /* ===== Toutes les emojis disponibles ===== */
-        const ALL_EMOJIS = ['🌸','🦋','🌙','⭐','🎵','🍀','🌺','🔮','🍬','🐚','🦊','🌊'];
+        /* ===== 15 emojis uniques pour le niveau difficile ===== */
+        const ALL_EMOJIS = [
+            '🌸','🦋','🌙','⭐','🎵',
+            '🍀','🌺','🔮','🍬','🐚',
+            '🦊','🌊','🌻','🍄','🪻'
+        ];
 
-        /* ===== Configuration des niveaux ===== */
+        /* ===== Configuration des 3 niveaux ===== */
         const LEVELS = {
-            easy:   { pairs: 6,  cols: 3, rows: 4 },
-            medium: { pairs: 8,  cols: 4, rows: 4 },
-            hard:   { pairs: 10, cols: 5, rows: 4 }
+            easy:   { pairs: 6,  cols: 4 },   /* 12 cartes : 4×3 */
+            medium: { pairs: 10, cols: 5 },   /* 20 cartes : 5×4 */
+            hard:   { pairs: 15, cols: 6 }    /* 30 cartes : 6×5 */
         };
 
         /* ===== État du jeu ===== */
-        let currentLevel = 'medium';
+        let currentLevel = 'easy';
         let cards = [];
         let flipped = [];
         let matched = 0;
-        let totalPairs = 8;
+        let totalPairs = 6;
         let moves = 0;
         let locked = false;
         let timer = null;
@@ -814,7 +803,7 @@
             cards.forEach((emoji, i) => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.style.animationDelay = (i * 0.04) + 's';
+                card.style.animationDelay = (i * 0.03) + 's';
                 card.dataset.emoji = emoji;
                 card.setAttribute('role', 'button');
                 card.setAttribute('tabindex', '0');
@@ -824,9 +813,8 @@
                     <div class="card-inner">
                         <div class="card-face card-back">
                             <span class="card-back-text">
-                                <span class="line1">Atelier</span>
+                                <span class="logo">Memory</span>
                                 <span class="ornament" aria-hidden="true"></span>
-                                <span class="line2">Mémo</span>
                             </span>
                         </div>
                         <div class="card-face card-front">
