@@ -1,1008 +1,915 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #12100e;
-            --fg: #f0e8db;
-            --muted: #7d7162;
-            --accent: #c9a04e;
-            --accent-light: #dfc07a;
-            --border: rgba(201,160,78,0.18);
-        }
-
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-.back-link {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    z-index: 10;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 58px;
-    height: 58px;
-    background: #4A7CCC;
-    color: white;
-    text-decoration: none;
-    border-radius: 50%;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1.05;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-    transition: transform .15s ease, filter .15s ease;
-  }
-
-  .back-link:hover { filter: brightness(1.08); }
-  .back-link:active { transform: scale(.95); }
-
-        body {
-            min-height: 100vh;
-            background: var(--bg);
-            color: var(--fg);
-            font-family: 'DM Sans', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* ===== Fond atmosphérique ===== */
-        .bg-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .bg-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.12;
-            animation: orbFloat 22s ease-in-out infinite;
-        }
-
-        .bg-orb:nth-child(1) {
-            width: 450px; height: 450px;
-            background: var(--accent);
-            top: -120px; right: -80px;
-        }
-
-        .bg-orb:nth-child(2) {
-            width: 350px; height: 350px;
-            background: #8b5e2f;
-            bottom: -80px; left: -60px;
-            animation-delay: -8s;
-        }
-
-        .bg-orb:nth-child(3) {
-            width: 280px; height: 280px;
-            background: var(--accent-light);
-            top: 45%; left: 55%;
-            animation-delay: -15s;
-            opacity: 0.08;
-        }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25%  { transform: translate(35px, -45px) scale(1.08); }
-            50%  { transform: translate(-25px, 25px) scale(0.94); }
-            75%  { transform: translate(40px, 35px) scale(1.05); }
-        }
-
-        .bg-layer::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            opacity: 0.6;
-        }
-
-        /* ===== Conteneur principal ===== */
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 640px;
-            padding: 2.2rem 1.5rem 3rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        /* ===== En-tête ===== */
-        .header { text-align: center; }
-
-        .header h1 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 900;
-            font-size: 3.2rem;
-            letter-spacing: -0.01em;
-            line-height: 1.1;
-            color: var(--fg);
-        }
-
-        .header h1 .gold { color: var(--accent); }
-
-        .header .tagline {
-            font-size: 0.78rem;
-            color: var(--muted);
-            font-weight: 300;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            margin-top: 0.6rem;
-        }
-
-        .header .rule {
-            width: 56px;
-            height: 1.5px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            margin: 0.7rem auto 0;
-            border-radius: 1px;
-        }
-
-        /* ===== Sélecteur de difficulté ===== */
-        .difficulty-selector {
-            display: flex;
-            gap: 0;
-            padding: 4px;
-            background: rgba(30, 24, 18, 0.55);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-        }
-
-        .diff-btn {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--muted);
-            background: transparent;
-            border: none;
-            padding: 0.5rem 1.3rem;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-            white-space: nowrap;
-        }
-
-        .diff-btn:hover { color: var(--fg); }
-
-        .diff-btn.active {
-            color: var(--bg);
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            box-shadow: 0 2px 12px rgba(201,160,78,0.35);
-            font-weight: 600;
-        }
-
-        .diff-btn:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        /* ===== Barre de stats ===== */
-        .stats-bar {
-            display: flex;
-            gap: 2rem;
-            padding: 0.65rem 2.2rem;
-            background: rgba(30, 24, 18, 0.55);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-            font-size: 0.85rem;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-weight: 300;
-        }
-
-        .stat-value {
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 1.1rem;
-            min-width: 3ch;
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* ===== Grille de cartes ===== */
-        .grid {
-            display: grid;
-            gap: 10px;
-            width: 100%;
-            perspective: 1000px;
-        }
-
-        .grid.cols-4 { grid-template-columns: repeat(4, 1fr); max-width: 400px; }
-        .grid.cols-5 { grid-template-columns: repeat(5, 1fr); max-width: 460px; }
-        .grid.cols-6 { grid-template-columns: repeat(6, 1fr); max-width: 520px; }
-
-        /* ===== Carte individuelle ===== */
-        .card {
-            aspect-ratio: 1;
-            cursor: pointer;
-            position: relative;
-            opacity: 0;
-            animation: cardEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            outline: none;
-        }
-
-        @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(20px) scale(0.88); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card.flipped .card-inner,
-        .card.matched .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* ===== DOS DE CARTE — Effet glossy ===== */
-        .card-back {
-            background:
-                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(201,160,78,0.05) 0%, transparent 50%),
-                linear-gradient(155deg, #362c1f 0%, #2a2218 35%, #1e1812 65%, #26201a 100%);
-            border: 1px solid rgba(201,160,78,0.22);
-            box-shadow:
-                0 2px 6px rgba(0,0,0,0.45),
-                0 8px 28px rgba(0,0,0,0.30),
-                inset 0 1px 0 rgba(255,255,255,0.06),
-                inset 0 -1px 0 rgba(0,0,0,0.2);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card-back::before {
-            content: '';
-            position: absolute;
-            top: -70%; left: -70%;
-            width: 240%; height: 240%;
-            background: linear-gradient(
-                135deg,
-                transparent 36%,
-                rgba(255,255,255,0.02) 40%,
-                rgba(255,255,255,0.09) 47%,
-                rgba(255,255,255,0.14) 50%,
-                rgba(255,255,255,0.09) 53%,
-                rgba(255,255,255,0.02) 60%,
-                transparent 64%
-            );
-            pointer-events: none;
-            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .card:not(.flipped):not(.matched):hover .card-back::before {
-            transform: translate(6%, 6%);
-        }
-
-        .card:not(.flipped):not(.matched):hover .card-back {
-            border-color: rgba(201,160,78,0.38);
-            box-shadow:
-                0 2px 6px rgba(0,0,0,0.45),
-                0 8px 28px rgba(0,0,0,0.30),
-                0 0 18px rgba(201,160,78,0.08),
-                inset 0 1px 0 rgba(255,255,255,0.06),
-                inset 0 -1px 0 rgba(0,0,0,0.2);
-        }
-
-        .card-back::after {
-            content: '';
-            position: absolute;
-            inset: 6px;
-            border: 1px solid rgba(201,160,78,0.10);
-            border-radius: 8px;
-            pointer-events: none;
-        }
-
-        /* ===== Texte "Atelier Mémo" au dos ===== */
-        .card-back-text {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            line-height: 1.35;
-            pointer-events: none;
-        }
-
-        .card-back-text .line1,
-        .card-back-text .line2 {
-            display: block;
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            color: var(--accent);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .card-back-text .line1 {
-            font-size: 0.62rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            opacity: 0.6;
-        }
-
-        .card-back-text .line2 {
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            opacity: 0.85;
-            margin-top: 1px;
-        }
-
-        .card-back-text .ornament {
-            display: block;
-            width: 16px;
-            height: 2px;
-            margin: 4px auto 0;
-            position: relative;
-        }
-
-        .card-back-text .ornament::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.4;
-            border-radius: 1px;
-        }
-
-        /* Tailles adaptées pour 5 colonnes */
-        .grid.cols-5 .card-back-text .line1 { font-size: 0.5rem; }
-        .grid.cols-5 .card-back-text .line2 { font-size: 0.65rem; }
-        .grid.cols-5 .card-back-text .ornament { width: 12px; }
-        .grid.cols-5 .card-back::after { inset: 4px; }
-        .grid.cols-5 .card-front .emoji { font-size: 1.8rem; }
-        .grid.cols-5 .card-face { border-radius: 10px; }
-
-        /* Tailles adaptées pour 6 colonnes */
-        .grid.cols-6 .card-back-text .line1 { font-size: 0.4rem; }
-        .grid.cols-6 .card-back-text .line2 { font-size: 0.52rem; }
-        .grid.cols-6 .card-back-text .ornament { width: 9px; margin-top: 2px; }
-        .grid.cols-6 .card-back::after { inset: 3px; border-radius: 6px; }
-        .grid.cols-6 .card-front .emoji { font-size: 1.4rem; }
-        .grid.cols-6 .card-face { border-radius: 9px; }
-
-        /* ===== FACE DE CARTE ===== */
-        .card-front {
-            background:
-                radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.04) 0%, transparent 60%),
-                linear-gradient(155deg, #2e261c 0%, #241e16 50%, #1c1810 100%);
-            border: 1px solid rgba(201,160,78,0.28);
-            transform: rotateY(180deg);
-            box-shadow:
-                0 2px 6px rgba(0,0,0,0.45),
-                0 8px 28px rgba(0,0,0,0.30),
-                inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-
-        .card-front .emoji {
-            font-size: 2.4rem;
-            line-height: 1;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-            transition: transform 0.3s ease;
-        }
-
-        .grid.cols-4 .card-front .emoji { font-size: 2.4rem; }
-
-        /* ===== État : paire trouvée ===== */
-        .card.matched .card-front {
-            border-color: rgba(201,160,78,0.50);
-            box-shadow:
-                0 2px 6px rgba(0,0,0,0.45),
-                0 0 24px rgba(201,160,78,0.12),
-                0 0 48px rgba(201,160,78,0.05),
-                inset 0 1px 0 rgba(255,255,255,0.06);
-        }
-
-        .card.matched .card-front .emoji {
-            transform: scale(1.05);
-        }
-
-        .card.match-anim .card-inner {
-            animation: matchBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes matchBounce {
-            0%   { transform: rotateY(180deg) scale(1); }
-            40%  { transform: rotateY(180deg) scale(1.12); }
-            100% { transform: rotateY(180deg) scale(1); }
-        }
-
-        /* ===== État : erreur ===== */
-        .card.shake .card-inner {
-            animation: cardShake 0.45s ease;
-        }
-
-        @keyframes cardShake {
-            0%, 100% { transform: rotateY(180deg) translateX(0); }
-            20%  { transform: rotateY(180deg) translateX(-7px); }
-            40%  { transform: rotateY(180deg) translateX(6px); }
-            60%  { transform: rotateY(180deg) translateX(-5px); }
-            80%  { transform: rotateY(180deg) translateX(4px); }
-        }
-
-        /* ===== Hover ===== */
-        .card:not(.flipped):not(.matched):hover .card-inner {
-            transform: rotateY(10deg) translateY(-3px);
-        }
-
-        .card:not(.flipped):not(.matched):active .card-inner {
-            transform: scale(0.96);
-            transition-duration: 0.1s;
-        }
-
-        .card:focus-visible .card-back {
-            outline: 2px solid var(--accent);
-            outline-offset: 3px;
-        }
-
-        /* ===== Particules dorées ===== */
-        .sparkle {
-            position: fixed;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--accent-light);
-            pointer-events: none;
-            z-index: 50;
-            animation: sparkFly 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        .sparkle.gold {
-            background: var(--accent);
-            width: 4px;
-            height: 4px;
-        }
-
-        @keyframes sparkFly {
-            0%   { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
-        }
-
-        /* ===== Bouton Recommencer ===== */
-        .btn-restart {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--accent);
-            background: transparent;
-            border: 1px solid rgba(201,160,78,0.25);
-            padding: 0.65rem 2rem;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-restart::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(201,160,78,0.1), rgba(201,160,78,0.03));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-restart:hover {
-            border-color: rgba(201,160,78,0.55);
-            box-shadow: 0 0 22px rgba(201,160,78,0.1);
-        }
-
-        .btn-restart:hover::before { opacity: 1; }
-        .btn-restart:active { transform: scale(0.96); }
-
-        .btn-restart:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 3px;
-        }
-
-        /* ===== Overlay de victoire ===== */
-        .win-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(18, 16, 14, 0.88);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-
-        .win-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .win-panel {
-            background:
-                radial-gradient(ellipse at 50% 0%, rgba(201,160,78,0.06) 0%, transparent 60%),
-                linear-gradient(160deg, #2a241c 0%, #1e1812 100%);
-            border: 1px solid rgba(201,160,78,0.25);
-            border-radius: 28px;
-            padding: 3rem 2.5rem 2.5rem;
-            text-align: center;
-            max-width: 380px;
-            width: 90%;
-            box-shadow:
-                0 24px 80px rgba(0,0,0,0.55),
-                0 0 50px rgba(201,160,78,0.06);
-            transform: translateY(30px) scale(0.95);
-            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .win-overlay.active .win-panel {
-            transform: translateY(0) scale(1);
-        }
-
-        .win-panel .trophy {
-            font-size: 2.8rem;
-            margin-bottom: 0.8rem;
-            display: block;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-        }
-
-        .win-panel h2 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 900;
-            font-size: 2.2rem;
-            color: var(--accent);
-            margin-bottom: 0.35rem;
-        }
-
-        .win-panel .win-sub {
-            color: var(--muted);
-            font-size: 0.9rem;
-            font-weight: 300;
-            margin-bottom: 2rem;
-        }
-
-        .win-stats {
-            display: flex;
-            justify-content: center;
-            gap: 2.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .win-stat-val {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--fg);
-            line-height: 1;
-        }
-
-        .win-stat-lbl {
-            font-size: 0.7rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-top: 0.4rem;
-        }
-
-        .btn-again {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--bg);
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border: none;
-            padding: 0.85rem 2.6rem;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 18px rgba(201,160,78,0.30);
-        }
-
-        .btn-again:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(201,160,78,0.40);
-        }
-
-        .btn-again:active { transform: translateY(0); }
-
-        .btn-again:focus-visible {
-            outline: 2px solid var(--fg);
-            outline-offset: 3px;
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 580px) {
-            .container {
-                padding: 1.5rem 1rem 2.5rem;
-                gap: 1.2rem;
-            }
-            .header h1 { font-size: 2.4rem; }
-            .grid { gap: 7px; }
-            .grid.cols-4 { max-width: 290px; }
-            .grid.cols-5 { max-width: 340px; }
-            .grid.cols-6 { max-width: 380px; }
-            .grid.cols-4 .card-front .emoji { font-size: 1.8rem; }
-            .grid.cols-5 .card-front .emoji { font-size: 1.4rem; }
-            .grid.cols-6 .card-front .emoji { font-size: 1.1rem; }
-            .grid.cols-4 .card-back-text .line1 { font-size: 0.5rem; }
-            .grid.cols-4 .card-back-text .line2 { font-size: 0.65rem; }
-            .grid.cols-4 .card-back-text .ornament { width: 12px; }
-            .grid.cols-5 .card-back-text .line1 { font-size: 0.42rem; }
-            .grid.cols-5 .card-back-text .line2 { font-size: 0.54rem; }
-            .grid.cols-6 .card-back-text .line1 { font-size: 0.35rem; }
-            .grid.cols-6 .card-back-text .line2 { font-size: 0.44rem; }
-            .stats-bar { padding: 0.5rem 1.2rem; gap: 1.2rem; }
-            .stat { font-size: 0.8rem; }
-            .stat-value { font-size: 1rem; min-width: 3.5ch; }
-            .diff-btn { font-size: 0.65rem; padding: 0.4rem 0.9rem; }
-        }
-
-        @media (max-width: 400px) {
-            .grid { gap: 5px; }
-            .grid.cols-4 { max-width: 250px; }
-            .grid.cols-5 { max-width: 290px; }
-            .grid.cols-6 { max-width: 320px; }
-            .grid.cols-4 .card-front .emoji { font-size: 1.5rem; }
-            .grid.cols-5 .card-front .emoji { font-size: 1.15rem; }
-            .grid.cols-6 .card-front .emoji { font-size: 0.95rem; }
-            .card-back::after { inset: 3px; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .card-inner { transition: none; }
-            .bg-orb { animation: none; }
-            .card.match-anim .card-inner { animation: none; }
-            .card.shake .card-inner { animation: none; }
-            .sparkle { animation: none; display: none; }
-            .card { animation: none; opacity: 1; }
-            .win-panel { transition: none; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Cartes Postales</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&family=Poppins:wght@600&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f23;--bg2:#161630;--fg:#e4e4f0;--muted:#6a6a90;--accent:#e07a5f;--accent2:#c96a52;--card:#1c1c3a;--border:#2a2a50}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;height:100dvh;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent;user-select:none}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;min-height:46px;z-index:20}
+.hdr-t{font-family:'Dancing Script',cursive;font-size:20px;font-weight:700;color:var(--accent)}
+.hdr-a{display:flex;gap:2px}
+.hb{width:38px;height:38px;border:none;border-radius:8px;background:0 0;color:var(--muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
+.hb:active{background:var(--card);color:var(--fg)}
+.hb.on{color:var(--accent);background:rgba(224,122,95,.12)}
+.hb.dl{background:var(--accent);color:#fff}.hb.dl:active{background:var(--accent2)}
+
+/* ZONE CARTE */
+.ca{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px;position:relative;background:radial-gradient(ellipse at 50% 40%,#181838,var(--bg) 75%);touch-action:none}
+.pc{position:relative;width:100%;max-width:540px;aspect-ratio:3/2;background:#f5e6d3;border-radius:3px;box-shadow:0 6px 30px rgba(0,0,0,.5);overflow:visible;touch-action:none}
+.pc-bg{position:absolute;inset:0;background-size:cover;background-position:center;border-radius:3px}
+.pc-el{position:absolute;inset:0;overflow:visible;border-radius:3px}
+.pc-st{position:absolute;top:8px;right:8px;width:56px;height:56px;border:2.5px solid rgba(0,0,0,.15);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-12deg);font-family:'Courier New',monospace;color:rgba(0,0,0,.18);pointer-events:none;transition:opacity .2s;line-height:1.1}
+.pc-st span:first-child{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.pc-st span:last-child{font-size:6px}
+.pc-st.off{opacity:0}
+
+/* ELEMENTS */
+.el{position:absolute;cursor:move;z-index:5;touch-action:none;animation:elIn .15s ease-out}
+.el.sel{z-index:10}
+.el.sel::after{content:'';position:absolute;inset:-4px;border:2px dashed var(--accent);border-radius:5px;pointer-events:none}
+@keyframes elIn{from{opacity:0;transform:scale(.7) rotate(0deg)}to{opacity:1}}
+
+/* BULLES */
+.bbl{padding:10px 14px;min-width:50px;min-height:28px;display:inline-block;max-width:180px;word-wrap:break-word;text-align:center;position:relative}
+.bbl-r{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.bbl-r::after{content:'';position:absolute;bottom:-9px;left:16px;border:7px solid transparent;border-top-color:#fff}
+.bbl-p{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.bbl-p::after{content:'';position:absolute;bottom:-12px;left:20px;width:9px;height:9px;background:#fff;border-radius:50%}
+.bbl-p::before{content:'';position:absolute;bottom:-21px;left:12px;width:5px;height:5px;background:#fff;border-radius:50%}
+.bbl-s{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.bbl-s::after{content:'';position:absolute;top:50%;right:-9px;transform:translateY(-50%);border:7px solid transparent;border-left-color:#fff}
+.bbl-t{font-size:14px;line-height:1.3;outline:none;color:#333;font-family:'Dancing Script',cursive}
+.el-tx{white-space:pre-wrap;outline:none;text-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+/* BARRE FLOTTANTE */
+.fb{position:fixed;bottom:220px;left:50%;transform:translateX(-50%) translateY(8px);display:flex;gap:3px;padding:5px 7px;background:var(--card);border:1px solid var(--border);border-radius:11px;box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:60;opacity:0;pointer-events:none;transition:all .2s}
+.fb.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.fbb{width:36px;height:36px;border:none;border-radius:7px;background:0 0;color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fbb:active{background:var(--accent);color:#fff}
+.fbb.dd:active{background:#e74c3c;color:#fff}
+
+/* PANNEAU BAS */
+.bp{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);z-index:30;display:flex;flex-direction:column;height:210px;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:7px 2px 5px;border:none;background:0 0;color:var(--muted);font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .1s;border-bottom:2px solid transparent}
+.tab i{font-size:14px}
+.tab:active{background:var(--card)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tc{flex:1;overflow:hidden;position:relative}
+.tp{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;overflow-y:auto;overflow-x:hidden;padding:7px 10px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.tp::-webkit-scrollbar{display:none}
+
+.st{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:5px 0 5px}
+.st:first-child{margin-top:0}
+
+/* Couleurs */
+.cr{display:flex;gap:4px;flex-wrap:wrap}
+.cs{width:28px;height:28px;border-radius:5px;border:2px solid transparent;cursor:pointer;flex-shrink:0;transition:transform .08s}
+.cs:active{transform:scale(.88)}
+.cs.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--bg2)}
+.cc{width:28px;height:28px;border-radius:5px;border:2px dashed var(--border);background:0 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;flex-shrink:0}
+.cc:active{border-color:var(--accent);color:var(--accent)}
+
+/* Photos */
+.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.pb{border-radius:5px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:transform .08s;aspect-ratio:3/2;background:var(--card)}
+.pb:active{transform:scale(.94)}
+.pb.on{border-color:var(--accent)}
+.pb img{width:100%;height:100%;object-fit:cover;display:block}
+.ub{width:100%;padding:8px;border:2px dashed var(--border);border-radius:7px;background:0 0;color:var(--muted);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:'DM Sans',sans-serif}
+.ub:active{border-color:var(--accent);color:var(--accent)}
+
+/* Filtres */
+.fr{display:flex;gap:4px;overflow-x:auto;touch-action:pan-x;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.fr::-webkit-scrollbar{display:none}
+.fb2{flex-shrink:0;width:54px;height:38px;border-radius:5px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:transform .08s;position:relative;background:var(--card)}
+.fb2:active{transform:scale(.94)}
+.fb2.on{border-color:var(--accent)}
+.fb2 img{width:100%;height:100%;object-fit:cover}
+.fb2 span{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9);padding:1px 0}
+
+/* Emojis */
+.eg{display:grid;grid-template-columns:repeat(8,1fr);gap:0}
+.eb{aspect-ratio:1;border:none;border-radius:7px;background:0 0;font-size:21px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .08s,transform .08s}
+.eb:active{background:var(--card);transform:scale(.86)}
+
+/* Formes */
+.shg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.shb{aspect-ratio:1;border:2px solid var(--border);border-radius:8px;background:0 0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .1s,transform .08s;padding:8px}
+.shb:active{border-color:var(--accent);transform:scale(.92)}
+.bo{display:flex;gap:6px;margin-bottom:6px}
+.bob{flex:1;padding:10px 6px;border:2px solid var(--border);border-radius:8px;background:0 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:border-color .1s;color:var(--muted);font-family:'DM Sans',sans-serif}
+.bob:active{border-color:var(--accent);color:var(--accent)}
+.bob span{font-size:8px}
+.bi{width:36px;height:24px;background:#fff;position:relative;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.bi.t::after{content:'';position:absolute;bottom:-6px;left:8px;border:5px solid transparent;border-top-color:#fff}
+.bi.p{border-radius:10px}
+.bi.p::after{content:'';position:absolute;bottom:-9px;left:12px;width:7px;height:7px;background:#fff;border-radius:50%}
+.bi.p::before{content:'';position:absolute;bottom:-15px;left:6px;width:4px;height:4px;background:#fff;border-radius:50%}
+.bi.s{border-radius:10px}
+.bi.s::after{content:'';position:absolute;top:50%;right:-6px;transform:translateY(-50%);border:5px solid transparent;border-left-color:#fff}
+
+/* Texte panel */
+.ti{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:7px;background:var(--card);color:var(--fg);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:6px}
+.ti:focus{border-color:var(--accent)}
+.fo{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
+.fob{padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:0 0;color:var(--muted);font-size:11px;cursor:pointer;transition:all .08s}
+.fob:active{border-color:var(--accent);color:var(--accent)}
+.fob.on{border-color:var(--accent);color:var(--accent);background:rgba(224,122,95,.1)}
+.so{display:flex;gap:3px;margin-bottom:4px}
+.sb{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:0 0;color:var(--muted);font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .08s}
+.sb:active{border-color:var(--accent);color:var(--accent)}
+.sb.on{border-color:var(--accent);color:var(--accent);background:rgba(224,122,95,.1)}
+.ab{width:100%;padding:9px;border:none;border-radius:7px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px}
+.ab:active{background:var(--accent2)}
+
+/* MODALE */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100}
+.mo.show{display:flex}
+.mb{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px;width:85%;max-width:300px}
+.mb label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px}
+.mi{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--fg);font-size:14px;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:10px}
+.mi:focus{border-color:var(--accent)}
+.ma{display:flex;gap:6px;justify-content:flex-end}
+.meb{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:0 0;color:var(--fg);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.meb:active{background:var(--card)}
+.meb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.meb.pr:active{background:var(--accent2)}
+
+/* TOAST */
+.toast{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-12px);background:var(--card);border:1px solid var(--border);color:var(--fg);padding:7px 14px;border-radius:8px;font-size:11px;z-index:200;opacity:0;transition:all .25s;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+#hp{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(max-width:360px){.eg{grid-template-columns:repeat(6,1fr)}.eb{font-size:19px}.pg{grid-template-columns:repeat(3,1fr)}.bp{height:190px}}
+</style>
 </head>
 <body>
 
-    <div class="bg-layer" aria-hidden="true">
-        <div class="bg-orb"></div>
-        <div class="bg-orb"></div>
-        <div class="bg-orb"></div>
-    </div>
+<header class="hdr">
+<span class="hdr-t">La nouvelle carte postale</span>
+<div class="hdr-a">
+<button class="hb on" id="stBtn" onclick="toggleStamp()" aria-label="Tampon"><i class="fas fa-stamp"></i></button>
+<button class="hb" onclick="shareCard()" aria-label="Partager"><i class="fas fa-share-nodes"></i></button>
+<button class="hb dl" onclick="exportPNG()" aria-label="Telecharger"><i class="fas fa-download"></i></button>
+</div>
+</header>
 
-    <main class="container">
-        <header class="header">
-            <a class="back-link" href="https://pierreg78-maker.github.io/Atelier/">Retour<br>à<br>l'accueil</a>
-            <h1><span class="gold">Memory</span></h1>
-            <p class="tagline">Retrouvez les paires</p>
-            <div class="rule" aria-hidden="true"></div>
-        </header>
+<main class="ca">
+<div class="pc" id="pc">
+<div class="pc-bg" id="pcBg"></div>
+<div class="pc-el" id="pcEl"></div>
+<div class="pc-st" id="pcSt"><span>POSTE</span><span id="stDt"></span></div>
+</div>
+</main>
 
-        <nav class="difficulty-selector" role="tablist" aria-label="Niveau de difficulté">
-            <button class="diff-btn active" role="tab" data-level="easy" aria-selected="true">Facile</button>
-            <button class="diff-btn" role="tab" data-level="medium" aria-selected="false">Moyen</button>
-            <button class="diff-btn" role="tab" data-level="hard" aria-selected="false">Difficile</button>
-        </nav>
+<div class="fb" id="fbar">
+<button class="fbb" onclick="scaleEl(1.25)" aria-label="Agrandir"><i class="fas fa-plus"></i></button>
+<button class="fbb" onclick="scaleEl(0.8)" aria-label="Reduire"><i class="fas fa-minus"></i></button>
+<button class="fbb" onclick="rotEl(15)" aria-label="Tourner"><i class="fas fa-rotate-right"></i></button>
+<button class="fbb dd" onclick="delEl()" aria-label="Supprimer"><i class="fas fa-trash"></i></button>
+</div>
 
-        <div class="stats-bar" role="status" aria-live="polite">
-            <div class="stat">
-                <span class="stat-label">Coups</span>
-                <span class="stat-value" id="moves">0</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">Paires</span>
-                <span class="stat-value" id="pairs">0/6</span>
-            </div>
-        </div>
+<div class="bp">
+<nav class="tabs">
+<button class="tab on" data-t="bg" onclick="swTab('bg')"><i class="fas fa-image"></i><span>Fond</span></button>
+<button class="tab" data-t="em" onclick="swTab('em')"><i class="fas fa-face-smile"></i><span>Emojis</span></button>
+<button class="tab" data-t="bb" onclick="swTab('bb')"><i class="fas fa-comment-dots"></i><span>Bulles</span></button>
+<button class="tab" data-t="tx" onclick="swTab('tx')"><i class="fas fa-font"></i><span>Texte</span></button>
+<button class="tab" data-t="sh" onclick="swTab('sh')"><i class="fas fa-shapes"></i><span>Formes</span></button>
+</nav>
+<div class="tc">
+<div class="tp" id="p-bg"></div>
+<div class="tp" id="p-em" style="display:none"></div>
+<div class="tp" id="p-bb" style="display:none"></div>
+<div class="tp" id="p-tx" style="display:none"></div>
+<div class="tp" id="p-sh" style="display:none"></div>
+</div>
+</div>
 
-        <div class="grid cols-4" id="grid" role="group" aria-label="Plateau de jeu"></div>
+<div class="mo" id="editMo">
+<div class="mb">
+<label>Modifier le texte</label>
+<input class="mi" id="editIn" type="text" maxlength="100">
+<div class="ma">
+<button class="meb" onclick="closeEdit()">Annuler</button>
+<button class="meb pr" onclick="confirmEdit()">OK</button>
+</div>
+</div>
+</div>
 
-        <button class="btn-restart" id="restartBtn" aria-label="Recommencer la partie">Recommencer</button>
-    </main>
+<input type="color" id="hp" value="#f5e6d3">
+<input type="color" id="shp" value="#9aa0a6">
+<input type="file" id="fileIn" accept="image/*" style="display:none">
 
-    <div class="win-overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Victoire">
-        <div class="win-panel">
-            <span class="trophy" aria-hidden="true">🏆</span>
-            <h2>Bravo !</h2>
-            <p class="win-sub">Toutes les paires ont été retrouvées.</p>
-            <div class="win-stats">
-                <div>
-                    <div class="win-stat-val" id="winMoves">0</div>
-                    <div class="win-stat-lbl">Coups</div>
-                </div>
-                <div>
-                    <div class="win-stat-val" id="winTime">0:00</div>
-                    <div class="win-stat-lbl">Temps</div>
-                </div>
-            </div>
-            <button class="btn-again" id="againBtn">Rejouer</button>
-        </div>
-    </div>
+<script>
+/* ============================================================
+   CARTES POSTALES — Créateur mobile
+   ============================================================ */
 
-    <script>
-        /* ===== 15 emojis uniques pour le niveau difficile ===== */
-        const ALL_EMOJIS = [
-            '🌸','🦋','🌙','⭐','🎵',
-            '🍀','🌺','🔮','🍬','🐚',
-            '🦊','🌊','🌻','🍄','🪻'
-        ];
+// === Données ===
+var BG_C = ['#f5e6d3','#e8d5b7','#fce4ec','#e3f2fd','#e8f5e9','#fff8e1','#f3e5f5','#d7ccc8','#fff3e0','#1a1a2e','#2c3e50','#0d1b2a','#fdf2e9','#eaecee','#f9e7e7'];
+var PHOTOS = [10,15,28,29,36,37,42,47,54,65,66,69,76,82,89,96,101,106,129,134,155,167];
+var FILTS = [{n:'Aucun',c:'none'},{n:'Sepia',c:'sepia(.8)'},{n:'N&B',c:'grayscale(1)'},{n:'Vintage',c:'sepia(.4) saturate(1.3) contrast(1.1)'},{n:'Chaud',c:'saturate(1.4) brightness(1.05)'},{n:'Froid',c:'saturate(.8) brightness(1.05) hue-rotate(15deg)'},{n:'Contraste',c:'contrast(1.4)'}];
+var EMOJIS = ['😀','😊','😂','🥰','😍','😘','😎','🤗','🥳','😋','🤔','😅','😢','😭','🥺','😤','😡','🤩','🥹','😴','🐶','🐱','🐰','🦊','🐻','🐼','🐨','🦁','🐯','🐮','🐷','🐸','🦋','🐝','🐌','🦄','🐙','🐢','🐠','🦜','🌸','🌺','🌻','🌹','🌷','🍀','🌿','🌲','🌴','🌵','🍁','🍂','🌊','⛰️','🌈','☀️','🌙','⭐','❤️','💝','💖','💕','🫶','🤍','💗','🏠','✈️','🚗','🚲','⛵','🎈','🎁','🎵','🎨','📸','☕','🎂','🍰','📮'];
+var BBL_C = ['#ffffff','#fff8e7','#fffde7','#fce4ec','#e3f2fd','#e8f5e9','#f3e5f5','#1a1a2e'];
+var FONTS = [{n:'Manuscrite',v:"'Dancing Script',cursive"},{n:'Elégante',v:"'Playfair Display',serif"},{n:'Moderne',v:"'Poppins',sans-serif"},{n:'Fluide',v:"'Sacramento',cursive"}];
+var SIZES = [{n:'Petit',v:16},{n:'Moyen',v:24},{n:'Grand',v:36},{n:'Très grand',v:48}];
+var TX_C = ['#000000','#333333','#ffffff','#c0392b','#e07a5f','#f39c12','#27ae60','#2980b9','#8e44ad','#e91e63'];
+var SHAPES = [{n:'Cercle',k:'circle'},{n:'Carré',k:'square'},{n:'Triangle',k:'triangle'},{n:'Hexagone',k:'hexagon'},{n:'Étoile',k:'star'},{n:'Flèche',k:'arrow'}];
+var SHAPE_C = ['#9aa0a6','#000000','#f2c230','#e63950','#2ecc71','#2980b9','#8e44ad','#ffffff'];
 
-        /* ===== Configuration des 3 niveaux ===== */
-        const LEVELS = {
-            easy:   { pairs: 6,  cols: 4 },
-            medium: { pairs: 10, cols: 5 },
-            hard:   { pairs: 15, cols: 6 }
+// === État ===
+var els = [];
+var selId = null;
+var bgType = 'color';
+var bgColor = '#f5e6d3';
+var bgImg = null;
+var bgFilter = 'none';
+var showSt = true;
+var bblClr = '#ffffff';
+var txFont = FONTS[0].v;
+var txSz = 24;
+var txClr = '#000000';
+var shColor = '#9aa0a6';
+var drag = null;
+var editId = null;
+var idC = 0;
+var lastTap = 0;
+var lastTapId = '';
+
+// === Init ===
+function init() {
+    var d = new Date();
+    document.getElementById('stDt').textContent = pad(d.getDate()) + '.' + pad(d.getMonth()+1) + '.' + d.getFullYear();
+
+    buildBg();
+    buildEm();
+    buildBb();
+    buildTx();
+    buildSh();
+    applyBg();
+
+    document.getElementById('hp').addEventListener('input', function(e) { setBgClr(e.target.value); });
+    document.getElementById('shp').addEventListener('input', function(e) { setShClr(e.target.value); });
+    document.getElementById('fileIn').addEventListener('change', function(e) {
+        var f = e.target.files[0]; if (!f) return;
+        var r = new FileReader();
+        r.onload = function(ev) {
+            var img = new Image();
+            img.onload = function() { bgImg = img; bgType = 'photo'; bgFilter = 'none'; applyBg(); showFlt(); };
+            img.src = ev.target.result;
         };
+        r.readAsDataURL(f);
+        e.target.value = '';
+    });
 
-        /* ===== État du jeu ===== */
-        let currentLevel = 'easy';
-        let cards = [];
-        let flipped = [];
-        let matched = 0;
-        let totalPairs = 6;
-        let moves = 0;
-        let locked = false;
-        let timer = null;
-        let startTime = null;
-        let elapsed = 0;
+    document.getElementById('pcEl').addEventListener('click', function(e) {
+        if (e.target === this) desel();
+    });
 
-        /* ===== Références DOM ===== */
-        const gridEl      = document.getElementById('grid');
-        const movesEl     = document.getElementById('moves');
-        const pairsEl     = document.getElementById('pairs');
-        const winOverlay  = document.getElementById('winOverlay');
-        const winMovesEl  = document.getElementById('winMoves');
-        const winTimeEl   = document.getElementById('winTime');
-        const diffBtns    = document.querySelectorAll('.diff-btn');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchcancel', onUp);
 
-        /* ===== Sélecteur de difficulté ===== */
-        diffBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = btn.dataset.level;
-                if (level === currentLevel) return;
+    document.addEventListener('keydown', function(e) {
+        if ((e.key === 'Delete' || e.key === 'Backspace') && selId && document.activeElement.tagName !== 'INPUT') { delEl(); e.preventDefault(); }
+        if (e.key === 'Escape') { desel(); closeEdit(); }
+    });
+}
 
-                diffBtns.forEach(b => {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-selected', 'false');
-                });
-                btn.classList.add('active');
-                btn.setAttribute('aria-selected', 'true');
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
-                currentLevel = level;
-                init();
+// === Construction panneaux ===
+function buildBg() {
+    var h = '';
+    h += '<div class="st">Importer une photo</div><button class="ub" onclick="document.getElementById(\'fileIn\').click()"><i class="fas fa-cloud-arrow-up"></i> Choisir une photo</button>';
+
+    h += '<div class="st" id="fltT" style="display:none">Filtres</div><div class="fr" id="fltR" style="display:none">';
+    for (var i = 0; i < FILTS.length; i++) {
+        var f = FILTS[i];
+        h += '<button class="fb2' + (i === 0 ? ' on' : '') + '" data-f="' + f.c + '" onclick="setFlt(\'' + f.c + '\',this)"><img src="https://picsum.photos/id/47/54/38" style="filter:' + f.c + '" alt="" loading="lazy"><span>' + f.n + '</span></button>';
+    }
+    h += '</div>';
+
+    h += '<div class="st">Couleur unie</div><div class="cr" id="bgCr">';
+    for (var i = 0; i < BG_C.length; i++) {
+        var c = BG_C[i];
+        var bdr = isLight(c) ? 'border:2px solid ' + (c === bgColor ? 'var(--accent)' : 'var(--border)') : '';
+        h += '<div class="cs' + (c === bgColor ? ' on' : '') + '" style="background:' + c + ';' + bdr + '" data-hex="' + c + '" onclick="setBgClr(\'' + c + '\')"></div>';
+    }
+    h += '<button class="cc" onclick="document.getElementById(\'hp\').click()"><i class="fas fa-palette"></i></button></div>';
+
+    h += '<div class="st">Bibliothèque <span style="text-transform:none;font-weight:400;letter-spacing:0;color:var(--muted)">— photos libres de droits</span></div><div class="pg">';
+    for (var i = 0; i < PHOTOS.length; i++) {
+        h += '<button class="pb" data-pid="' + PHOTOS[i] + '" onclick="loadPh(' + PHOTOS[i] + ')"><img src="https://picsum.photos/id/' + PHOTOS[i] + '/120/80" alt="" loading="lazy" onerror="this.outerHTML=\'...\'"></button>';
+    }
+    h += '</div>';
+
+    h += '<button class="ub" style="margin-top:8px" onclick="clearBg()"><i class="fas fa-eraser"></i> Effacer le fond actuel</button>';
+
+    document.getElementById('p-bg').innerHTML = h;
+}
+
+function clearBg() {
+    bgImg = null; bgType = 'color'; bgColor = '#f5e6d3'; bgFilter = 'none';
+    hideFlt(); applyBg();
+    buildBg();
+    toast('Fond réinitialisé');
+}
+
+function buildEm() {
+    var h = '<div class="eg">';
+    for (var i = 0; i < EMOJIS.length; i++) {
+        h += '<button class="eb" onclick="addEm(\'' + EMOJIS[i] + '\')">' + EMOJIS[i] + '</button>';
+    }
+    h += '</div>';
+    document.getElementById('p-em').innerHTML = h;
+}
+
+function buildBb() {
+    var h = '<div class="st">Style de bulle</div><div class="bo">';
+    h += '<button class="bob" onclick="addBb(\'r\')"><div class="bi t"></div><span>Ronde</span></button>';
+    h += '<button class="bob" onclick="addBb(\'p\')"><div class="bi p"></div><span>Pensée</span></button>';
+    h += '<button class="bob" onclick="addBb(\'s\')"><div class="bi s"></div><span>Latérale</span></button>';
+    h += '</div>';
+
+    h += '<div class="st">Couleur de la bulle</div><div class="cr" id="bbCr">';
+    for (var i = 0; i < BBL_C.length; i++) {
+        var c = BBL_C[i];
+        var bdr = (c === '#ffffff') ? 'border:2px solid ' + (c === bblClr ? 'var(--accent)' : 'var(--border)') : '';
+        h += '<div class="cs' + (c === bblClr ? ' on' : '') + '" style="background:' + c + ';' + bdr + '" onclick="setBblClr(\'' + c + '\',this)"></div>';
+    }
+    h += '</div>';
+    document.getElementById('p-bb').innerHTML = h;
+}
+
+function buildTx() {
+    var h = '<div class="st">Votre texte</div><input class="ti" id="txIn" type="text" placeholder="Écrivez ici..." maxlength="80">';
+
+    h += '<div class="st">Police</div><div class="fo" id="foR">';
+    for (var i = 0; i < FONTS.length; i++) {
+        h += '<button class="fob' + (i === 0 ? ' on' : '') + '" style="font-family:' + FONTS[i].v + '" onclick="setTxFont(' + i + ',this)">' + FONTS[i].n + '</button>';
+    }
+    h += '</div>';
+
+    h += '<div class="st">Taille</div><div class="so" id="szR">';
+    for (var i = 0; i < SIZES.length; i++) {
+        h += '<button class="sb' + (i === 1 ? ' on' : '') + '" onclick="setTxSz(' + SIZES[i].v + ',this)">' + SIZES[i].n + '</button>';
+    }
+    h += '</div>';
+
+    h += '<div class="st">Couleur</div><div class="cr" id="txCr">';
+    for (var i = 0; i < TX_C.length; i++) {
+        var c = TX_C[i];
+        var bdr = (c === '#ffffff') ? 'border:2px solid ' + (c === txClr ? 'var(--accent)' : 'var(--border)') : '';
+        h += '<div class="cs' + (c === txClr ? ' on' : '') + '" style="background:' + c + ';' + bdr + '" onclick="setTxClr(\'' + c + '\',this)"></div>';
+    }
+    h += '</div>';
+
+    h += '<button class="ab" onclick="addTx()">Ajouter sur la carte</button>';
+    document.getElementById('p-tx').innerHTML = h;
+}
+
+// === Formes ===
+var SHAPE_PATHS = {
+    circle: '<circle cx="50" cy="50" r="46"/>',
+    square: '<rect x="6" y="6" width="88" height="88" rx="8"/>',
+    triangle: '<polygon points="50,6 96,90 4,90"/>',
+    hexagon: '<polygon points="27,6 73,6 96,50 73,94 27,94 4,50"/>',
+    star: '<polygon points="50,4 61,37 96,37 68,58 79,92 50,71 21,92 32,58 4,37 39,37"/>',
+    arrow: '<polygon points="4,66 4,42 60,42 60,20 96,54 60,88 60,66"/>'
+};
+var SHAPE_PTS = {
+    square: [[6,6],[94,6],[94,94],[6,94]],
+    triangle: [[50,6],[96,90],[4,90]],
+    hexagon: [[27,6],[73,6],[96,50],[73,94],[27,94],[4,50]],
+    star: [[50,4],[61,37],[96,37],[68,58],[79,92],[50,71],[21,92],[32,58],[4,37],[39,37]],
+    arrow: [[4,66],[4,42],[60,42],[60,20],[96,54],[60,88],[60,66]]
+};
+
+function shapeSVG(k, color, size) {
+    return '<svg viewBox="0 0 100 100" width="' + size + '" height="' + size + '" style="display:block;pointer-events:none"><g fill="' + color + '">' + SHAPE_PATHS[k] + '</g></svg>';
+}
+
+function buildSh() {
+    var h = '<div class="st">Insérer une forme</div><div class="shg">';
+    for (var i = 0; i < SHAPES.length; i++) {
+        h += '<button class="shb" onclick="addSh(' + i + ')">' + shapeSVG(SHAPES[i].k, shColor, 36) + '</button>';
+    }
+    h += '</div>';
+    h += '<div class="st">Couleur</div><div class="cr" id="shCr">';
+    for (var i = 0; i < SHAPE_C.length; i++) {
+        var c = SHAPE_C[i];
+        var bdr = isLight(c) ? 'border:2px solid ' + (c === shColor ? 'var(--accent)' : 'var(--border)') : '';
+        h += '<div class="cs' + (c === shColor ? ' on' : '') + '" style="background:' + c + ';' + bdr + '" data-hex="' + c + '" onclick="setShClr(\'' + c + '\')"></div>';
+    }
+    h += '<button class="cc" onclick="document.getElementById(\'shp\').click()"><i class="fas fa-palette"></i></button></div>';
+    document.getElementById('p-sh').innerHTML = h;
+}
+
+function setShClr(c) {
+    shColor = c;
+    buildSh();
+}
+
+function addSh(i) {
+    var pc = document.getElementById('pc');
+    var s = SHAPES[i];
+    var size = 64;
+    var el = {id:'e'+(idC++), type:'sh', shape:s.k, clr:shColor, x:(pc.offsetWidth-size)/2, y:(pc.offsetHeight-size)/2, sc:1, rot:0, size:size};
+    els.push(el); mkDom(el); sel(el.id); vib(5);
+}
+
+function isLight(hex) {
+    var r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+    return (r*299 + g*587 + b*114) / 1000 > 180;
+}
+
+// === Onglets ===
+function swTab(t) {
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('on', tabs[i].getAttribute('data-t') === t);
+    }
+    var ids = ['p-bg','p-em','p-bb','p-tx','p-sh'];
+    var map = {bg:'p-bg',em:'p-em',bb:'p-bb',tx:'p-tx',sh:'p-sh'};
+    for (var i = 0; i < ids.length; i++) {
+        document.getElementById(ids[i]).style.display = (ids[i] === map[t]) ? 'block' : 'none';
+    }
+}
+
+// === Fond ===
+function setBgClr(c) {
+    bgColor = c; bgType = 'color'; bgImg = null;
+    var swatches = document.querySelectorAll('#bgCr .cs');
+    for (var i = 0; i < swatches.length; i++) {
+        swatches[i].classList.toggle('on', swatches[i].getAttribute('data-hex') === c);
+    }
+    hideFlt(); applyBg();
+}
+
+function loadPh(pid) {
+    document.getElementById('pcBg').style.opacity = '0.3';
+    var btns = document.querySelectorAll('.pb');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('on');
+    var active = document.querySelector('.pb[data-pid="' + pid + '"]');
+    if (active) active.classList.add('on');
+
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+        bgImg = img; bgType = 'photo'; bgFilter = 'none';
+        applyBg(); showFlt();
+        document.getElementById('pcBg').style.opacity = '1';
+    };
+    img.onerror = function() { document.getElementById('pcBg').style.opacity = '1'; toast('Erreur de chargement'); };
+    img.src = 'https://picsum.photos/id/' + pid + '/800/533';
+}
+
+function applyBg() {
+    var bg = document.getElementById('pcBg');
+    if (bgType === 'color') {
+        bg.style.backgroundImage = 'none';
+        bg.style.backgroundColor = bgColor;
+        bg.style.filter = 'none';
+    } else if (bgType === 'photo' && bgImg) {
+        bg.style.backgroundColor = 'transparent';
+        bg.style.backgroundImage = 'url(' + bgImg.src + ')';
+        bg.style.filter = bgFilter;
+    }
+}
+
+function setFlt(c, btn) {
+    bgFilter = c; applyBg();
+    var btns = document.querySelectorAll('#fltR .fb2');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('on');
+    if (btn) btn.classList.add('on');
+}
+function showFlt() { document.getElementById('fltT').style.display = ''; document.getElementById('fltR').style.display = ''; }
+function hideFlt() { document.getElementById('fltT').style.display = 'none'; document.getElementById('fltR').style.display = 'none'; }
+
+// === Tampon ===
+function toggleStamp() {
+    showSt = !showSt;
+    document.getElementById('pcSt').classList.toggle('off', !showSt);
+    document.getElementById('stBtn').classList.toggle('on', showSt);
+}
+
+// === Sélection ===
+function sel(id) {
+    selId = id;
+    var doms = document.querySelectorAll('.el');
+    for (var i = 0; i < doms.length; i++) doms[i].classList.toggle('sel', doms[i].getAttribute('data-id') === id);
+    document.getElementById('fbar').classList.add('show');
+}
+function desel() {
+    selId = null;
+    var doms = document.querySelectorAll('.el');
+    for (var i = 0; i < doms.length; i++) doms[i].classList.remove('sel');
+    document.getElementById('fbar').classList.remove('show');
+}
+
+// === Actions élément ===
+function scaleEl(f) {
+    var el = findEl(selId); if (!el) return;
+    el.sc = Math.max(0.3, Math.min(4, el.sc * f));
+    var dom = document.getElementById('d-' + el.id);
+    if (dom) dom.style.transform = 'rotate(' + el.rot + 'deg) scale(' + el.sc + ')';
+    vib(3);
+}
+function rotEl(d) {
+    var el = findEl(selId); if (!el) return;
+    el.rot = (el.rot + d) % 360;
+    var dom = document.getElementById('d-' + el.id);
+    if (dom) dom.style.transform = 'rotate(' + el.rot + 'deg) scale(' + el.sc + ')';
+    vib(3);
+}
+function delEl() {
+    if (!selId) return;
+    var dom = document.getElementById('d-' + selId);
+    if (dom) dom.remove();
+    var newEls = [];
+    for (var i = 0; i < els.length; i++) { if (els[i].id !== selId) newEls.push(els[i]); }
+    els = newEls;
+    desel(); vib(10);
+}
+
+// === Ajout éléments ===
+function addEm(emoji) {
+    var pc = document.getElementById('pc');
+    var el = {id:'e'+(idC++), type:'em', em:emoji, x:(pc.offsetWidth-48)/2, y:(pc.offsetHeight-48)/2, sc:1, rot:0, fs:48};
+    els.push(el); mkDom(el); sel(el.id); vib(5);
+}
+
+function addBb(style) {
+    var pc = document.getElementById('pc');
+    var el = {id:'e'+(idC++), type:'bb', st:style, text:'Votre texte', x:(pc.offsetWidth-140)/2, y:(pc.offsetHeight-60)/2, sc:1, rot:0, bg:bblClr, clr:'#333', font:"'Dancing Script',cursive", fs:14};
+    els.push(el); mkDom(el); sel(el.id); vib(5);
+    setTimeout(function() { openEdit(el.id); }, 200);
+}
+
+function addTx() {
+    var txt = document.getElementById('txIn').value.trim();
+    if (!txt) { toast('Écrivez un texte d\'abord'); return; }
+    var pc = document.getElementById('pc');
+    var el = {id:'e'+(idC++), type:'tx', text:txt, x:20, y:(pc.offsetHeight-txSz)/2, sc:1, rot:0, clr:txClr, font:txFont, fs:txSz};
+    els.push(el); mkDom(el); sel(el.id);
+    document.getElementById('txIn').value = '';
+    vib(5);
+}
+
+// === Création DOM ===
+function mkDom(el) {
+    var div = document.createElement('div');
+    div.className = 'el';
+    div.id = 'd-' + el.id;
+    div.setAttribute('data-id', el.id);
+    div.style.left = el.x + 'px';
+    div.style.top = el.y + 'px';
+    div.style.transform = 'rotate(' + el.rot + 'deg) scale(' + el.sc + ')';
+
+    if (el.type === 'em') {
+        div.textContent = el.em;
+        div.style.fontSize = el.fs + 'px';
+        div.style.lineHeight = '1';
+        div.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,.2))';
+    } else if (el.type === 'bb') {
+        var bbl = document.createElement('div');
+        bbl.className = 'bbl bbl-' + el.st;
+        bbl.style.background = el.bg;
+        var sp = document.createElement('span');
+        sp.className = 'bbl-t';
+        sp.style.color = el.clr;
+        sp.style.fontFamily = el.font;
+        sp.textContent = el.text;
+        bbl.appendChild(sp);
+        div.appendChild(bbl);
+    } else if (el.type === 'tx') {
+        var sp = document.createElement('span');
+        sp.className = 'el-tx';
+        sp.style.color = el.clr;
+        sp.style.fontFamily = el.font;
+        sp.style.fontSize = el.fs + 'px';
+        sp.textContent = el.text;
+        div.appendChild(sp);
+    } else if (el.type === 'sh') {
+        div.innerHTML = shapeSVG(el.shape, el.clr, el.size);
+        div.style.filter = 'drop-shadow(0 1px 2px rgba(0,0,0,.2))';
+    }
+
+    div.addEventListener('mousedown', function(e) { startDrag(e, el.id); });
+    div.addEventListener('touchstart', function(e) { startDrag(e, el.id); }, {passive:false});
+
+    // Double tap pour éditer
+    div.addEventListener('mouseup', function() { handleTap(el); });
+    div.addEventListener('touchend', function() { handleTap(el); });
+
+    document.getElementById('pcEl').appendChild(div);
+}
+
+function handleTap(el) {
+    if (drag && drag.moved) return;
+    var now = Date.now();
+    if (now - lastTap < 400 && lastTapId === el.id && (el.type === 'bb' || el.type === 'tx')) {
+        openEdit(el.id);
+        lastTap = 0; lastTapId = '';
+        return;
+    }
+    lastTap = now; lastTapId = el.id;
+}
+
+// === Drag ===
+function startDrag(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    sel(id);
+    var el = findEl(id); if (!el) return;
+    var cx, cy;
+    if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+    else { cx = e.clientX; cy = e.clientY; }
+    drag = {id:id, sx:cx, sy:cy, ox:el.x, oy:el.y, moved:false};
+}
+
+function onMove(e) {
+    if (!drag) return;
+    e.preventDefault();
+    var cx, cy;
+    if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+    else { cx = e.clientX; cy = e.clientY; }
+    var dx = cx - drag.sx, dy = cy - drag.sy;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
+    var el = findEl(drag.id); if (!el) return;
+    var pc = document.getElementById('pc');
+    el.x = Math.max(-20, Math.min(pc.offsetWidth - 20, drag.ox + dx));
+    el.y = Math.max(-20, Math.min(pc.offsetHeight - 20, drag.oy + dy));
+    var dom = document.getElementById('d-' + el.id);
+    if (dom) { dom.style.left = el.x + 'px'; dom.style.top = el.y + 'px'; }
+}
+
+function onUp() { drag = null; }
+
+// === Édition texte ===
+function openEdit(id) {
+    var el = findEl(id); if (!el) return;
+    editId = id;
+    document.getElementById('editIn').value = el.text || '';
+    document.getElementById('editMo').classList.add('show');
+    setTimeout(function() { var inp = document.getElementById('editIn'); inp.focus(); inp.select(); }, 100);
+}
+function confirmEdit() {
+    var el = findEl(editId); if (!el) { closeEdit(); return; }
+    el.text = document.getElementById('editIn').value;
+    var dom = document.getElementById('d-' + editId);
+    if (dom) {
+        var sp = dom.querySelector('.bbl-t') || dom.querySelector('.el-tx');
+        if (sp) sp.textContent = el.text;
+    }
+    closeEdit();
+}
+function closeEdit() { document.getElementById('editMo').classList.remove('show'); editId = null; }
+document.getElementById('editMo').addEventListener('click', function(e) { if (e.target === this) closeEdit(); });
+document.getElementById('editIn').addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmEdit(); });
+
+// === Sélecteurs panneau ===
+function setBblClr(c, btn) {
+    bblClr = c;
+    var swatches = document.querySelectorAll('#bbCr .cs');
+    for (var i = 0; i < swatches.length; i++) swatches[i].classList.remove('on');
+    if (btn) btn.classList.add('on');
+}
+function setTxFont(i, btn) {
+    txFont = FONTS[i].v;
+    var btns = document.querySelectorAll('#foR .fob');
+    for (var j = 0; j < btns.length; j++) btns[j].classList.remove('on');
+    if (btn) btn.classList.add('on');
+}
+function setTxSz(s, btn) {
+    txSz = s;
+    var btns = document.querySelectorAll('#szR .sb');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('on');
+    if (btn) btn.classList.add('on');
+}
+function setTxClr(c, btn) {
+    txClr = c;
+    var swatches = document.querySelectorAll('#txCr .cs');
+    for (var i = 0; i < swatches.length; i++) swatches[i].classList.remove('on');
+    if (btn) btn.classList.add('on');
+}
+
+// === Rendu carte (utilisé par téléchargement + partage) ===
+function renderCardCanvas() {
+    var W = 1500, H = 1000;
+    var canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext('2d');
+    var pc = document.getElementById('pc');
+    var sx = W / pc.offsetWidth, sy = H / pc.offsetHeight;
+
+    // Fond
+    if (bgType === 'color') {
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, W, H);
+    } else if (bgType === 'photo' && bgImg && bgImg.complete) {
+        try { ctx.filter = bgFilter === 'none' ? 'none' : bgFilter; } catch(er) {}
+        var ir = bgImg.width / bgImg.height, cr = W / H;
+        var dw, dh, dx, dy;
+        if (ir > cr) { dh = H; dw = H * ir; dx = (W - dw) / 2; dy = 0; }
+        else { dw = W; dh = W / ir; dx = 0; dy = (H - dh) / 2; }
+        ctx.drawImage(bgImg, dx, dy, dw, dh);
+        try { ctx.filter = 'none'; } catch(er) {}
+    }
+
+    // Tampon
+    if (showSt) {
+        ctx.save();
+        ctx.translate(W - 80 * sx, 70 * sy);
+        ctx.rotate(-12 * Math.PI / 180);
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(0, 0, 40 * Math.min(sx,sy), 0, Math.PI*2); ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = 'bold ' + (11 * Math.min(sx,sy)) + 'px "Courier New",monospace';
+        ctx.fillText('POSTE', 0, -5 * Math.min(sx,sy));
+        ctx.font = (7 * Math.min(sx,sy)) + 'px "Courier New",monospace';
+        var d = new Date();
+        ctx.fillText(pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear(), 0, 9 * Math.min(sx,sy));
+        ctx.restore();
+    }
+
+    // Éléments
+    for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var dom = document.getElementById('d-' + el.id);
+        if (!dom) continue;
+        ctx.save();
+        var cx_ = (el.x + dom.offsetWidth / 2) * sx;
+        var cy_ = (el.y + dom.offsetHeight / 2) * sy;
+        ctx.translate(cx_, cy_);
+        ctx.rotate(el.rot * Math.PI / 180);
+        ctx.scale(el.sc, el.sc);
+
+        if (el.type === 'em') {
+            ctx.font = el.fs * sx + 'px serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(el.em, 0, 0);
+        } else if (el.type === 'bb') {
+            var bw = dom.offsetWidth * sx, bh = dom.offsetHeight * sy;
+            var bbl = dom.querySelector('.bbl');
+            var tailH = el.st === 'r' ? 10 : el.st === 'p' ? 18 : 0;
+            var totalH = bh + tailH * sy;
+            var rad = 16 * sx;
+
+            ctx.fillStyle = el.bg;
+            drawRR(ctx, -bw/2, -totalH/2, bw, bh, rad);
+            ctx.fill();
+
+            // Queue
+            if (el.st === 'r') {
+                ctx.beginPath();
+                ctx.moveTo(-bw/2 + 25*sx, -totalH/2 + bh);
+                ctx.lineTo(-bw/2 + 16*sx, -totalH/2 + bh + 10*sy);
+                ctx.lineTo(-bw/2 + 40*sx, -totalH/2 + bh);
+                ctx.closePath(); ctx.fill();
+            } else if (el.st === 'p') {
+                ctx.beginPath(); ctx.arc(-bw/2 + 22*sx, -totalH/2 + bh + 8*sy, 5*sx, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(-bw/2 + 12*sx, -totalH/2 + bh + 16*sy, 3*sx, 0, Math.PI*2); ctx.fill();
+            } else if (el.st === 's') {
+                ctx.beginPath();
+                ctx.moveTo(bw/2, -9*sy);
+                ctx.lineTo(bw/2 + 11*sx, 0);
+                ctx.lineTo(bw/2, 9*sy);
+                ctx.closePath(); ctx.fillStyle = el.bg; ctx.fill();
+            }
+
+            // Texte bulle
+            ctx.fillStyle = el.clr;
+            ctx.font = el.fs * sx + 'px ' + el.font;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            var lines = wrapTxt(ctx, el.text, bw - 24*sx);
+            var lh = el.fs * 1.3 * sx;
+            var startY = -((lines.length - 1) * lh) / 2;
+            for (var j = 0; j < lines.length; j++) ctx.fillText(lines[j], 0, startY + j * lh);
+
+        } else if (el.type === 'tx') {
+            ctx.fillStyle = el.clr;
+            ctx.font = el.fs * sx + 'px ' + el.font;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(el.text, 0, 0);
+        } else if (el.type === 'sh') {
+            drawShape(ctx, el.shape, el.clr, el.size * Math.min(sx, sy));
+        }
+        ctx.restore();
+    }
+
+    return canvas;
+}
+
+// === Téléchargement ===
+function exportPNG() {
+    var canvas = renderCardCanvas();
+    var a = document.createElement('a');
+    a.download = 'carte-postale.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    toast('Carte postale téléchargée !');
+    vib(10);
+}
+
+// === Partage natif (WhatsApp, e-mail, etc.) ===
+function shareCard() {
+    var canvas = renderCardCanvas();
+    canvas.toBlob(function(blob) {
+        if (!blob) { toast('Erreur, réessayez'); return; }
+        var file = new File([blob], 'carte-postale.png', {type:'image/png'});
+        if (navigator.canShare && navigator.canShare({files:[file]})) {
+            navigator.share({
+                files: [file],
+                title: 'Ma carte postale',
+                text: 'Voici ma carte postale !'
+            }).then(function() { vib(10); }).catch(function(e) {
+                if (e && e.name !== 'AbortError') toast('Partage annulé');
             });
-        });
-
-        /* ===== Initialisation ===== */
-        function init() {
-            const config = LEVELS[currentLevel];
-            totalPairs = config.pairs;
-            flipped  = [];
-            matched  = 0;
-            moves    = 0;
-            locked   = false;
-            elapsed  = 0;
-            startTime = null;
-            clearInterval(timer);
-
-            movesEl.textContent = '0';
-            pairsEl.textContent = '0/' + totalPairs;
-            winOverlay.classList.remove('active');
-
-            gridEl.className = 'grid cols-' + config.cols;
-
-            const selected = ALL_EMOJIS.slice(0, config.pairs);
-            cards = [...selected, ...selected];
-            shuffle(cards);
-
-            gridEl.innerHTML = '';
-
-            cards.forEach((emoji, i) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.animationDelay = (i * 0.03) + 's';
-                card.dataset.emoji = emoji;
-                card.setAttribute('role', 'button');
-                card.setAttribute('tabindex', '0');
-                card.setAttribute('aria-label', 'Carte face cachée');
-
-                card.innerHTML = `
-                    <div class="card-inner">
-                        <div class="card-face card-back">
-                            <span class="card-back-text">
-                                <span class="line1">Atelier</span>
-                                <span class="ornament" aria-hidden="true"></span>
-                                <span class="line2">Mémo</span>
-                            </span>
-                        </div>
-                        <div class="card-face card-front">
-                            <span class="emoji" aria-hidden="true">${emoji}</span>
-                        </div>
-                    </div>
-                `;
-
-                card.addEventListener('click', () => flipCard(card));
-                card.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        flipCard(card);
-                    }
-                });
-
-                gridEl.appendChild(card);
-            });
+        } else {
+            toast('Partage indisponible ici, téléchargement...');
+            exportPNG();
         }
+    }, 'image/png');
+}
 
-        /* ===== Mélange Fisher-Yates ===== */
-        function shuffle(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
+function drawShape(ctx, k, color, size) {
+    var s = size / 100;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    if (k === 'circle') {
+        ctx.arc(0, 0, 46 * s, 0, Math.PI * 2);
+    } else {
+        var pts = SHAPE_PTS[k];
+        for (var i = 0; i < pts.length; i++) {
+            var px = (pts[i][0] - 50) * s, py = (pts[i][1] - 50) * s;
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         }
+        ctx.closePath();
+    }
+    ctx.fill();
+}
 
-        /* ===== Chronomètre ===== */
-        function startTimer() {
-            if (startTime) return;
-            startTime = Date.now();
-            timer = setInterval(() => {
-                elapsed = Math.floor((Date.now() - startTime) / 1000);
-            }, 500);
-        }
+function drawRR(ctx, x, y, w, h, r) {
+    r = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
 
-        function formatTime(sec) {
-            const m = Math.floor(sec / 60);
-            const s = sec % 60;
-            return m + ':' + String(s).padStart(2, '0');
-        }
+function wrapTxt(ctx, text, maxW) {
+    var words = text.split(' ');
+    var lines = [], line = '';
+    for (var i = 0; i < words.length; i++) {
+        var test = line ? line + ' ' + words[i] : words[i];
+        if (ctx.measureText(test).width > maxW && line) {
+            lines.push(line); line = words[i];
+        } else line = test;
+    }
+    if (line) lines.push(line);
+    return lines.length ? lines : [''];
+}
 
-        /* ===== Retourner une carte ===== */
-        function flipCard(card) {
-            if (locked) return;
-            if (card.classList.contains('flipped')) return;
-            if (card.classList.contains('matched')) return;
-            if (flipped.length >= 2) return;
+// === Utilitaires ===
+function findEl(id) {
+    for (var i = 0; i < els.length; i++) { if (els[i].id === id) return els[i]; }
+    return null;
+}
+function vib(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} }
+function toast(msg) {
+    var old = document.querySelector('.toast'); if (old) old.remove();
+    var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function() { t.classList.add('show'); }, 10);
+    setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2200);
+}
 
-            startTimer();
-
-            card.classList.add('flipped');
-            card.setAttribute('aria-label', 'Carte ' + card.dataset.emoji);
-            flipped.push(card);
-
-            if (flipped.length === 2) {
-                moves++;
-                movesEl.textContent = moves;
-                checkMatch();
-            }
-        }
-
-        /* ===== Vérifier la paire ===== */
-        function checkMatch() {
-            const [a, b] = flipped;
-
-            if (a.dataset.emoji === b.dataset.emoji) {
-                matched++;
-                pairsEl.textContent = matched + '/' + totalPairs;
-
-                setTimeout(() => {
-                    a.classList.add('matched', 'match-anim');
-                    b.classList.add('matched', 'match-anim');
-                    spawnSparkles(a);
-                    spawnSparkles(b);
-                    flipped = [];
-
-                    if (matched === totalPairs) {
-                        clearInterval(timer);
-                        setTimeout(showWin, 700);
-                    }
-                }, 350);
-            } else {
-                locked = true;
-
-                setTimeout(() => {
-                    a.classList.add('shake');
-                    b.classList.add('shake');
-                }, 450);
-
-                setTimeout(() => {
-                    a.classList.remove('flipped', 'shake');
-                    b.classList.remove('flipped', 'shake');
-                    a.setAttribute('aria-label', 'Carte face cachée');
-                    b.setAttribute('aria-label', 'Carte face cachée');
-                    flipped = [];
-                    locked = false;
-                }, 950);
-            }
-        }
-
-        /* ===== Particules dorées ===== */
-        function spawnSparkles(el) {
-            const rect = el.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            const count = 10;
-
-            for (let i = 0; i < count; i++) {
-                const spark = document.createElement('div');
-                spark.className = 'sparkle' + (i % 3 === 0 ? ' gold' : '');
-                spark.style.left = cx + 'px';
-                spark.style.top = cy + 'px';
-
-                const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.5;
-                const dist = 25 + Math.random() * 30;
-                spark.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-                spark.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-
-                document.body.appendChild(spark);
-                spark.addEventListener('animationend', () => spark.remove());
-            }
-        }
-
-        /* ===== Écran de victoire ===== */
-        function showWin() {
-            winMovesEl.textContent = moves;
-            winTimeEl.textContent = formatTime(elapsed);
-            winOverlay.classList.add('active');
-        }
-
-        /* ===== Écouteurs ===== */
-        document.getElementById('restartBtn').addEventListener('click', init);
-        document.getElementById('againBtn').addEventListener('click', init);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && winOverlay.classList.contains('active')) {
-                init();
-            }
-        });
-
-        /* ===== Démarrage ===== */
-        init();
-    </script>
+// === Démarrage ===
+init();
+</script>
 </body>
 </html>
