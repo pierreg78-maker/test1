@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Flipbook pourri</title>
+    <title>Mon Flipbook</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- jQuery 2.2.4 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
-    <!-- jQuery Migrate 1.x : restaure $.browser (supprimé depuis jQuery 1.9), nécessaire pour turn.js -->
-    <script src="https://code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
-
-    <!-- PDF.js et son worker -->
+    <!-- PDF.js et son worker (lecture du PDF dans le navigateur, aucun envoi sur un serveur) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
 
-    <!-- Turn.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <!-- StPageFlip : librairie moderne pour l'effet de tournage de page, sans dépendance -->
+    <script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js"></script>
 </head>
 <body>
 
     <div id="upload-container">
         <label for="pdf-file-input" class="upload-btn">Choisir un PDF</label>
         <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+        <p id="loading-message" class="hidden">Chargement du PDF en cours...</p>
     </div>
 
     <div id="flipbook-container">
-        <div id="flipbook">
-            <!-- Les pages seront injectées ici -->
-        </div>
+        <div id="book"></div>
+    </div>
+
+    <div id="nav-container" class="hidden">
+        <button id="prev-btn" class="nav-btn" aria-label="Page précédente">&#10094;</button>
+        <span id="page-indicator">- / -</span>
+        <button id="next-btn" class="nav-btn" aria-label="Page suivante">&#10095;</button>
     </div>
 
     <script src="script.js"></script>
