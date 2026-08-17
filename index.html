@@ -1,33 +1,28 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Mon Flipbook</title>
- <link rel="stylesheet" href="style.css">
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Flipbook</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Turn.js via CDN (ou ton fichier local) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
 </head>
 <body>
 
- <div id="flipbook-container">
- <div id="flipbook">
- <div class="page" style="background-image: url('pages/page1.jpg');"></div>
- <div class="page" style="background-image: url('pages/page2.jpg');"></div>
- <div class="page" style="background-image: url('pages/page3.jpg');"></div>
- <div class="page" style="background-image: url('pages/page4.jpg');"></div>
-   <div class="page" style="background-image: url('pages/page5.jpg');"></div>
- <div class="page" style="background-image: url('pages/page6.jpg');"></div>
- <div class="page" style="background-image: url('pages/page7.jpg');"></div>
- <div class="page" style="background-image: url('pages/page8.jpg');"></div>
-   <div class="page" style="background-image: url('pages/page9.jpg');"></div>
- <div class="page" style="background-image: url('pages/page10.jpg');"></div>
- <div class="page" style="background-image: url('pages/page11.jpg');"></div>
- <div class="page" style="background-image: url('pages/page12.jpg');"></div>
- </div>
- </div>
+    <div id="upload-container">
+        <label for="pdf-file-input" class="upload-btn">Choisir un PDF</label>
+        <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+    </div>
 
-<script src="turn.min.js"></script>
-<script src="script.js"></script>
+    <div id="flipbook-container">
+        <div id="flipbook">
+            <!-- Les pages seront injectées ici -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
