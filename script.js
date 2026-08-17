@@ -42,7 +42,7 @@ $(document).ready(function() {
 
                     // Création de l'élément de page pour turn.js
                     const pageDiv = $('<div class="page"></div>');
-                    const img = $('<img>').attr('src', canvas.toDataURL('image/png')).css({
+                    const img = $('<img>').attr('src', canvas.toDataURL('image/png')).attr('draggable', 'false').css({
                         'width': '100%',
                         'height': '100%'
                     });
