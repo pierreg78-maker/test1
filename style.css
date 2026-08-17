@@ -30,6 +30,8 @@ body, html {
 }
 
 #flipbook-container {
+    position: relative;
+    overflow: hidden;
     width: 800px;
     height: 600px;
     background-color: white;
@@ -37,6 +39,7 @@ body, html {
 }
 
 #flipbook {
+    position: relative;
     width: 100%;
     height: 100%;
 }
