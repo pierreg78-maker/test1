@@ -85,3 +85,12 @@ body, html {
     min-width: 60px;
     text-align: center;
 }
+
+.download-btn {
+    background-color: #28a745;
+    margin-left: 10px;
+}
+
+.download-btn:hover {
+    background-color: #1e7e34;
+}
