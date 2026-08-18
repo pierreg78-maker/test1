@@ -43,8 +43,8 @@ body, html {
 #flipbook-container {
     width: 90vw;
     max-width: 800px;
-    height: 70vh;
-    max-height: 600px;
+    height: 85vh;
+    max-height: 850px;
     background-color: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
