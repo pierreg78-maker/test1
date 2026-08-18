@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const styleBlock = `
             body, html { margin:0; padding:0; width:100%; height:100%; background:#f0f0f0;
                 display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; }
-            #flipbook-container { width:90vw; max-width:800px; height:70vh; max-height:600px;
+            #flipbook-container { width:90vw; max-width:800px; height:85vh; max-height:850px;
                 background:#fff; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:flex; justify-content:center; align-items:center; }
             #book { width:100%; height:100%; }
             #nav-container { margin-top:20px; display:flex; align-items:center; gap:20px; }
