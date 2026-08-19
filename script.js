@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Parcours de chaque page du PDF et rendu sur un canvas
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
-                    const scale = 1.5; // Qualité du rendu
+                    const scale = 2.5; // Qualité du rendu
                     const viewport = page.getViewport({ scale: scale });
 
                     const canvas = document.createElement('canvas');
