@@ -1,1 +1,1 @@
-dépôt pour tester des trucs
+Permet de créer un flipbook à partir d'un pdf, localement.
