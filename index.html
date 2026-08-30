@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FAF7F1;
+            --fg: #1B211E;
+            --muted: #4A6B72;
+            --accent: #E4762F;
+            --accent-light: #EFA06B;
+            --slate: #4F7B87;
+            --sage: #74A395;
+            --border: rgba(27,33,30,0.12);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+.back-link {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 10;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    background: var(--slate);
+    color: white;
+    text-decoration: none;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(27,33,30,0.25);
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  .back-link:hover { filter: brightness(1.08); }
+  .back-link:active { transform: scale(.95); }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== Fond atmosphérique ===== */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.07;
+            animation: orbFloat 22s ease-in-out infinite;
+        }
+
+        .bg-orb:nth-child(1) {
+            width: 450px; height: 450px;
+            background: var(--slate);
+            top: -120px; right: -80px;
+        }
+
+        .bg-orb:nth-child(2) {
+            width: 350px; height: 350px;
+            background: var(--sage);
+            bottom: -80px; left: -60px;
+            animation-delay: -8s;
+        }
+
+        .bg-orb:nth-child(3) {
+            width: 280px; height: 280px;
+            background: var(--accent-light);
+            top: 45%; left: 55%;
+            animation-delay: -15s;
+            opacity: 0.05;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25%  { transform: translate(35px, -45px) scale(1.08); }
+            50%  { transform: translate(-25px, 25px) scale(0.94); }
+            75%  { transform: translate(40px, 35px) scale(1.05); }
+        }
+
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.6;
+        }
+
+        /* ===== Conteneur principal ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            padding: 2.2rem 1.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* ===== En-tête ===== */
+        .header { text-align: center; }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 3.2rem;
+            letter-spacing: -0.01em;
+            line-height: 1.1;
+            color: var(--fg);
+        }
+
+        .header h1 .gold { color: var(--accent); }
+
+        .header .tagline {
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-weight: 300;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-top: 0.6rem;
+        }
+
+        .header .rule {
+            width: 56px;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 0.7rem auto 0;
+            border-radius: 1px;
+        }
+
+        /* ===== Sélecteur de difficulté ===== */
+        .difficulty-selector {
+            display: flex;
+            gap: 0;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            box-shadow: 0 4px 20px rgba(27,33,30,0.10);
+        }
+
+        .diff-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: transparent;
+            border: none;
+            padding: 0.5rem 1.3rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            white-space: nowrap;
+        }
+
+        .diff-btn:hover { color: var(--fg); }
+
+        .diff-btn.active {
+            color: var(--fg);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            box-shadow: 0 2px 12px rgba(228,118,47,0.35);
+            font-weight: 600;
+        }
+
+        .diff-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* ===== Barre de stats ===== */
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            padding: 0.65rem 2.2rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            box-shadow: 0 4px 20px rgba(27,33,30,0.10);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.85rem;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 3ch;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ===== Grille de cartes ===== */
+        /* La largeur (--card-w) et la hauteur (--card-h) des cartes sont
+           calculées séparément en JS : les cartes sont rectangulaires afin
+           de remplir tout l'espace disponible, horizontalement ET
+           verticalement, quel que soit le niveau de difficulté. */
+        .grid {
+            display: grid;
+            gap: 10px;
+            perspective: 1000px;
+        }
+
+        .grid.cols-4 {
+            grid-template-columns: repeat(4, var(--card-w, 80px));
+            grid-template-rows: repeat(3, var(--card-h, 80px));
+        }
+        .grid.cols-5 {
+            grid-template-columns: repeat(5, var(--card-w, 80px));
+            grid-template-rows: repeat(4, var(--card-h, 80px));
+        }
+        .grid.cols-6 {
+            grid-template-columns: repeat(6, var(--card-w, 80px));
+            grid-template-rows: repeat(5, var(--card-h, 80px));
+        }
+
+        /* ===== Carte individuelle ===== */
+        .card {
+            cursor: pointer;
+            position: relative;
+            opacity: 0;
+            animation: cardEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            outline: none;
+        }
+
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px) scale(0.88); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card.flipped .card-inner,
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ===== DOS DE CARTE — Bleu ardoise ===== */
+        .card-back {
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(27,33,30,0.08) 0%, transparent 50%),
+                linear-gradient(155deg, #5C8894 0%, #4F7B87 45%, #3E636D 100%);
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow:
+                0 2px 6px rgba(27,33,30,0.20),
+                0 8px 28px rgba(27,33,30,0.14),
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.12);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: -70%; left: -70%;
+            width: 240%; height: 240%;
+            background: linear-gradient(
+                135deg,
+                transparent 36%,
+                rgba(255,255,255,0.03) 40%,
+                rgba(255,255,255,0.12) 47%,
+                rgba(255,255,255,0.18) 50%,
+                rgba(255,255,255,0.12) 53%,
+                rgba(255,255,255,0.03) 60%,
+                transparent 64%
+            );
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .card:not(.flipped):not(.matched):hover .card-back::before {
+            transform: translate(6%, 6%);
+        }
+
+        .card:not(.flipped):not(.matched):hover .card-back {
+            border-color: rgba(255,255,255,0.45);
+            box-shadow:
+                0 2px 6px rgba(27,33,30,0.20),
+                0 8px 28px rgba(27,33,30,0.14),
+                0 0 18px rgba(79,123,135,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.12);
+        }
+
+        .card-back::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(255,255,255,0.20);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* ===== Texte "Atelier Mémo" au dos ===== */
+        .card-back-text {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.35;
+            pointer-events: none;
+        }
+
+        .card-back-text .line1,
+        .card-back-text .line2 {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #FAF7F1;
+            text-shadow: 0 1px 3px rgba(27,33,30,0.35);
+        }
+
+        .card-back-text .line1 {
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .card-back-text .line2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.95;
+            margin-top: 1px;
+        }
+
+        .card-back-text .ornament {
+            display: block;
+            width: 16px;
+            height: 2px;
+            margin: 4px auto 0;
+            position: relative;
+        }
+
+        .card-back-text .ornament::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, #FAF7F1, transparent);
+            opacity: 0.5;
+            border-radius: 1px;
+        }
+
+        /* Tailles du dos de carte proportionnelles à la plus petite
+           dimension de la carte (largeur ou hauteur), calculée dynamiquement
+           en JS : plus besoin de paliers fixes par nombre de colonnes. */
+        .card-back-text .line1 { font-size: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.078); }
+        .card-back-text .line2 { font-size: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.10); }
+        .card-back-text .ornament { width: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.15); }
+        .card-back::after { inset: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.05); }
+        .card-face { border-radius: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.14); }
+
+        /* ===== FACE DE CARTE — Blanc cassé ===== */
+        .card-front {
+            background:
+                radial-gradient(ellipse at 50% 40%, rgba(79,123,135,0.05) 0%, transparent 60%),
+                linear-gradient(155deg, #FFFFFF 0%, #FAF7F1 60%, #F3EEE4 100%);
+            border: 1px solid rgba(79,123,135,0.25);
+            transform: rotateY(180deg);
+            box-shadow:
+                0 2px 6px rgba(27,33,30,0.15),
+                0 8px 28px rgba(27,33,30,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+
+        .card-front .emoji {
+            font-size: calc(min(var(--card-w, 80px), var(--card-h, 80px)) * 0.5);
+            line-height: 1;
+            filter: drop-shadow(0 3px 6px rgba(27,33,30,0.25));
+            transition: transform 0.3s ease;
+        }
+
+        /* ===== État : paire trouvée ===== */
+        .card.matched .card-front {
+            border-color: rgba(228,118,47,0.55);
+            box-shadow:
+                0 2px 6px rgba(27,33,30,0.15),
+                0 0 24px rgba(228,118,47,0.16),
+                0 0 48px rgba(228,118,47,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+
+        .card.matched .card-front .emoji {
+            transform: scale(1.05);
+        }
+
+        .card.match-anim .card-inner {
+            animation: matchBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes matchBounce {
+            0%   { transform: rotateY(180deg) scale(1); }
+            40%  { transform: rotateY(180deg) scale(1.12); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        /* ===== État : erreur ===== */
+        .card.shake .card-inner {
+            animation: cardShake 0.45s ease;
+        }
+
+        @keyframes cardShake {
+            0%, 100% { transform: rotateY(180deg) translateX(0); }
+            20%  { transform: rotateY(180deg) translateX(-7px); }
+            40%  { transform: rotateY(180deg) translateX(6px); }
+            60%  { transform: rotateY(180deg) translateX(-5px); }
+            80%  { transform: rotateY(180deg) translateX(4px); }
+        }
+
+        /* ===== Hover ===== */
+        .card:not(.flipped):not(.matched):hover .card-inner {
+            transform: rotateY(10deg) translateY(-3px);
+        }
+
+        .card:not(.flipped):not(.matched):active .card-inner {
+            transform: scale(0.96);
+            transition-duration: 0.1s;
+        }
+
+        .card:focus-visible .card-back {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* ===== Particules dorées ===== */
+        .sparkle {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            pointer-events: none;
+            z-index: 50;
+            animation: sparkFly 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sparkle.gold {
+            background: var(--accent);
+            width: 4px;
+            height: 4px;
+        }
+
+        @keyframes sparkFly {
+            0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+
+        /* ===== Bouton Recommencer ===== */
+        .btn-restart {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid rgba(228,118,47,0.30);
+            padding: 0.65rem 2rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-restart::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(228,118,47,0.10), rgba(228,118,47,0.03));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-restart:hover {
+            border-color: rgba(228,118,47,0.55);
+            box-shadow: 0 0 22px rgba(228,118,47,0.12);
+        }
+
+        .btn-restart:hover::before { opacity: 1; }
+        .btn-restart:active { transform: scale(0.96); }
+
+        .btn-restart:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* ===== Overlay de victoire ===== */
+        .win-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(27, 33, 30, 0.45);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .win-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .win-panel {
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(228,118,47,0.06) 0%, transparent 60%),
+                linear-gradient(160deg, #FFFFFF 0%, #FAF7F1 100%);
+            border: 1px solid rgba(79,123,135,0.22);
+            border-radius: 28px;
+            padding: 3rem 2.5rem 2.5rem;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow:
+                0 24px 80px rgba(27,33,30,0.20),
+                0 0 50px rgba(228,118,47,0.08);
+            transform: translateY(30px) scale(0.95);
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .win-overlay.active .win-panel {
+            transform: translateY(0) scale(1);
+        }
+
+        .win-panel .trophy {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(27,33,30,0.20));
+        }
+
+        .win-panel h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 0.35rem;
+        }
+
+        .win-panel .win-sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+
+        .win-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .win-stat-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--fg);
+            line-height: 1;
+        }
+
+        .win-stat-lbl {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-top: 0.4rem;
+        }
+
+        .btn-again {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--fg);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            padding: 0.85rem 2.6rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 18px rgba(228,118,47,0.30);
+        }
+
+        .btn-again:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(228,118,47,0.40);
+        }
+
+        .btn-again:active { transform: translateY(0); }
+
+        .btn-again:focus-visible {
+            outline: 2px solid var(--fg);
+            outline-offset: 3px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 580px) {
+            .container {
+                padding: 1.5rem 1rem 2.5rem;
+                gap: 1.2rem;
+            }
+            .header h1 { font-size: 2.4rem; }
+            .grid { gap: 7px; }
+            .stats-bar { padding: 0.5rem 1.2rem; gap: 1.2rem; }
+            .stat { font-size: 0.8rem; }
+            .stat-value { font-size: 1rem; min-width: 3.5ch; }
+            .diff-btn { font-size: 0.65rem; padding: 0.4rem 0.9rem; }
+        }
+
+        @media (max-width: 400px) {
+            .grid { gap: 5px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card-inner { transition: none; }
+            .bg-orb { animation: none; }
+            .card.match-anim .card-inner { animation: none; }
+            .card.shake .card-inner { animation: none; }
+            .sparkle { animation: none; display: none; }
+            .card { animation: none; opacity: 1; }
+            .win-panel { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer" aria-hidden="true">
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+    </div>
+
+    <main class="container">
+        <header class="header">
+            <a class="back-link" href="https://pierreg78-maker.github.io/Atelier/">Retour<br>à<br>l'accueil</a>
+            <h1><span class="gold">Memory</span></h1>
+            <p class="tagline">Retrouvez les paires</p>
+            <div class="rule" aria-hidden="true"></div>
+        </header>
+
+        <nav class="difficulty-selector" role="tablist" aria-label="Niveau de difficulté">
+            <button class="diff-btn active" role="tab" data-level="easy" aria-selected="true">Facile</button>
+            <button class="diff-btn" role="tab" data-level="medium" aria-selected="false">Moyen</button>
+            <button class="diff-btn" role="tab" data-level="hard" aria-selected="false">Difficile</button>
+        </nav>
+
+        <div class="stats-bar" role="status" aria-live="polite">
+            <div class="stat">
+                <span class="stat-label">Coups</span>
+                <span class="stat-value" id="moves">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Paires</span>
+                <span class="stat-value" id="pairs">0/6</span>
+            </div>
+        </div>
+
+        <div class="grid cols-4" id="grid" role="group" aria-label="Plateau de jeu"></div>
+
+        <button class="btn-restart" id="restartBtn" aria-label="Recommencer la partie">Recommencer</button>
+    </main>
+
+    <div class="win-overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Victoire">
+        <div class="win-panel">
+            <span class="trophy" aria-hidden="true">🏆</span>
+            <h2>Bravo !</h2>
+            <p class="win-sub">Toutes les paires ont été retrouvées.</p>
+            <div class="win-stats">
+                <div>
+                    <div class="win-stat-val" id="winMoves">0</div>
+                    <div class="win-stat-lbl">Coups</div>
+                </div>
+                <div>
+                    <div class="win-stat-val" id="winTime">0:00</div>
+                    <div class="win-stat-lbl">Temps</div>
+                </div>
+            </div>
+            <button class="btn-again" id="againBtn">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        /* ===== 15 emojis uniques pour le niveau difficile ===== */
+        const ALL_EMOJIS = [
+            '🌸','🦋','🌙','⭐','🎵',
+            '🍀','🌺','🔮','🍬','🐚',
+            '🦊','🌊','🌻','🍄','🪻'
+        ];
+
+        /* ===== Configuration des 3 niveaux ===== */
+        const LEVELS = {
+            easy:   { pairs: 6,  cols: 4 },
+            medium: { pairs: 10, cols: 5 },
+            hard:   { pairs: 15, cols: 6 }
+        };
+
+        /* ===== État du jeu ===== */
+        let currentLevel = 'easy';
+        let cards = [];
+        let flipped = [];
+        let matched = 0;
+        let totalPairs = 6;
+        let moves = 0;
+        let locked = false;
+        let timer = null;
+        let startTime = null;
+        let elapsed = 0;
+
+        /* ===== Références DOM ===== */
+        const gridEl      = document.getElementById('grid');
+        const movesEl     = document.getElementById('moves');
+        const pairsEl     = document.getElementById('pairs');
+        const winOverlay  = document.getElementById('winOverlay');
+        const winMovesEl  = document.getElementById('winMoves');
+        const winTimeEl   = document.getElementById('winTime');
+        const diffBtns    = document.querySelectorAll('.diff-btn');
+
+        /* ===== Sélecteur de difficulté ===== */
+        diffBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const level = btn.dataset.level;
+                if (level === currentLevel) return;
+
+                diffBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+
+                currentLevel = level;
+                init();
+            });
+        });
+
+        /* ===== Ajustement dynamique de la taille des cartes =====
+           Calcule largeur et hauteur des cartes séparément (cartes
+           rectangulaires) afin de remplir tout l'espace disponible, à la
+           fois horizontalement et verticalement, quel que soit le niveau
+           de difficulté ou la taille de l'écran. */
+        function fitGrid() {
+            const config = LEVELS[currentLevel];
+            const cols = config.cols;
+            const rows = (config.pairs * 2) / cols;
+
+            const gridGap = parseFloat(getComputedStyle(gridEl).gap) || 0;
+            const containerEl = document.querySelector('.container');
+            const containerStyle = getComputedStyle(containerEl);
+            const containerGap = parseFloat(containerStyle.gap) || 0;
+
+            // Largeur disponible : le conteneur, hors marges internes
+            const availableWidth = containerEl.clientWidth
+                - parseFloat(containerStyle.paddingLeft)
+                - parseFloat(containerStyle.paddingRight);
+
+            // Hauteur disponible : la fenêtre, moins tout ce qui entoure la
+            // grille (en-tête, sélecteur de niveau, barre de stats, bouton).
+            const header   = document.querySelector('.header');
+            const selector = document.querySelector('.difficulty-selector');
+            const restartBtn = document.getElementById('restartBtn');
+            const usedHeight = header.offsetHeight
+                + selector.offsetHeight
+                + document.querySelector('.stats-bar').offsetHeight
+                + restartBtn.offsetHeight
+                + containerGap * 4
+                + parseFloat(containerStyle.paddingTop)
+                + parseFloat(containerStyle.paddingBottom)
+                + 12; // petite marge de sécurité
+
+            const availableHeight = window.innerHeight - usedHeight;
+
+            let cardW = (availableWidth  - gridGap * (cols - 1)) / cols;
+            let cardH = (availableHeight - gridGap * (rows - 1)) / rows;
+
+            cardW = Math.max(56, Math.min(cardW, 220));
+            cardH = Math.max(56, Math.min(cardH, 260));
+
+            // Empêche des cartes trop étirées dans un sens ou dans l'autre
+            const maxRatio = 1.55;
+            if (cardH > cardW * maxRatio) cardH = cardW * maxRatio;
+            if (cardW > cardH * maxRatio) cardW = cardH * maxRatio;
+
+            gridEl.style.setProperty('--card-w', cardW + 'px');
+            gridEl.style.setProperty('--card-h', cardH + 'px');
+        }
+
+        /* ===== Initialisation ===== */
+        function init() {
+            const config = LEVELS[currentLevel];
+            totalPairs = config.pairs;
+            flipped  = [];
+            matched  = 0;
+            moves    = 0;
+            locked   = false;
+            elapsed  = 0;
+            startTime = null;
+            clearInterval(timer);
+
+            movesEl.textContent = '0';
+            pairsEl.textContent = '0/' + totalPairs;
+            winOverlay.classList.remove('active');
+
+            gridEl.className = 'grid cols-' + config.cols;
+            fitGrid();
+
+            const selected = ALL_EMOJIS.slice(0, config.pairs);
+            cards = [...selected, ...selected];
+            shuffle(cards);
+
+            gridEl.innerHTML = '';
+
+            cards.forEach((emoji, i) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = (i * 0.03) + 's';
+                card.dataset.emoji = emoji;
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', 'Carte face cachée');
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-back">
+                            <span class="card-back-text">
+                                <span class="line1">Atelier</span>
+                                <span class="ornament" aria-hidden="true"></span>
+                                <span class="line2">Mémo</span>
+                            </span>
+                        </div>
+                        <div class="card-face card-front">
+                            <span class="emoji" aria-hidden="true">${emoji}</span>
+                        </div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => flipCard(card));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        flipCard(card);
+                    }
+                });
+
+                gridEl.appendChild(card);
+            });
+        }
+
+        /* ===== Mélange Fisher-Yates ===== */
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        }
+
+        /* ===== Chronomètre ===== */
+        function startTimer() {
+            if (startTime) return;
+            startTime = Date.now();
+            timer = setInterval(() => {
+                elapsed = Math.floor((Date.now() - startTime) / 1000);
+            }, 500);
+        }
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            return m + ':' + String(s).padStart(2, '0');
+        }
+
+        /* ===== Retourner une carte ===== */
+        function flipCard(card) {
+            if (locked) return;
+            if (card.classList.contains('flipped')) return;
+            if (card.classList.contains('matched')) return;
+            if (flipped.length >= 2) return;
+
+            startTimer();
+
+            card.classList.add('flipped');
+            card.setAttribute('aria-label', 'Carte ' + card.dataset.emoji);
+            flipped.push(card);
+
+            if (flipped.length === 2) {
+                moves++;
+                movesEl.textContent = moves;
+                checkMatch();
+            }
+        }
+
+        /* ===== Vérifier la paire ===== */
+        function checkMatch() {
+            const [a, b] = flipped;
+
+            if (a.dataset.emoji === b.dataset.emoji) {
+                matched++;
+                pairsEl.textContent = matched + '/' + totalPairs;
+
+                setTimeout(() => {
+                    a.classList.add('matched', 'match-anim');
+                    b.classList.add('matched', 'match-anim');
+                    spawnSparkles(a);
+                    spawnSparkles(b);
+                    flipped = [];
+
+                    if (matched === totalPairs) {
+                        clearInterval(timer);
+                        setTimeout(showWin, 700);
+                    }
+                }, 350);
+            } else {
+                locked = true;
+
+                setTimeout(() => {
+                    a.classList.add('shake');
+                    b.classList.add('shake');
+                }, 450);
+
+                setTimeout(() => {
+                    a.classList.remove('flipped', 'shake');
+                    b.classList.remove('flipped', 'shake');
+                    a.setAttribute('aria-label', 'Carte face cachée');
+                    b.setAttribute('aria-label', 'Carte face cachée');
+                    flipped = [];
+                    locked = false;
+                }, 950);
+            }
+        }
+
+        /* ===== Particules dorées ===== */
+        function spawnSparkles(el) {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const count = 10;
+
+            for (let i = 0; i < count; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'sparkle' + (i % 3 === 0 ? ' gold' : '');
+                spark.style.left = cx + 'px';
+                spark.style.top = cy + 'px';
+
+                const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.5;
+                const dist = 25 + Math.random() * 30;
+                spark.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+                spark.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+
+                document.body.appendChild(spark);
+                spark.addEventListener('animationend', () => spark.remove());
+            }
+        }
+
+        /* ===== Écran de victoire ===== */
+        function showWin() {
+            winMovesEl.textContent = moves;
+            winTimeEl.textContent = formatTime(elapsed);
+            winOverlay.classList.add('active');
+        }
+
+        /* ===== Écouteurs ===== */
+        document.getElementById('restartBtn').addEventListener('click', init);
+        document.getElementById('againBtn').addEventListener('click', init);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && winOverlay.classList.contains('active')) {
+                init();
+            }
+        });
+
+        /* ===== Réajustement au redimensionnement / changement d'orientation ===== */
+        let resizeTimeout = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(fitGrid, 150);
+        });
+        window.addEventListener('orientationchange', fitGrid);
+
+        /* ===== Démarrage ===== */
+        init();
+    </script>
+</body>
+</html>
