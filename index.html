@@ -30,782 +30,12 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    // ─── On colle tout le code ici, sans l'export default ───
+    // ─── Récupération des hooks React ───
     const { useState, useEffect, useRef, useMemo } = React;
 
-    // ═══════════════════════════════════════════════════════════
-    import { useState, useEffect, useRef, useMemo } from "react";
-
-// ═══════════════════════════════════════════════════════════════════
-// DONNÉES — 3 exercices de démonstration (ratios + intensité + tags)
-// ═══════════════════════════════════════════════════════════════════
-
-const EXERCISES = [
-  {
-    id: "box",
-    name: "Box Breathing",
-    subtitle: "Calme alerte & performance",
-    emoji: "⬜",
-    duration: "4–6 min",
-    level: "Débutant",
-    origin: "US Navy SEALs / Marines",
-    benefits: ["Focus", "Performance", "CalmeAlerte"],
-    tags: ["#Focus", "#Performance", "#CalmeAlerte", "#Débutant", "#NavySEALs"],
-    color: "#38bdf8",
-    gradFrom: "#0c4a6e",
-    gradTo: "#075985",
-    description:
-      "Technique tactique utilisée par les forces spéciales. Ratio égal pour stabiliser le système nerveux tout en restant alerte.",
-    ratio: { inspire: 4, hold: 4, expire: 4, holdEmpty: 4 },
-    intensity: {
-      inspire: "douce et régulière",
-      hold: "neutre, sans tension",
-      expire: "contrôlée et complète",
-      holdEmpty: "neutre",
-    },
-    cycles: 6,
-    instructions: {
-      inspire: "Inspire tranquillement par le nez. Le ventre se gonfle.",
-      hold: "Retiens l’air. Corps détendu, épaules relâchées.",
-      expire: "Expire lentement par le nez ou la bouche. Vide complètement.",
-      holdEmpty: "Poumons vides. Reste calme quelques instants.",
-    },
-  },
-  {
-    id: "478",
-    name: "4-7-8",
-    subtitle: "Le tranquillisant naturel",
-    emoji: "🌙",
-    duration: "2–3 min",
-    level: "Débutant",
-    origin: "Andrew Weil / Pranayama",
-    benefits: ["Sommeil", "Anxiété", "Calme"],
-    tags: ["#Sommeil", "#Anxiété", "#Calme", "#Débutant", "#Scientifique"],
-    color: "#a78bfa",
-    gradFrom: "#1e1b4b",
-    gradTo: "#2e1065",
-    description:
-      "Méthode popularisée par le Dr Andrew Weil. L’expiration longue active fortement le système parasympathique. Idéal avant de dormir ou en cas d’anxiété.",
-    ratio: { inspire: 4, hold: 7, expire: 8, holdEmpty: 0 },
-    intensity: {
-      inspire: "douce",
-      hold: "neutre",
-      expire: "longue et complète",
-    },
-    cycles: 4,
-    instructions: {
-      inspire: "Inspire silencieusement par le nez pendant 4 comptes.",
-      hold: "Retiens le souffle sans forcer pendant 7 comptes.",
-      expire: "Expire par la bouche en faisant un léger « whoosh », vide vraiment les poumons.",
-    },
-  },
-  {
-    id: "coherence",
-    name: "Cohérence cardiaque",
-    subtitle: "Équilibre & HRV",
-    emoji: "💗",
-    duration: "5 min",
-    level: "Débutant",
-    origin: "Recherche scientifique (HRV)",
-    benefits: ["Stress", "HRV", "Équilibre"],
-    tags: ["#Stress", "#HRV", "#Équilibre", "#Débutant", "#Scientifique"],
-    color: "#2dd4bf",
-    gradFrom: "#042f2e",
-    gradTo: "#134e4a",
-    description:
-      "Respiration à ~5–6 cycles par minute. Maximise la variabilité de la fréquence cardiaque et régule le stress au quotidien. À pratiquer 3×5 min par jour idéalement.",
-    ratio: { inspire: 5, hold: 0, expire: 5, holdEmpty: 0 },
-    intensity: {
-      inspire: "douce et fluide",
-      expire: "douce et fluide",
-    },
-    cycles: 30, // ~5 min
-    instructions: {
-      inspire: "Inspire doucement par le nez. Laisse le ventre s’ouvrir.",
-      expire: "Expire doucement par le nez ou la bouche. Continu et régulier.",
-    },
-  },
-];
-
-// Couleurs de phase
-const PHASE_STYLE = {
-  inspire: { accent: "#38bdf8", label: "INSPIRE", bg: "from-sky-950 to-sky-900" },
-  hold: { accent: "#a78bfa", label: "RETIENS", bg: "from-violet-950 to-violet-900" },
-  expire: { accent: "#2dd4bf", label: "EXPIRE", bg: "from-teal-950 to-teal-900" },
-  holdEmpty: { accent: "#94a3b8", label: "PAUSE", bg: "from-slate-950 to-slate-900" },
-  prep: { accent: "#64748b", label: "", bg: "from-slate-950 to-slate-900" },
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// UTILITAIRES
-// ═══════════════════════════════════════════════════════════════════
-
-const store = {
-  get: (k, fb = null) => {
-    try {
-      const r = localStorage.getItem(k);
-      return r ? JSON.parse(r) : fb;
-    } catch {
-      return fb;
-    }
-  },
-  set: (k, v) => {
-    try {
-      localStorage.setItem(k, JSON.stringify(v));
-    } catch {}
-  },
-};
-
-function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function updateStreak() {
-  const s = store.get("af_streak", { count: 0, lastDate: null });
-  const today = getTodayKey();
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  if (s.lastDate === today) return s;
-  const updated = {
-    count: s.lastDate === yesterday ? s.count + 1 : 1,
-    lastDate: today,
-  };
-  store.set("af_streak", updated);
-  return updated;
-}
-
-function logSession(exId, name) {
-  const logs = store.get("af_journal", []);
-  logs.unshift({
-    id: Date.now(),
-    exerciseId: exId,
-    name,
-    date: getTodayKey(),
-    time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
-  });
-  store.set("af_journal", logs.slice(0, 100));
-}
-
-// Génère la séquence de phases à partir du ratio + cycles
-function buildSequence(ex) {
-  const seq = [];
-  const { ratio, cycles, instructions, intensity } = ex;
-  const phases = ["inspire", "hold", "expire", "holdEmpty"].filter(
-    (p) => ratio[p] > 0
-  );
-
-  for (let c = 1; c <= cycles; c++) {
-    phases.forEach((phase) => {
-      seq.push({
-        phase,
-        duration: ratio[phase],
-        cycle: c,
-        totalCycles: cycles,
-        instruction: instructions[phase] || "",
-        intensity: intensity[phase] || "douce",
-      });
-    });
-  }
-  return seq;
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// COMPOSANT PRINCIPAL
-// ═══════════════════════════════════════════════════════════════════
-
-export default function AirFitness() {
-  const [tab, setTab] = useState("home"); // home | exercise | complete | journal
-  const [activeEx, setActiveEx] = useState(null);
-  const [sequence, setSequence] = useState([]);
-  const [stepIdx, setStepIdx] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [streak, setStreak] = useState(() =>
-    store.get("af_streak", { count: 0, lastDate: null })
-  );
-  const [journal, setJournal] = useState(() => store.get("af_journal", []));
-  const intervalRef = useRef(null);
-
-  const today = getTodayKey();
-  const doneToday = streak.lastDate === today;
-
-  // Filtrage
-  const filteredExercises = useMemo(() => {
-    if (selectedTags.length === 0) return EXERCISES;
-    return EXERCISES.filter((ex) =>
-      selectedTags.every((t) => ex.tags.includes(t))
-    );
-  }, [selectedTags]);
-
-  // Toutes les tags uniques pour les chips
-  const allTags = useMemo(() => {
-    const set = new Set();
-    EXERCISES.forEach((ex) => ex.tags.forEach((t) => set.add(t)));
-    return Array.from(set).sort();
-  }, []);
-
-  // Timer
-  useEffect(() => {
-    clearInterval(intervalRef.current);
-    if (!running || !activeEx || tab !== "exercise") return;
-
-    intervalRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t > 1) return t - 1;
-        // Fin de phase
-        clearInterval(intervalRef.current);
-        if (stepIdx < sequence.length - 1) {
-          const next = stepIdx + 1;
-          setStepIdx(next);
-          setTimeLeft(sequence[next].duration);
-        } else {
-          setRunning(false);
-          finishExercise();
-        }
-        return 0;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalRef.current);
-  }, [running, stepIdx, tab, activeEx, sequence]);
-
-  function openExercise(ex) {
-    const seq = buildSequence(ex);
-    setActiveEx(ex);
-    setSequence(seq);
-    setStepIdx(0);
-    setTimeLeft(seq[0].duration);
-    setRunning(false);
-    setTab("exercise");
-  }
-
-  function finishExercise() {
-    const updated = updateStreak();
-    setStreak(updated);
-    logSession(activeEx.id, activeEx.name);
-    setJournal(store.get("af_journal", []));
-    setTab("complete");
-  }
-
-  function toggleTag(tag) {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // ÉCRAN EXERCICE
-  // ─────────────────────────────────────────────────────────────────
-  if (tab === "exercise" && activeEx && sequence.length > 0) {
-    const current = sequence[stepIdx];
-    const style = PHASE_STYLE[current.phase] || PHASE_STYLE.prep;
-    const progress = ((stepIdx + 1) / sequence.length) * 100;
-    const isFirst = stepIdx === 0 && timeLeft === sequence[0].duration;
-
-    return (
-      <div
-        className={`min-h-screen flex flex-col bg-gradient-to-b ${style.bg} transition-all duration-700`}
-        style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-12 pb-3">
-          <button
-            onClick={() => {
-              setRunning(false);
-              setTab("home");
-            }}
-            className="text-white/40 text-sm active:opacity-60"
-          >
-            ← Quitter
-          </button>
-          <div className="text-center">
-            <p className="text-white/50 text-xs font-medium tracking-wide">
-              {activeEx.name}
-            </p>
-            <p className="text-white/30 text-[10px] mt-0.5">
-              Cycle {current.cycle} / {current.totalCycles}
-            </p>
-          </div>
-          <div className="w-14" />
-        </div>
-
-        {/* Progress bar */}
-        <div className="mx-5 h-0.5 rounded-full bg-white/10">
-          <div
-            className="h-0.5 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%`, background: style.accent }}
-          />
-        </div>
-
-        {/* Corps */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
-          {/* Label phase */}
-          <div
-            className="px-5 py-1.5 rounded-full text-xs font-bold tracking-[0.2em]"
-            style={{
-              background: style.accent + "18",
-              color: style.accent,
-              border: `1px solid ${style.accent}30`,
-            }}
-          >
-            {style.label}
-          </div>
-
-          {/* Cercle timer */}
-          <div className="relative flex items-center justify-center">
-            {running && (
-              <div
-                className="absolute w-48 h-48 rounded-full animate-ping opacity-[0.08]"
-                style={{
-                  background: style.accent,
-                  animationDuration:
-                    current.phase === "expire" ? "2.2s" : "1.4s",
-                }}
-              />
-            )}
-            <div
-              className="w-44 h-44 rounded-full flex flex-col items-center justify-center gap-1"
-              style={{
-                background: style.accent + "10",
-                border: `2px solid ${style.accent}35`,
-                boxShadow: `0 0 40px ${style.accent}15`,
-              }}
-            >
-              <span className="text-5xl font-light text-white tabular-nums leading-none">
-                {timeLeft}
-              </span>
-              <span className="text-[11px] text-white/40 tracking-widest uppercase">
-                sec
-              </span>
-            </div>
-          </div>
-
-          {/* Instruction + intensité */}
-          <div className="text-center max-w-xs space-y-2">
-            <p className="text-white/90 text-[15px] leading-relaxed font-medium">
-              {current.instruction}
-            </p>
-            <p className="text-white/35 text-xs">
-              Intensité : {current.intensity}
-            </p>
-          </div>
-        </div>
-
-        {/* Contrôles */}
-        <div className="px-5 pb-12 flex flex-col gap-3">
-          <button
-            onClick={() => setRunning((r) => !r)}
-            className="w-full py-4 rounded-2xl text-white font-semibold text-[15px] transition-all active:scale-[0.98]"
-            style={{
-              background: running
-                ? "rgba(255,255,255,0.08)"
-                : `linear-gradient(135deg, ${style.accent}, ${style.accent}cc)`,
-              border: running ? "1px solid rgba(255,255,255,0.12)" : "none",
-              boxShadow: running ? "none" : `0 8px 28px ${style.accent}35`,
-            }}
-          >
-            {running ? "⏸  Pause" : isFirst ? "▶  Démarrer" : "▶  Reprendre"}
-          </button>
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                if (stepIdx > 0) {
-                  const p = stepIdx - 1;
-                  setStepIdx(p);
-                  setTimeLeft(sequence[p].duration);
-                  setRunning(false);
-                }
-              }}
-              disabled={stepIdx === 0}
-              className="flex-1 py-3 rounded-2xl text-white/45 text-sm transition-all active:scale-95 disabled:opacity-20"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              ← Précédent
-            </button>
-            <button
-              onClick={() => {
-                if (stepIdx < sequence.length - 1) {
-                  const n = stepIdx + 1;
-                  setStepIdx(n);
-                  setTimeLeft(sequence[n].duration);
-                } else {
-                  setRunning(false);
-                  finishExercise();
-                }
-              }}
-              className="flex-1 py-3 rounded-2xl text-white/70 text-sm transition-all active:scale-95"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              Suivant →
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // ÉCRAN COMPLET
-  // ─────────────────────────────────────────────────────────────────
-  if (tab === "complete" && activeEx) {
-    return (
-      <div
-        className="min-h-screen bg-[#070b14] flex flex-col items-center justify-center px-6 py-12"
-        style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
-      >
-        <div className="w-full max-w-sm flex flex-col items-center gap-7 text-center">
-          <div className="text-6xl">{activeEx.emoji}</div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white mb-1.5">
-              Session terminée
-            </h2>
-            <p className="text-slate-400 text-sm">
-              Tu as terminé{" "}
-              <span className="text-white font-medium">{activeEx.name}</span>
-            </p>
-          </div>
-
-          {/* Streak */}
-          <div
-            className="w-full rounded-3xl p-5"
-            style={{
-              background: "linear-gradient(145deg, #12182b, #1a1435)",
-              border: "1px solid #2e2a55",
-            }}
-          >
-            <p className="text-indigo-400/80 text-[11px] uppercase tracking-[0.15em] mb-2">
-              Série en cours
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">
-                {streak.count >= 7 ? "🔥" : streak.count >= 3 ? "⚡" : "✨"}
-              </span>
-              <div className="text-left">
-                <p className="text-white text-2xl font-semibold">
-                  {streak.count} jour{streak.count > 1 ? "s" : ""}
-                </p>
-                <p className="text-indigo-300/70 text-xs">Continue comme ça</p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setTab("home")}
-            className="w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
-            style={{
-              background: "linear-gradient(135deg, #0ea5e9, #0284c7)",
-              boxShadow: "0 8px 28px #0ea5e935",
-            }}
-          >
-            Retour à l’accueil
-          </button>
-          <button
-            onClick={() => openExercise(activeEx)}
-            className="w-full py-3 rounded-2xl text-sky-400/90 text-sm font-medium"
-            style={{ border: "1px solid #0ea5e925" }}
-          >
-            Refaire cet exercice
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // ÉCRAN JOURNAL
-  // ─────────────────────────────────────────────────────────────────
-  if (tab === "journal") {
-    return (
-      <div
-        className="min-h-screen bg-[#070b14] flex flex-col"
-        style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
-      >
-        <div className="px-5 pt-12 pb-4">
-          <h1 className="text-xl font-semibold text-white">Journal</h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Historique de tes sessions de souffle
-          </p>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-5 pb-28">
-          {journal.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-              <span className="text-4xl opacity-40">📓</span>
-              <p className="text-slate-400 text-sm">Aucune session encore</p>
-              <p className="text-slate-600 text-xs max-w-[220px]">
-                Termine un exercice pour commencer à remplir ton journal
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2.5">
-              {journal.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-2xl px-4 py-3.5 flex items-center justify-between"
-                  style={{
-                    background: "#0f1524",
-                    border: "1px solid #1a2236",
-                  }}
-                >
-                  <div>
-                    <p className="text-white text-sm font-medium">
-                      {entry.name}
-                    </p>
-                    <p className="text-slate-500 text-xs mt-0.5">
-                      {entry.date} · {entry.time}
-                    </p>
-                  </div>
-                  <span className="text-slate-600 text-lg">✓</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <BottomNav tab={tab} setTab={setTab} />
-      </div>
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-  // ÉCRAN ACCUEIL
-  // ─────────────────────────────────────────────────────────────────
-  return (
-    <div
-      className="min-h-screen bg-[#070b14] flex flex-col"
-      style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
-    >
-      <div className="flex-1 overflow-y-auto pb-28">
-        {/* Header */}
-        <div className="px-5 pt-12 pb-1 flex items-center justify-between">
-          <div>
-            <h1 className="text-[22px] font-semibold text-white tracking-tight">
-              Air Fitness
-            </h1>
-            <p className="text-slate-500 text-xs mt-0.5">
-              Respire · Présence · Transformation
-            </p>
-          </div>
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-            style={{
-              background: "radial-gradient(circle, #0ea5e9 0%, #0369a1 100%)",
-              boxShadow: "0 0 20px #0ea5e940",
-            }}
-          >
-            🌬️
-          </div>
-        </div>
-
-        {/* Streak card */}
-        <div
-          className="mx-5 mt-5 rounded-3xl p-5"
-          style={{
-            background: "linear-gradient(145deg, #12182b, #1a1435)",
-            border: "1px solid #2e2a55",
-          }}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-indigo-400/80 text-[11px] uppercase tracking-[0.15em] font-medium mb-1">
-                Série en cours
-              </p>
-              <div className="flex items-end gap-1.5">
-                <span className="text-3xl font-semibold text-white">
-                  {streak.count}
-                </span>
-                <span className="text-indigo-300/70 text-sm mb-0.5">
-                  jour{streak.count > 1 ? "s" : ""}
-                </span>
-              </div>
-            </div>
-            <span className="text-3xl">
-              {streak.count >= 7 ? "🔥" : streak.count >= 3 ? "⚡" : "✨"}
-            </span>
-          </div>
-          <div className="flex gap-1.5 mb-2.5">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-1 h-1 rounded-full transition-all"
-                style={{
-                  background:
-                    i < Math.min(streak.count, 7) ? "#818cf8" : "#2a2550",
-                }}
-              />
-            ))}
-          </div>
-          <p className="text-indigo-400/60 text-xs">
-            {doneToday
-              ? "Session réalisée aujourd’hui"
-              : "Fais une session pour prolonger ta série"}
-          </p>
-        </div>
-
-        {/* Filtres hashtags */}
-        <div className="px-5 mt-6">
-          <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-            Filtrer par besoin
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {allTags.map((tag) => {
-              const active = selectedTags.includes(tag);
-              return (
-                <button
-                  key={tag}
-                  onClick={() => toggleTag(tag)}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
-                  style={{
-                    background: active ? "#0ea5e920" : "#0f1524",
-                    color: active ? "#38bdf8" : "#64748b",
-                    border: active
-                      ? "1px solid #0ea5e940"
-                      : "1px solid #1a2236",
-                  }}
-                >
-                  {tag}
-                </button>
-              );
-            })}
-            {selectedTags.length > 0 && (
-              <button
-                onClick={() => setSelectedTags([])}
-                className="px-3 py-1.5 rounded-full text-xs text-slate-500"
-              >
-                Effacer
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Liste des exercices */}
-        <div className="px-5 mt-6">
-          <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-            {selectedTags.length > 0
-              ? `${filteredExercises.length} exercice${filteredExercises.length > 1 ? "s" : ""}`
-              : "Exercices de souffle"}
-          </p>
-
-          <div className="flex flex-col gap-3">
-            {filteredExercises.map((ex) => (
-              <button
-                key={ex.id}
-                onClick={() => openExercise(ex)}
-                className="w-full text-left rounded-2xl p-4 transition-all active:scale-[0.98]"
-                style={{
-                  background: "#0f1524",
-                  border: `1px solid ${ex.color}18`,
-                }}
-              >
-                <div className="flex items-start gap-3.5">
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ background: ex.color + "15" }}
-                  >
-                    {ex.emoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <p className="text-white font-semibold text-[15px]">
-                        {ex.name}
-                      </p>
-                      <span
-                        className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                        style={{
-                          background: ex.color + "15",
-                          color: ex.color,
-                        }}
-                      >
-                        {ex.level}
-                      </span>
-                    </div>
-                    <p className="text-slate-400 text-xs leading-snug mb-2">
-                      {ex.subtitle}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {ex.tags.slice(0, 4).map((t) => (
-                        <span
-                          key={t}
-                          className="text-[10px] text-slate-500"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-3 mt-2 text-slate-600 text-[11px]">
-                      <span>⏱ {ex.duration}</span>
-                      <span>
-                        {ex.ratio.inspire}-{ex.ratio.hold || "·"}-
-                        {ex.ratio.expire}
-                        {ex.ratio.holdEmpty ? `-${ex.ratio.holdEmpty}` : ""}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-slate-600 text-lg self-center">›</span>
-                </div>
-              </button>
-            ))}
-
-            {filteredExercises.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-8">
-                Aucun exercice ne correspond à ces filtres
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <BottomNav tab={tab} setTab={setTab} />
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// BOTTOM NAV
-// ═══════════════════════════════════════════════════════════════════
-
-function BottomNav({ tab, setTab }) {
-  const items = [
-    { id: "home", emoji: "🌬️", label: "Souffle" },
-    { id: "journal", emoji: "📓", label: "Journal" },
-  ];
-
-  return (
-    <div
-      className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-8 py-3.5"
-      style={{
-        background: "#060a12",
-        borderTop: "1px solid #141b2d",
-      }}
-    >
-      {items.map((item) => {
-        const active = tab === item.id;
-        return (
-          <button
-            key={item.id}
-            onClick={() => setTab(item.id)}
-            className="flex flex-col items-center gap-0.5 transition-all active:scale-90"
-          >
-            <span className="text-xl">{item.emoji}</span>
-            <span
-              className="text-[11px] font-medium"
-              style={{ color: active ? "#38bdf8" : "#475569" }}
-            >
-              {item.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
- ═══════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════
+    // DONNÉES — 3 exercices (ratio, intensité, tags)
+    // ═══════════════════════════════════════════════════════════════════
     const EXERCISES = [
       {
         id: "box",
@@ -832,7 +62,7 @@ function BottomNav({ tab, setTab }) {
         cycles: 6,
         instructions: {
           inspire: "Inspire tranquillement par le nez. Le ventre se gonfle.",
-          hold: "Retiens l'air. Corps détendu, épaules relâchées.",
+          hold: "Retiens l’air. Corps détendu, épaules relâchées.",
           expire: "Expire lentement par le nez ou la bouche. Vide complètement.",
           holdEmpty: "Poumons vides. Reste calme quelques instants.",
         },
@@ -851,7 +81,7 @@ function BottomNav({ tab, setTab }) {
         gradFrom: "#1e1b4b",
         gradTo: "#2e1065",
         description:
-          "Méthode popularisée par le Dr Andrew Weil. L'expiration longue active fortement le système parasympathique. Idéal avant de dormir ou en cas d'anxiété.",
+          "Méthode popularisée par le Dr Andrew Weil. L’expiration longue active fortement le système parasympathique. Idéal avant de dormir ou en cas d’anxiété.",
         ratio: { inspire: 4, hold: 7, expire: 8, holdEmpty: 0 },
         intensity: {
           inspire: "douce",
@@ -885,14 +115,15 @@ function BottomNav({ tab, setTab }) {
           inspire: "douce et fluide",
           expire: "douce et fluide",
         },
-        cycles: 30, // ~5 min
+        cycles: 30,
         instructions: {
-          inspire: "Inspire doucement par le nez. Laisse le ventre s'ouvrir.",
+          inspire: "Inspire doucement par le nez. Laisse le ventre s’ouvrir.",
           expire: "Expire doucement par le nez ou la bouche. Continu et régulier.",
         },
       },
     ];
 
+    // ─── Styles des phases ───
     const PHASE_STYLE = {
       inspire: { accent: "#38bdf8", label: "INSPIRE", bg: "from-sky-950 to-sky-900" },
       hold: { accent: "#a78bfa", label: "RETIENS", bg: "from-violet-950 to-violet-900" },
@@ -901,6 +132,7 @@ function BottomNav({ tab, setTab }) {
       prep: { accent: "#64748b", label: "", bg: "from-slate-950 to-slate-900" },
     };
 
+    // ─── Utilitaires de persistance ───
     const store = {
       get: (k, fb = null) => {
         try {
@@ -952,7 +184,6 @@ function BottomNav({ tab, setTab }) {
       const phases = ["inspire", "hold", "expire", "holdEmpty"].filter(
         (p) => ratio[p] > 0
       );
-
       for (let c = 1; c <= cycles; c++) {
         phases.forEach((phase) => {
           seq.push({
@@ -968,7 +199,7 @@ function BottomNav({ tab, setTab }) {
       return seq;
     }
 
-    // ─── COMPOSANT PRINCIPAL ───
+    // ─── Composant principal ───
     function AirFitness() {
       const [tab, setTab] = useState("home");
       const [activeEx, setActiveEx] = useState(null);
@@ -1046,7 +277,7 @@ function BottomNav({ tab, setTab }) {
         );
       }
 
-      // ─── ÉCRAN EXERCICE ───
+      // ─── Écran exercice ───
       if (tab === "exercise" && activeEx && sequence.length > 0) {
         const current = sequence[stepIdx];
         const style = PHASE_STYLE[current.phase] || PHASE_STYLE.prep;
@@ -1194,7 +425,7 @@ function BottomNav({ tab, setTab }) {
         );
       }
 
-      // ─── ÉCRAN COMPLET ───
+      // ─── Écran de fin ───
       if (tab === "complete" && activeEx) {
         return (
           <div
@@ -1244,7 +475,7 @@ function BottomNav({ tab, setTab }) {
                   boxShadow: "0 8px 28px #0ea5e935",
                 }}
               >
-                Retour à l'accueil
+                Retour à l’accueil
               </button>
               <button
                 onClick={() => openExercise(activeEx)}
@@ -1258,7 +489,7 @@ function BottomNav({ tab, setTab }) {
         );
       }
 
-      // ─── ÉCRAN JOURNAL ───
+      // ─── Écran Journal ───
       if (tab === "journal") {
         return (
           <div
@@ -1312,7 +543,7 @@ function BottomNav({ tab, setTab }) {
         );
       }
 
-      // ─── ÉCRAN ACCUEIL ───
+      // ─── Écran d’accueil ───
       return (
         <div
           className="min-h-screen bg-[#070b14] flex flex-col"
@@ -1339,6 +570,7 @@ function BottomNav({ tab, setTab }) {
               </div>
             </div>
 
+            {/* Carte Streak */}
             <div
               className="mx-5 mt-5 rounded-3xl p-5"
               style={{
@@ -1378,11 +610,12 @@ function BottomNav({ tab, setTab }) {
               </div>
               <p className="text-indigo-400/60 text-xs">
                 {doneToday
-                  ? "Session réalisée aujourd'hui"
+                  ? "Session réalisée aujourd’hui"
                   : "Fais une session pour prolonger ta série"}
               </p>
             </div>
 
+            {/* Filtres */}
             <div className="px-5 mt-6">
               <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
                 Filtrer par besoin
@@ -1418,6 +651,7 @@ function BottomNav({ tab, setTab }) {
               </div>
             </div>
 
+            {/* Liste exercices */}
             <div className="px-5 mt-6">
               <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
                 {selectedTags.length > 0
@@ -1496,7 +730,7 @@ function BottomNav({ tab, setTab }) {
       );
     }
 
-    // ─── BOTTOM NAV ───
+    // ─── Barre de navigation inférieure ───
     function BottomNav({ tab, setTab }) {
       const items = [
         { id: "home", emoji: "🌬️", label: "Souffle" },
@@ -1533,7 +767,7 @@ function BottomNav({ tab, setTab }) {
       );
     }
 
-    // ─── RENDU ───
+    // ─── Rendu ───
     const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(<AirFitness />);
   </script>
