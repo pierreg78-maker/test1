@@ -36,6 +36,16 @@
     // ─── Récupération des hooks React ───
     const { useState, useEffect, useRef, useMemo } = React;
 
+    function LogoMark({ color = "#67e8f9", size = 22 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 120 120" fill="none" aria-hidden="true">
+          <path d="M96 38.5 A44 44 0 1 1 98 86" stroke={color} strokeWidth="8" strokeLinecap="round" />
+          <path d="M28 62 C 46 46, 62 46, 78 60 C 88 70, 100 66, 112 54" stroke={color} strokeWidth="7.5" strokeLinecap="round" fill="none" />
+          <path d="M32 72 C 50 86, 68 86, 84 70 C 92 62, 100 64, 108 72" stroke={color} strokeWidth="7.5" strokeLinecap="round" fill="none" />
+        </svg>
+      );
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // DONNÉES — 3 exercices (ratio, intensité, tags)
     // ═══════════════════════════════════════════════════════════════════
@@ -48,8 +58,8 @@
         duration: "4–6 min",
         level: "Débutant",
         origin: "US Navy SEALs / Marines",
-        benefits: ["Focus", "Performance", "CalmeAlerte"],
-        tags: ["#Focus", "#Performance", "#CalmeAlerte", "#Débutant", "#NavySEALs"],
+        benefits: ["Focus", "Performance", "Concentration"],
+        tags: ["#Focus", "#Performance", "#Concentration", "#Débutant", "#NavySEALs"],
         color: "#38bdf8",
         gradFrom: "#0c4a6e",
         gradTo: "#075985",
@@ -563,13 +573,15 @@
                 </p>
               </div>
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+                className="w-10 h-10 rounded-full flex items-center justify-center"
                 style={{
-                  background: "radial-gradient(circle, #0ea5e9 0%, #0369a1 100%)",
-                  boxShadow: "0 0 20px #0ea5e940",
+                  background: "radial-gradient(circle, #0b3a58 0%, #082033 100%)",
+                  boxShadow: "0 0 18px #22d3ee33",
+                  border: "1px solid #22d3ee44",
                 }}
+                aria-label="Air Fitness"
               >
-                🌬️
+                <LogoMark color="#67e8f9" size={22} />
               </div>
             </div>
 
