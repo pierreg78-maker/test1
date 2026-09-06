@@ -28,13 +28,13 @@
       position: relative;
     }
   </style>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#07202b">
+  <!-- Chemins relatifs : Pages est servi sous /test1/, pas à la racine du domaine -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#07202b">
 </head>
 <body>
   <div id="root"></div>
@@ -597,17 +597,13 @@
                   Souffle · Présence · Santé 
                 </p>
               </div>
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{
-                  background: "radial-gradient(circle, #0b3a58 0%, #082033 100%)",
-                  boxShadow: "0 0 18px #22d3ee33",
-                  border: "1px solid #22d3ee44",
-                }}
-                aria-label="Air Fitness"
-              >
-                <LogoMark color="#67e8f9" size={22} />
-              </div>
+              <img
+                src="images/logo_sans_texte_modif.png"
+                alt="Air Fitness"
+                width="44"
+                height="44"
+                className="w-11 h-11 object-contain"
+              />
             </div>
 
             {/* Carte Streak */}
@@ -779,12 +775,13 @@
 
       return (
         <div
-          className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-8 py-3.5"
+          className="fixed bottom-0 left-0 right-0"
           style={{
             background: "#060a12",
             borderTop: "1px solid #141b2d",
           }}
         >
+        <div className="max-w-[480px] mx-auto flex items-center justify-between px-5 py-3.5">
           {items.map((item) => {
             const active = tab === item.id;
             return (
@@ -803,6 +800,7 @@
               </button>
             );
           })}
+        </div>
         </div>
       );
     }
