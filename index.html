@@ -27,6 +27,79 @@
       min-height: 100vh;
       position: relative;
     }
+    .term-mark {
+      border-bottom: 1px dotted #eab30899;
+      cursor: help;
+      color: inherit;
+    }
+    .term-pop {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      width: min(260px, 72vw);
+      background: #12182b;
+      border: 1px solid #2e2a55;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      line-height: 1.45;
+      padding: 10px 12px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      z-index: 50;
+      text-align: left;
+    }
+    .term-pop strong {
+      display: block;
+      color: #f8fafc;
+      font-size: 12px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-logo img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      object-position: center;
+    }
+    .bpm-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #22d3ee22;
+      border: 1px solid #22d3ee55;
+      color: #67e8f9;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .bpm-box:focus {
+      outline: none;
+      border-color: #67e8f9;
+    }
+    input.bpm-box::-webkit-outer-spin-button,
+    input.bpm-box::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input.bpm-box[type=number] {
+      -moz-appearance: textfield;
+    }
   </style>
   <!-- Chemins relatifs : Pages est servi sous /test1/, pas à la racine du domaine -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
@@ -42,6 +115,105 @@
   <script type="text/babel">
     // ─── Récupération des hooks React ───
     const { useState, useEffect, useRef, useMemo } = React;
+
+    const DEFINITIONS = {
+      vfc: {
+        title: "VFC — Variabilité de la Fréquence Cardiaque",
+        text: "Variation des intervalles entre deux battements. Une VFC élevée signale un système nerveux souple, capable de passer du stress au calme. La cohérence cardiaque est l’un des moyens les plus simples de l’entraîner.",
+      },
+      box: {
+        title: "Box Breathing",
+        text: "Respiration en carré : quatre temps égaux — inspire, retiens, expire, pause à vide. Utilisée par les forces spéciales pour rester calme et alerte. Le « carré » rend le rythme facile à mémoriser.",
+      },
+      "478": {
+        title: "4-7-8",
+        text: "Quatre temps d’inspire, sept de rétention, huit d’expire. L’expiration longue active le système parasympathique : c’est un tranquillisant naturel, idéal avant le sommeil.",
+      },
+      bpm: {
+        title: "bpm — battements par minute",
+        text: "Tempo du métronome. À 60 bpm, un compte dure une seconde. Plus bas (autour de 45), le souffle s’allonge et s’apaise ; plus haut, le rythme se resserre.",
+      },
+    };
+
+    function formatRatio(ratio) {
+      if (!ratio) return "";
+      if (!ratio.hold && !ratio.holdEmpty) return `${ratio.inspire}–${ratio.expire}`;
+      if (ratio.holdEmpty) return `${ratio.inspire}–${ratio.hold}–${ratio.expire}–${ratio.holdEmpty}`;
+      return `${ratio.inspire}–${ratio.hold}–${ratio.expire}`;
+    }
+
+    function ratioDefinition(label) {
+      return {
+        title: `Ratio ${label}`,
+        text: "Chaque chiffre est un nombre de comptes du métronome, pas des secondes fixes. L’ordre habituel : inspire — rétention poumons pleins — expire — pause poumons vides. Le tempo (bpm) décide de la durée réelle de chaque compte.",
+      };
+    }
+
+    function playMetronomeClick(audioCtxRef) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx();
+        const ctx = audioCtxRef.current;
+        if (ctx.state === "suspended") ctx.resume();
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(168, t);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(420, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.07, t + 0.006);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.1);
+      } catch (e) {}
+    }
+
+    function Term({ defKey, ratioLabel, children }) {
+      const [open, setOpen] = useState(false);
+      const wrapRef = useRef(null);
+      const def =
+        defKey === "ratio"
+          ? ratioDefinition(ratioLabel || children)
+          : DEFINITIONS[defKey];
+
+      useEffect(() => {
+        if (!open) return;
+        const close = (e) => {
+          if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener("click", close);
+        return () => document.removeEventListener("click", close);
+      }, [open]);
+
+      if (!def) return <>{children}</>;
+
+      return (
+        <span
+          ref={wrapRef}
+          className="relative inline"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setOpen((v) => !v);
+          }}
+        >
+          <span className="term-mark">{children}</span>
+          {open && (
+            <span className="term-pop" role="tooltip">
+              <strong>{def.title}</strong>
+              {def.text}
+            </span>
+          )}
+        </span>
+      );
+    }
 
     function LogoMark({ color = "#67e8f9", glowColor = "#22d3ee", size = 22 }) {
   const ring  = "M 106.57 78.16 A 49.98 49.98 0 1 1 108.01 46.10";
@@ -243,14 +415,24 @@
       const [activeEx, setActiveEx] = useState(null);
       const [sequence, setSequence] = useState([]);
       const [stepIdx, setStepIdx] = useState(0);
-      const [timeLeft, setTimeLeft] = useState(0);
+      const [beatsLeft, setBeatsLeft] = useState(0);
       const [running, setRunning] = useState(false);
       const [selectedTags, setSelectedTags] = useState([]);
+      const [bpm, setBpm] = useState(() => {
+        const saved = store.get("af_bpm", 60);
+        const n = Number(saved);
+        return n >= 1 && n <= 200 ? n : 60;
+      });
       const [streak, setStreak] = useState(() =>
         store.get("af_streak", { count: 0, lastDate: null })
       );
       const [journal, setJournal] = useState(() => store.get("af_journal", []));
       const intervalRef = useRef(null);
+      const audioCtxRef = useRef(null);
+      const runningRef = useRef(false);
+      const stepRef = useRef(0);
+      const seqRef = useRef([]);
+      const bpmRef = useRef(bpm);
 
       const today = getTodayKey();
       const doneToday = streak.lastDate === today;
@@ -269,34 +451,55 @@
       }, []);
 
       useEffect(() => {
+        runningRef.current = running;
+      }, [running]);
+      useEffect(() => {
+        stepRef.current = stepIdx;
+      }, [stepIdx]);
+      useEffect(() => {
+        seqRef.current = sequence;
+      }, [sequence]);
+      useEffect(() => {
+        bpmRef.current = bpm;
+        store.set("af_bpm", bpm);
+      }, [bpm]);
+
+      useEffect(() => {
         clearInterval(intervalRef.current);
         if (!running || !activeEx || tab !== "exercise") return;
 
-        intervalRef.current = setInterval(() => {
-          setTimeLeft((t) => {
+        const tick = () => {
+          playMetronomeClick(audioCtxRef);
+          setBeatsLeft((t) => {
             if (t > 1) return t - 1;
-            clearInterval(intervalRef.current);
-            if (stepIdx < sequence.length - 1) {
-              const next = stepIdx + 1;
+            const seq = seqRef.current;
+            const idx = stepRef.current;
+            if (idx < seq.length - 1) {
+              const next = idx + 1;
               setStepIdx(next);
-              setTimeLeft(sequence[next].duration);
-            } else {
-              setRunning(false);
-              finishExercise();
+              stepRef.current = next;
+              return seq[next].duration;
             }
+            setRunning(false);
+            runningRef.current = false;
+            finishExercise();
             return 0;
           });
-        }, 1000);
+        };
+
+        playMetronomeClick(audioCtxRef);
+        const period = Math.max(50, Math.round(60000 / (bpmRef.current || 60)));
+        intervalRef.current = setInterval(tick, period);
 
         return () => clearInterval(intervalRef.current);
-      }, [running, stepIdx, tab, activeEx, sequence]);
+      }, [running, tab, activeEx, bpm]);
 
       function openExercise(ex) {
         const seq = buildSequence(ex);
         setActiveEx(ex);
         setSequence(seq);
         setStepIdx(0);
-        setTimeLeft(seq[0].duration);
+        setBeatsLeft(seq[0].duration);
         setRunning(false);
         setTab("exercise");
       }
@@ -320,7 +523,13 @@
         const current = sequence[stepIdx];
         const style = PHASE_STYLE[current.phase] || PHASE_STYLE.prep;
         const progress = ((stepIdx + 1) / sequence.length) * 100;
-        const isFirst = stepIdx === 0 && timeLeft === sequence[0].duration;
+        const isFirst = stepIdx === 0 && beatsLeft === sequence[0].duration;
+
+        function clampBpm(v) {
+          const n = parseInt(v, 10);
+          if (Number.isNaN(n)) return;
+          setBpm(Math.min(200, Math.max(1, n)));
+        }
 
         return (
           <div
@@ -339,7 +548,13 @@
               </button>
               <div className="text-center">
                 <p className="text-white/50 text-xs font-medium tracking-wide">
-                  {activeEx.name}
+                  {activeEx.id === "box" ? (
+                    <Term defKey="box">{activeEx.name}</Term>
+                  ) : activeEx.id === "478" ? (
+                    <Term defKey="478">{activeEx.name}</Term>
+                  ) : (
+                    activeEx.name
+                  )}
                 </p>
                 <p className="text-white/30 text-[10px] mt-0.5">
                   Cycle {current.cycle} / {current.totalCycles}
@@ -353,6 +568,36 @@
                 className="h-0.5 rounded-full transition-all duration-500"
                 style={{ width: `${progress}%`, background: style.accent }}
               />
+            </div>
+
+            <p className="px-6 mt-4 text-center text-white/40 text-[11px] italic leading-relaxed">
+              {activeEx.description}
+            </p>
+
+            <div className="mt-3 flex items-center justify-center gap-2">
+              <input
+                className="bpm-box"
+                type="number"
+                min="1"
+                max="200"
+                value={bpm}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    setBpm("");
+                    return;
+                  }
+                  clampBpm(raw);
+                }}
+                onBlur={() => {
+                  if (!bpm) setBpm(60);
+                }}
+                inputMode="numeric"
+                aria-label="Tempo en battements par minute"
+              />
+              <span className="text-cyan-300/80 text-xs tracking-wide">
+                <Term defKey="bpm">bpm</Term>
+              </span>
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
@@ -387,10 +632,10 @@
                   }}
                 >
                   <span className="text-5xl font-light text-white tabular-nums leading-none">
-                    {timeLeft}
+                    {beatsLeft}
                   </span>
                   <span className="text-[11px] text-white/40 tracking-widest uppercase">
-                    sec
+                    comptes
                   </span>
                 </div>
               </div>
@@ -407,7 +652,10 @@
 
             <div className="px-5 pb-12 flex flex-col gap-3">
               <button
-                onClick={() => setRunning((r) => !r)}
+                onClick={() => {
+                  playMetronomeClick(audioCtxRef);
+                  setRunning((r) => !r);
+                }}
                 className="w-full py-4 rounded-2xl text-white font-semibold text-[15px] transition-all active:scale-[0.98]"
                 style={{
                   background: running
@@ -425,7 +673,7 @@
                     if (stepIdx > 0) {
                       const p = stepIdx - 1;
                       setStepIdx(p);
-                      setTimeLeft(sequence[p].duration);
+                      setBeatsLeft(sequence[p].duration);
                       setRunning(false);
                     }
                   }}
@@ -443,7 +691,7 @@
                     if (stepIdx < sequence.length - 1) {
                       const n = stepIdx + 1;
                       setStepIdx(n);
-                      setTimeLeft(sequence[n].duration);
+                      setBeatsLeft(sequence[n].duration);
                     } else {
                       setRunning(false);
                       finishExercise();
@@ -597,13 +845,14 @@
                   Souffle · Présence · Santé 
                 </p>
               </div>
-              <img
-                src="images/logo_sans_texte_modif.png"
-                alt="Air Fitness"
-                width="44"
-                height="44"
-                className="w-11 h-11 object-contain"
-              />
+              <div className="header-logo">
+                <img
+                  src="images/logo_sans_texte_modif.png"
+                  alt="Air Fitness"
+                  width="36"
+                  height="36"
+                />
+              </div>
             </div>
 
             {/* Carte Streak */}
@@ -654,7 +903,7 @@
             {/* Filtres */}
             <div className="px-5 mt-6">
               <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-                Filtrer par besoin
+                FILTRES
               </p>
               <div className="flex flex-wrap gap-2">
                 {allTags.map((tag) => {
@@ -716,7 +965,13 @@
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="text-white font-semibold text-[15px]">
-                            {ex.name}
+                            {ex.id === "box" ? (
+                              <Term defKey="box">{ex.name}</Term>
+                            ) : ex.id === "478" ? (
+                              <Term defKey="478">{ex.name}</Term>
+                            ) : (
+                              ex.name
+                            )}
                           </p>
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
@@ -729,21 +984,32 @@
                           </span>
                         </div>
                         <p className="text-slate-400 text-xs leading-snug mb-2">
-                          {ex.subtitle}
+                          {ex.id === "coherence" ? (
+                            <>
+                              Équilibre &{" "}
+                              <Term defKey="vfc">VFC</Term>
+                            </>
+                          ) : (
+                            ex.subtitle
+                          )}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                           {ex.tags.slice(0, 4).map((t) => (
                             <span key={t} className="text-[10px] text-slate-500">
-                              {t}
+                              {t === "#VFC" ? (
+                                <Term defKey="vfc">#VFC</Term>
+                              ) : (
+                                t
+                              )}
                             </span>
                           ))}
                         </div>
                         <div className="flex gap-3 mt-2 text-slate-600 text-[11px]">
                           <span>⏱ {ex.duration}</span>
                           <span>
-                            {ex.ratio.inspire}-{ex.ratio.hold || "·"}-
-                            {ex.ratio.expire}
-                            {ex.ratio.holdEmpty ? `-${ex.ratio.holdEmpty}` : ""}
+                            <Term defKey="ratio" ratioLabel={formatRatio(ex.ratio)}>
+                              {formatRatio(ex.ratio)}
+                            </Term>
                           </span>
                         </div>
                       </div>
