@@ -2,328 +2,741 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>L'Atelier Artistique</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pierre G. - Créateur d'expériences numériques</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231B2A4A'/><text x='32' y='44' font-family='Arial, sans-serif' font-size='27' font-weight='bold' fill='%23E87722' text-anchor='middle'>PG</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#1B2A4A',
+                        navyLight: '#243659',
+                        navyDark: '#131D35',
+                        accent: '#E87722',
+                        accentHover: '#D06A1B',
+                        mint: '#A8D5BA',
+                        mintDark: '#7BC89C',
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-site: #111116; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background-color: #1B2A4A; color: #ffffff; }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-site);
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100dvh;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        header {
-            width: 100%;
-            padding: 10px;
-            text-align: center;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            color: #2c3e50;
-        }
-
-        .subtitle {
-            margin: 3px 0 0 0;
-            font-size: 0.85rem;
-            color: #7f8c8d;
-        }
-
-        #main-wrapper {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 0;
-            min-height: 0; /* Empêche le débordement flex */
-        }
-
-        #canvas-container {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 0; 
-        }
-
-        canvas {
+        .card-link {
             display: block;
-            cursor: crosshair;
-            background-color: #111116;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-
-        #toolbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 20px;
-            border-radius: 25px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
-            z-index: 10;
-            backdrop-filter: blur(5px);
-            width: auto;
-            max-width: 95%;
-            margin-bottom: 5px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            border: none;
-            padding: 10px 18px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        .btn-clear {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .btn-back {
-            background-color: #7f8c8d;
-            color: white;
             text-decoration: none;
-            display: inline-block;
+            color: inherit;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .card-link:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            border-color: #E87722;
+        }
+        .card-link:hover .card-title {
+            color: #E87722;
+        }
+        .card-link:hover .card-arrow {
+            transform: translateX(4px);
+            color: #E87722;
+        }
+        .card-link:hover .card-icon svg {
+            color: rgba(232,119,34,0.4);
+        }
+        .card-arrow {
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .card-icon svg {
+            transition: color 0.3s ease;
         }
 
-        .color-palette {
-            display: flex;
-            gap: 8px;
+        .badge-soon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #E87722;
+            background: rgba(232,119,34,0.12);
+            padding: 4px 10px;
+            border-radius: 9999px;
         }
 
-        .color-opt {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: transform 0.2s;
-            box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #E87722;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover { color: #E87722; }
+        .nav-link:hover::after { width: 100%; }
+
+        .hero-photo {
+            border: 3px solid rgba(255,255,255,0.1);
+            transition: border-color 0.4s ease;
+        }
+        .hero-photo:hover {
+            border-color: #E87722;
         }
 
-        .color-opt.active {
-            border-color: #333;
-            transform: scale(1.1);
+        .section-label {
+            letter-spacing: 0.15em;
         }
 
-        @media (max-width: 768px) {
-            #toolbar {
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px;
-                width: 90%;
-            }
-
-            .color-palette {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-
-            .color-opt {
-                width: 35px;
-                height: 35px;
-            }
-
-            .action-buttons {
-                width: 100%;
-            }
-
-            .btn {
-                flex: 1;
-                text-align: center;
-                padding: 12px;
-                font-size: 0.9rem;
-            }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mint-line {
+            width: 40px;
+            height: 3px;
+            background-color: #A8D5BA;
+        }
+
+        .don-link {
+            color: #E87722;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s ease;
+        }
+        .don-link:hover {
+            color: #F09040;
+        }
+
+        @media (max-width: 640px) {
+            .hero-grid { flex-direction: column; text-align: center; }
+            .hero-photo { margin: 0 auto; }
+        }
+    
+    /* ---- Carrousel 3D ---- */
+.carousel-viewport { width: 100%; overflow: hidden; }
+.carousel-scene {
+    perspective: 1300px;
+    height: 580px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ring {
+    position: relative;
+    width: 210px;
+    height: 255px;
+    transform-style: preserve-3d;
+    animation: ring-spin 40s linear infinite;
+    will-change: transform;
+}
+@keyframes ring-spin {
+    from { transform: rotateX(-24deg) rotateY(0deg); }
+    to   { transform: rotateX(-24deg) rotateY(-360deg); }
+}
+.ring-title {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    transform-style: preserve-3d;
+    animation: ring-counter 40s linear infinite;
+}
+@keyframes ring-counter {
+    from { transform: rotateY(0deg) rotateX(24deg); }
+    to   { transform: rotateY(360deg) rotateX(24deg); }
+}
+.orbit-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px;
+    text-decoration: none;
+    overflow: hidden;
+    transform: translate(-50%, -50%) rotateY(calc(var(--i) * 30deg)) translateZ(430px);
+    transition: box-shadow 0.25s ease;
+}
+.orbit-card:hover { box-shadow: 0 26px 60px rgba(0,0,0,0.6); }
+.orbit-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(19, 29, 53, 0.6);
+    backface-visibility: hidden;
+}
+.orbit-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+.orbit-name {
+    font-size: clamp(16px, 1.6vw, 21px);
+    font-weight: 700;
+    line-height: 1.15;
+}
+.carousel-scene:hover .ring,
+.carousel-scene:hover .ring-title { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+    .ring, .ring-title { animation: none; }
+}
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>&#127881 Bienvenue dans l'atelier artistique ! &#127880 </h1>
-        <h3>🎨 Le Kaléidoscope Magique</h3>
-        <p class="subtitle">Choisissez vos couleurs et créez une oeuvre d'art unique (et symétrique)</p>
-    </header>
-
-    <div id="main-wrapper">
-        <div id="canvas-container">
-            <canvas id="kaleidoscopeCanvas"></canvas>
-        </div>
-        
-        <div id="toolbar">
-            <div class="color-palette" id="palette"></div>
-            <div class="action-buttons">
-                <button class="btn btn-clear" id="clearBtn">✨ Effacer</button>
-                <a href="https://pierreg78-maker.github.io/Atelier/" class="btn btn-back">🏠 Retour</a>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-navy/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#" class="text-lg font-semibold tracking-tight text-white">
+                Pierre G.
+            </a>
+            <div class="flex items-center gap-4 sm:gap-8">
+                <a href="#aide" class="nav-link text-xs sm:text-sm text-white/70 font-medium">Aide à la personne</a>
+                <a href="#utilitaires" class="nav-link text-xs sm:text-sm text-white/70 font-medium">Utilitaires</a>
+                <a href="#en-cours" class="nav-link text-xs sm:text-sm text-white/70 font-medium">En cours</a>
+                <a href="#apropos" class="nav-link text-xs sm:text-sm text-white/70 font-medium">À propos</a>
             </div>
         </div>
-    </div>
+    </nav>
 
+    <!-- Hero -->
+    <header class="pt-32 pb-20 px-6">
+        <div class="max-w-6xl mx-auto flex items-center gap-16 hero-grid">
+            <div class="flex-1">
+                <p class="section-label text-xs font-semibold text-mint uppercase mb-4">Développeur créatif</p>
+                <h1 class="text-4xl sm:text-5xl font-bold leading-tight tracking-tight mb-6">
+                    Créer des jeux stimulants,
+                    <span class="text-accent">au service des personnes âgées et en situation de handicap.</span>
+                </h1>
+                <p class="text-white/60 text-lg leading-relaxed max-w-xl mb-8">
+                    Par passion et bénévolement, je développe des jeux accessibles à tous, sans publicité et sans collecte de données personnelles. Conçus avec l'aide de différentes intelligences artificielles, ils fonctionnent directement dans le navigateur, sans rien à installer.
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="#aide" class="inline-flex items-center gap-2 bg-accent hover:bg-accentHover text-white text-sm font-semibold px-6 py-3 transition-colors">
+                        Voir mes projets
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </a>
+                    <a href="#apropos" class="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm font-medium transition-colors">
+                        En savoir plus
+                    </a>
+                </div>
+            </div>
+            <div class="flex-shrink-0 hidden sm:block">
+                <img src="https://picsum.photos/seed/elderly-smile-young-man-care/320/380.jpg" alt="Accompagnement bienveillant" class="hero-photo rounded-2xl w-64 h-80 object-cover">
+            </div>
+        </div>
+    </header>
+
+    <!-- Section 1 : Univers de l'aide à la personne -->
+    <section id="aide" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-14 fade-in">
+                <p class="section-label text-xs font-semibold text-mint uppercase mb-3">Mon univers</p>
+                <h2 class="text-3xl font-bold tracking-tight">L'aide à la personne</h2>
+                <div class="mint-line mt-4"></div>
+                <p class="text-white/50 mt-4 max-w-lg text-base leading-relaxed">Des jeux et activités gratuits, jouables directement dans le navigateur, sans installation ni publicité. Pensés pour les personnes âgées et en situation de handicap, ils accompagnent la stimulation au quotidien comme les moments de plaisir partagé.</p>
+            </div>
+
+            <!-- 1.1 Stimulation cognitive -->
+            <div id="stimulation" class="mb-16">
+                <div class="flex items-center gap-4 mb-2 fade-in">
+                    <span class="text-xs font-bold text-accent tracking-widest">01</span>
+                    <h3 class="text-xl font-semibold tracking-tight">Stimulation cognitive</h3>
+                    <div class="h-px flex-1 bg-white/10"></div>
+                </div>
+                <p class="text-white/40 text-sm mb-6 fade-in">Des exercices ciblés pour entretenir la mémoire, l'attention et la concentration — en accompagnement ou en toute autonomie.</p>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Atelier Mémoire -->
+                    <a href="https://pierreg78-maker.github.io/Atelier/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="8" y="14" width="13" height="19" rx="3" transform="rotate(-14 14.5 23.5)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="rgba(168,213,186,0.08)"/>
+                                    <rect x="27" y="14" width="13" height="19" rx="3" transform="rotate(14 33.5 23.5)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="rgba(255,255,255,0.05)"/>
+                                    <rect x="17" y="13" width="14" height="21" rx="3" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="rgba(232,119,34,0.14)"/>
+                                    <path d="M21.5 21.5c0-2.6 5-2.6 5 0c0 1.9-2.5 2.1-2.5 4.3" stroke="rgba(255,255,255,0.45)" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+                                    <circle cx="24" cy="29.8" r="1.2" fill="rgba(255,255,255,0.45)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Atelier Mémo</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Un atelier complet de 14 jeux gratuits pour entretenir la mémoire au quotidien : attention, mémorisation, logique… Chaque jeu cible une faculté et se joue directement dans le navigateur.</p>
+                        </div>
+                    </a>
+
+                    <!-- Simon -->
+                    <a href="https://pierreg78-maker.github.io/Simon2/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="18" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none"/>
+                                    <path d="M24 6 A18 18 0 0 1 42 24 L24 24 Z" fill="rgba(232,119,34,0.25)"/>
+                                    <path d="M42 24 A18 18 0 0 1 24 42 L24 24 Z" fill="rgba(168,213,186,0.25)"/>
+                                    <path d="M24 42 A18 18 0 0 1 6 24 L24 24 Z" fill="rgba(232,119,34,0.12)"/>
+                                    <path d="M6 24 A18 18 0 0 1 24 6 L24 24 Z" fill="rgba(168,213,186,0.15)"/>
+                                    <circle cx="24" cy="24" r="4" fill="#1B2A4A" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Simon</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Testez votre mémoire visuelle et auditive. Reproduisez une séquence de sons et de couleurs de plus en plus longue : jusqu'où irez-vous ?</p>
+                        </div>
+                    </a>
+
+                    <!-- Memory -->
+                    <a href="https://pierreg78-maker.github.io/Memory/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="12" y="8" width="26" height="32" rx="3" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
+                                    <rect x="8" y="12" width="26" height="32" rx="3" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+                                    <circle cx="21" cy="28" r="5" stroke="rgba(232,119,34,0.3)" stroke-width="1.5" fill="none"/>
+                                    <path d="M18 28L20 30L24 26" stroke="rgba(232,119,34,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Memory</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Le jeu de mémoire connu de tous les enfants, revisité : 3 niveaux de difficulté et un compteur de coups pour suivre vos progrès et vous dépasser.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- 1.2 Jeux pour le plaisir -->
+            <div id="jeux" class="mb-16">
+                <div class="flex items-center gap-4 mb-2 fade-in">
+                    <span class="text-xs font-bold text-accent tracking-widest">02</span>
+                    <h3 class="text-xl font-semibold tracking-tight">Jeux pour le plaisir</h3>
+                    <div class="h-px flex-1 bg-white/10"></div>
+                </div>
+                <p class="text-white/40 text-sm mb-6 fade-in">De grands classiques conçus pour partager de bons moments.</p>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- La Roue de la Fortune -->
+                    <a href="https://pierreg78-maker.github.io/la_roue_de_la_fortune/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="18" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                                    <path d="M24 6 A18 18 0 0 1 42 24 L24 24 Z" fill="rgba(232,119,34,0.2)"/>
+                                    <path d="M42 24 A18 18 0 0 1 24 42 L24 24 Z" fill="rgba(168,213,186,0.2)"/>
+                                    <path d="M24 42 A18 18 0 0 1 6 24 L24 24 Z" fill="rgba(232,119,34,0.12)"/>
+                                    <path d="M6 24 A18 18 0 0 1 24 6 L24 24 Z" fill="rgba(168,213,186,0.12)"/>
+                                    <circle cx="24" cy="24" r="3" fill="rgba(255,255,255,0.25)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">La Roue de la Fortune</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Seul ou à deux, l'adaptation du fameux jeu télévisé : faites tourner la roue, laissez le hasard décider et devinez expressions, titres et lieux.</p>
+                        </div>
+                    </a>
+
+                    <!-- 421 -->
+                    <a href="https://pierreg78-maker.github.io/421/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="4" y="4" width="40" height="40" rx="8" stroke="currentColor" stroke-width="2" color="rgba(255,255,255,0.2)"/>
+                                    <circle cx="16" cy="16" r="2.5" fill="rgba(255,255,255,0.25)"/>
+                                    <circle cx="32" cy="32" r="2.5" fill="rgba(255,255,255,0.25)"/>
+                                    <circle cx="24" cy="24" r="2.5" fill="rgba(255,255,255,0.25)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">421</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Le célèbre jeu de bistrot revisité en version web. Lancez les dés, tentez le 4-2-1 — et jouez même à distance avec vos proches.</p>
+                        </div>
+                    </a>
+
+                    <!-- Casse-briques Santé -->
+                    <a href="https://pierreg78-maker.github.io/casse-briques_sante/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="4" y="4" width="18" height="8" rx="2" stroke="rgba(232,119,34,0.3)" stroke-width="1.5" fill="rgba(232,119,34,0.1)"/>
+                                    <rect x="26" y="4" width="18" height="8" rx="2" stroke="rgba(168,213,186,0.3)" stroke-width="1.5" fill="rgba(168,213,186,0.1)"/>
+                                    <rect x="4" y="16" width="18" height="8" rx="2" stroke="rgba(168,213,186,0.3)" stroke-width="1.5" fill="rgba(168,213,186,0.1)"/>
+                                    <rect x="26" y="16" width="18" height="8" rx="2" stroke="rgba(232,119,34,0.3)" stroke-width="1.5" fill="rgba(232,119,34,0.1)"/>
+                                    <rect x="4" y="28" width="18" height="8" rx="2" stroke="rgba(232,119,34,0.3)" stroke-width="1.5" fill="rgba(232,119,34,0.1)"/>
+                                    <rect x="26" y="28" width="12" height="8" rx="2" stroke="rgba(168,213,186,0.3)" stroke-width="1.5" fill="rgba(168,213,186,0.1)"/>
+                                    <rect x="16" y="40" width="16" height="4" rx="2" fill="rgba(255,255,255,0.25)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Casse-briques Santé</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Un casse-briques au message original : ici, pas de briques — vous attaquez des tumeurs. Une façon ludique d'allier jeu et prévention santé.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- 1.3 Activités de détente -->
+            <div id="detente">
+                <div class="flex items-center gap-4 mb-2 fade-in">
+                    <span class="text-xs font-bold text-accent tracking-widest">03</span>
+                    <h3 class="text-xl font-semibold tracking-tight">Activités de détente</h3>
+                    <div class="h-px flex-1 bg-white/10"></div>
+                </div>
+                <p class="text-white/40 text-sm mb-6 fade-in">Des activités calmes et créatives, pour s'apaiser, se recentrer et prendre soin de soi.</p>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Mandala -->
+                    <a href="https://pierreg78-maker.github.io/Mandala/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="17" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                                    <circle cx="24" cy="24" r="9.5" stroke="rgba(232,119,34,0.35)" stroke-width="1.5" fill="rgba(232,119,34,0.06)"/>
+                                    <circle cx="37" cy="24" r="2.6" fill="rgba(232,119,34,0.3)"/>
+                                    <circle cx="30.5" cy="35.3" r="2.6" fill="rgba(168,213,186,0.3)"/>
+                                    <circle cx="17.5" cy="35.3" r="2.6" fill="rgba(232,119,34,0.3)"/>
+                                    <circle cx="11" cy="24" r="2.6" fill="rgba(168,213,186,0.3)"/>
+                                    <circle cx="17.5" cy="12.7" r="2.6" fill="rgba(232,119,34,0.3)"/>
+                                    <circle cx="30.5" cy="12.7" r="2.6" fill="rgba(168,213,186,0.3)"/>
+                                    <circle cx="24" cy="24" r="3.2" fill="rgba(168,213,186,0.55)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Mandala</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Laissez-vous porter par la création de mandalas : un moment de concentration apaisante, à savourer sans compter, directement dans le navigateur.</p>
+                        </div>
+                    </a>
+
+                    <!-- Musique douce -->
+                    <a href="https://pierreg78-maker.github.io/Toile_musicale/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="17" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+                                    <circle cx="10" cy="24" r="1.1" fill="rgba(255,255,255,0.2)"/>
+                                    <circle cx="38" cy="24" r="1.1" fill="rgba(255,255,255,0.2)"/>
+                                    <circle cx="24" cy="10" r="1.1" fill="rgba(255,255,255,0.2)"/>
+                                    <circle cx="24" cy="38" r="1.1" fill="rgba(255,255,255,0.2)"/>
+                                    <path d="M20 32V13l13-3v19" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <circle cx="16.5" cy="32" r="3.5" fill="rgba(232,119,34,0.5)"/>
+                                    <circle cx="29.5" cy="29" r="3.5" fill="rgba(168,213,186,0.5)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Musique douce</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Une toile musicale tissée de sons doux et apaisants, pour accompagner les instants de calme et favoriser la détente.</p>
+                        </div>
+                    </a>
+
+                    <!-- Tricot -->
+                    <a href="https://pierreg78-maker.github.io/pixel_art/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                        <div class="h-44 flex items-center justify-center">
+                            <div class="card-icon w-16 h-16">
+                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="6" y="6" width="10" height="10" rx="1" fill="rgba(232,119,34,0.25)"/>
+                                    <rect x="19" y="6" width="10" height="10" rx="1" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                                    <rect x="32" y="6" width="10" height="10" rx="1" fill="rgba(168,213,186,0.15)"/>
+                                    <rect x="6" y="19" width="10" height="10" rx="1" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                                    <rect x="19" y="19" width="10" height="10" rx="1" fill="rgba(168,213,186,0.2)"/>
+                                    <rect x="32" y="19" width="10" height="10" rx="1" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                                    <rect x="6" y="32" width="10" height="10" rx="1" fill="rgba(255,255,255,0.08)"/>
+                                    <rect x="19" y="32" width="10" height="10" rx="1" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                                    <rect x="32" y="32" width="10" height="10" rx="1" fill="rgba(232,119,34,0.18)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="card-title text-base font-semibold transition-colors">Tricot</h3>
+                                <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-white/45 text-sm leading-relaxed">Un éditeur de pixel art converti en créateur de modèles pour le tricot. Dessinez vos motifs, créez vos grilles, exportez vos créations.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2 : Petits utilitaires -->
+    <section id="utilitaires" class="py-20 px-6 bg-navyDark/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-14 fade-in">
+                <p class="section-label text-xs font-semibold text-mint uppercase mb-3">Au quotidien</p>
+                <h2 class="text-3xl font-bold tracking-tight">Petits utilitaires</h2>
+                <div class="mint-line mt-4"></div>
+                <p class="text-white/50 mt-4 max-w-lg text-base leading-relaxed">Des petits outils conçus pour simplifier le quotidien, construits avec la même exigence que mes projets plus ambitieux.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Convertisseur GitHub vers Raw -->
+                <a href="https://pierreg78-maker.github.io/convertisseur_github_vers_raw/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="card-icon w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 17h21m0 0l-6-6m6 6l-6 6" stroke="rgba(232,119,34,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <path d="M36 31H15m0 0l6-6m-6 6l6 6" stroke="rgba(168,213,186,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="card-title text-base font-semibold transition-colors">Convertisseur GitHub vers Raw</h3>
+                            <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p class="text-white/45 text-sm leading-relaxed">Transformez un lien GitHub en lien d'accès direct aux fichiers bruts en un clic. L'outil indispensable pour partager proprement vos ressources.</p>
+                    </div>
+                </a>
+
+                <!-- Pixelisator -->
+                <a href="https://pierreg78-maker.github.io/pixelisator/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="card-icon w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="8" width="9" height="9" rx="1.5" fill="rgba(255,255,255,0.14)"/>
+                                <rect x="19.5" y="8" width="9" height="9" rx="1.5" fill="rgba(232,119,34,0.4)"/>
+                                <rect x="31" y="8" width="9" height="9" rx="1.5" fill="rgba(255,255,255,0.07)"/>
+                                <rect x="8" y="19.5" width="9" height="9" rx="1.5" fill="rgba(168,213,186,0.3)"/>
+                                <rect x="19.5" y="19.5" width="9" height="9" rx="1.5" fill="rgba(232,119,34,0.55)"/>
+                                <rect x="31" y="19.5" width="9" height="9" rx="1.5" fill="rgba(168,213,186,0.16)"/>
+                                <rect x="8" y="31" width="9" height="9" rx="1.5" fill="rgba(255,255,255,0.05)"/>
+                                <rect x="19.5" y="31" width="9" height="9" rx="1.5" fill="rgba(168,213,186,0.24)"/>
+                                <rect x="31" y="31" width="9" height="9" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="card-title text-base font-semibold transition-colors">Pixelisator</h3>
+                            <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p class="text-white/45 text-sm leading-relaxed">Anonymisez vos photos en un clin d'œil : pixelisez visages, plaques d'immatriculation ou toute zone sensible. 100 % local, aucune image ne quitte votre navigateur.</p>
+                    </div>
+                </a>
+
+                <!-- Mon flipbook -->
+                <a href="https://pierreg78-maker.github.io/flipbook_pdf/" target="_blank" class="card-link rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="card-icon w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 16c-2.6-2-6.4-3-10.5-3H12v21h1.5c4.1 0 7.9 1 10.5 3z" fill="rgba(232,119,34,0.12)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M24 16c2.6-2 6.4-3 10.5-3H36v21h-1.5c-4.1 0-7.9 1-10.5 3z" fill="rgba(168,213,186,0.12)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M24 16c3.2-4.5 7.5-7 12-7" stroke="rgba(232,119,34,0.45)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 3" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="card-title text-base font-semibold transition-colors">Mon flipbook</h3>
+                            <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p class="text-white/45 text-sm leading-relaxed">Modifiez vos PDF et transformez-les en flipbook animé et élégant, idéal pour un support marketing ou un album personnel.</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3 : Projets en cours -->
+    <section id="en-cours" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-14 fade-in">
+                <p class="section-label text-xs font-semibold text-mint uppercase mb-3">En coulisses</p>
+                <h2 class="text-3xl font-bold tracking-tight">Projets en cours, à paraître</h2>
+                <div class="mint-line mt-4"></div>
+                <p class="text-white/50 mt-4 max-w-lg text-base leading-relaxed">Deux applications en préparation dans l'atelier. Elles rejoindront bientôt cette page — toujours gratuites, sans publicité et sans collecte de données.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Air Fitness -->
+                <a href="https://pierreg78-maker.github.io/test/" target="_blank" class="card-link relative rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                    <span class="badge-soon">Bientôt disponible</span>
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="card-icon w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="24" cy="24" r="17" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+                                <circle cx="24" cy="24" r="11" stroke="rgba(168,213,186,0.4)" stroke-width="1.5" fill="none"/>
+                                <circle cx="24" cy="24" r="5.5" fill="rgba(232,119,34,0.2)" stroke="rgba(232,119,34,0.45)" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="card-title text-base font-semibold transition-colors">Air Fitness</h3>
+                            <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p class="text-white/45 text-sm leading-relaxed">Une PWA d'exercices de respiration guidés pour apaiser le corps et l'esprit. Actuellement en préparation dans l'atelier !</p>
+                    </div>
+                </a>
+
+                <!-- Périgueux Ville Propre -->
+                <a href="https://pierreg78-maker.github.io/Px-propre/" target="_blank" class="card-link relative rounded-xl bg-white/[0.03] overflow-hidden fade-in">
+                    <span class="badge-soon">Bientôt disponibles</span>
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="card-icon w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="26" width="8" height="14" rx="1" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="rgba(255,255,255,0.05)"/>
+                                <rect x="20" y="20" width="8" height="20" rx="1" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="rgba(232,119,34,0.1)"/>
+                                <rect x="32" y="30" width="8" height="10" rx="1" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="rgba(168,213,186,0.08)"/>
+                                <path d="M25 12c0-5 3.6-8 8.5-8c0 4.8-3.6 8-8.5 8z" fill="rgba(168,213,186,0.45)"/>
+                                <path d="M25 12c-1.6 1.6-3.2 3.4-4.3 5.6" stroke="rgba(168,213,186,0.5)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="card-title text-base font-semibold transition-colors">Périgueux Ville Propre</h3>
+                            <svg class="card-arrow w-4 h-4 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <p class="text-white/45 text-sm leading-relaxed">Une PWA citoyenne dédiée à la propreté de la ville de Périgueux, pour un cadre de vie agréable pour tous. En cours de développement !</p>
+                    </div>
+                </a>
+
+                <!-- Carte teaser -->
+                <div class="rounded-xl bg-white/[0.03] border border-dashed border-white/15 overflow-hidden fade-in">
+                    <div class="h-44 flex items-center justify-center">
+                        <div class="w-16 h-16">
+                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="24" cy="24" r="17" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4"/>
+                                <path d="M24 17v14M17 24h14" stroke="rgba(232,119,34,0.4)" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-base font-semibold text-white/70 mb-2">D'autres idées en germe</h3>
+                        <p class="text-white/35 text-sm leading-relaxed">L'atelier ne s'arrête jamais : de nouveaux projets verront bientôt le jour ici même. Restez à l'affût !</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- À propos -->
+    <section id="apropos" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="fade-in">
+                    <p class="section-label text-xs font-semibold text-mint uppercase mb-3">À propos</p>
+                    <h2 class="text-3xl font-bold tracking-tight mb-6">Créer pour le plaisir de comprendre</h2>
+                    <div class="mint-line mb-6"></div>
+                    <p class="text-white/60 leading-relaxed mb-4">
+                        Je développe des projets web par curiosité et par goût du concret. Cette approche m'a amené à explorer des domaines variés : la logique de jeu, l'interaction utilisateur, la synthèse vocale, le traitement de fichiers. Je privilégie la simplicité d'accès et la finition plutôt que la complexité pour elle-même.
+                    </p>
+                    <p class="text-white/60 leading-relaxed mb-4">
+                        Ce portfolio est le reflet de ce cheminement. Il évolue au rythme de mes envies de créer, toujours au service des personnes dont je m'occupe.
+                    </p>
+                    <p class="text-white/60 leading-relaxed">
+                        Pour soutenir ma démarche gratuite et bénévole, vous pouvez <a href="https://www.gofundme.com/f/aide-aux-personnes-agees-atteintes-de-maladies-degeneratives?attribution_id=sl:94f4d0bc-9066-4a8b-8eca-9a5c099ec727&lang=fr_FR&ts=1782768191&utm_campaign=man_sharesheet_dash&utm_content=amp20_t1&utm_medium=customer&utm_source=copy_link" target="_blank" class="don-link">faire un don sur mon gofundme</a> ou simplement m'encourager par email pierreg78 [at] gmail.com.
+                    </p>
+                </div>
+                <div class="fade-in hidden lg:block">
+                    <img src="https://picsum.photos/seed/workspace-clean-code/600/450.jpg" alt="Espace de travail" class="rounded-2xl w-full object-cover border border-white/5">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-10 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-white/30 text-sm">Pierre G. - Tous les projets sont accessibles gratuitement en ligne.</p>
+            <div class="flex items-center gap-6">
+                <a href="https://github.com/pierreg78-maker" target="_blank" class="text-white/30 hover:text-accent text-sm transition-colors">GitHub</a>
+                <a href="#aide" class="text-white/30 hover:text-accent text-sm transition-colors">Aide à la personne</a>
+                <a href="#utilitaires" class="text-white/30 hover:text-accent text-sm transition-colors">Utilitaires</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll animation -->
     <script>
-        const canvas = document.getElementById('kaleidoscopeCanvas');
-        const ctx = canvas.getContext('2d');
-        const container = document.getElementById('canvas-container');
-        const clearBtn = document.getElementById('clearBtn');
-        const paletteContainer = document.getElementById('palette');
-
-        const symetrie = 8; 
-        let estEnTrainDeDessiner = false; 
-        let couleurCourante = '#00ffcc';
-        let derniereX = 0;
-        let derniereY = 0;
-        let epaisseurLigne = 5;
-
-        const couleurs = ['#00ffcc', '#ff0055', '#ffcc00', '#9b59b6', '#3498db', '#2ecc71', '#ffffff'];
-
-        couleurs.forEach((couleur, index) => {
-            const opt = document.createElement('div');
-            opt.className = `color-opt ${index === 0 ? 'active' : ''}`;
-            opt.style.backgroundColor = couleur;
-            opt.addEventListener('click', () => {
-                document.querySelectorAll('.color-opt').forEach(el => el.classList.remove('active'));
-                opt.classList.add('active');
-                couleurCourante = couleur;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                    observer.unobserve(entry.target);
+                }
             });
-            paletteContainer.appendChild(opt);
-        });
+        }, { threshold: 0.1 });
 
-        function redimensionner() {
-            // Recalcul strict et dynamique de l'espace carré disponible au pixel près
-            const marge = 20;
-            const tailleMaxX = container.clientWidth - marge;
-            const tailleMaxY = container.clientHeight - marge;
-            const taille = Math.max(100, Math.min(tailleMaxX, tailleMaxY));
-            
-            canvas.width = taille;
-            canvas.height = taille;
-            
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            effacerCanvas();
-        }
-
-        function effacerCanvas() {
-            ctx.save();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-        }
-
-        function dessinerTrace(x1, y1, x2, y2) {
-            ctx.strokeStyle = couleurCourante;
-            ctx.lineWidth = epaisseurLigne;
-
-            for (let i = 0; i < symetrie; i++) {
-                ctx.rotate((Math.PI * 2) / symetrie);
-                
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-
-                ctx.save();
-                ctx.scale(1, -1);
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-
-        function obtenirCoordonnees(evenement) {
-            const rect = canvas.getBoundingClientRect();
-            let clientX, clientY;
-
-            if (evenement.touches && evenement.touches.length > 0) {
-                clientX = evenement.touches[0].clientX;
-                clientY = evenement.touches[0].clientY;
-            } else {
-                clientX = evenement.clientX;
-                clientY = evenement.clientY;
-            }
-
-            return {
-                x: clientX - rect.left - canvas.width / 2,
-                y: clientY - rect.top - canvas.height / 2
-            };
-        }
-
-        function actionDebut(e) {
-            estEnTrainDeDessiner = true;
-            const coords = obtenirCoordonnees(e);
-            derniereX = coords.x;
-            derniereY = coords.y;
-        }
-
-        function actionMouvement(e) {
-            if (!estEnTrainDeDessiner) return;
-            e.preventDefault(); 
-            
-            const coords = obtenirCoordonnees(e);
-            dessinerTrace(derniereX, derniereY, coords.x, coords.y);
-            
-            derniereX = coords.x;
-            derniereY = coords.y;
-        }
-
-        function actionFin() {
-            estEnTrainDeDessiner = false;
-        }
-
-        canvas.addEventListener('mousedown', actionDebut);
-        canvas.addEventListener('mousemove', actionMouvement);
-        window.addEventListener('mouseup', actionFin);
-
-        canvas.addEventListener('touchstart', actionDebut, { passive: false });
-        canvas.addEventListener('touchmove', actionMouvement, { passive: false });
-        window.addEventListener('touchend', actionFin);
-
-        clearBtn.addEventListener('click', effacerCanvas);
-        window.addEventListener('resize', redimensionner);
-
-        setTimeout(redimensionner, 150);
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     </script>
+
 </body>
 </html>
