@@ -136,7 +136,7 @@
             .hero-photo { margin: 0 auto; }
         }
     
-  /* ---- Carrousel 3D ---- */
+ /* ---- Carrousel 3D ---- */
 .carousel-viewport { width: 100%; overflow: hidden; }
 .carousel-scene {
     perspective: 1300px;
@@ -145,7 +145,7 @@
     align-items: center;
     justify-content: center;
 }
-.ring {
+.orbit-ring {
     position: relative;
     width: 105px;
     height: 128px;
@@ -156,22 +156,6 @@
 @keyframes ring-spin {
     from { transform: rotateX(-24deg) rotateY(0deg); }
     to   { transform: rotateX(-24deg) rotateY(-360deg); }
-}
-.ring-title {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    pointer-events: none;
-    transform-style: preserve-3d;
-    animation: ring-counter 40s linear infinite;
-}
-@keyframes ring-counter {
-    from { transform: rotateY(0deg) rotateX(24deg); }
-    to   { transform: rotateY(360deg) rotateX(24deg); }
 }
 .orbit-card {
     position: absolute;
@@ -213,10 +197,9 @@
     text-transform: uppercase;
     opacity: 0.8;
 }
-.carousel-scene:hover .ring,
-.carousel-scene:hover .ring-title { animation-play-state: paused; }
+.carousel-scene:hover .orbit-ring { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
-    .ring, .ring-title { animation: none; }
+    .orbit-ring { animation: none; }
 }
     </style>
 </head>
@@ -238,7 +221,7 @@
     </nav>
 
     <!-- Hero -->
-    <header class="pt-32 pb-20 px-6">
+    <header class="pt-32 pb-10 px-6">
         <div class="max-w-6xl mx-auto flex items-center gap-16 hero-grid">
             <div class="flex-1">
                 <p class="section-label text-xs font-semibold text-mint uppercase mb-4">Développeur créatif</p>
@@ -266,19 +249,14 @@
     </header>
 
 <!-- Vitrine : carrousel 3D -->
-<section id="vitrine" class="pt-14 pb-20 px-6">
-    <div class="max-w-6xl mx-auto text-center mb-6 fade-in">
-        <p class="section-label text-xs font-semibold text-mint uppercase mb-2">Vitrine</p>
-        <p class="text-white/40 text-sm italic">Survolez la roue pour l'arrêter, puis cliquez sur une carte pour ouvrir le projet.</p>
+<section id="vitrine" class="pt-6 pb-20 px-6">
+    <div class="max-w-6xl mx-auto text-center mb-2 fade-in">
+        <p class="text-white/50 text-base leading-relaxed">Voici quelques-unes de mes <strong class="text-mint">réalisations</strong>. Les cartes sont <strong class="text-mint">cliquables</strong>. Plus de détails sous le carrousel.</p>
     </div>
 
     <div class="carousel-viewport">
         <div class="carousel-scene" id="scene">
-            <div class="ring" id="ring">
-                <div class="ring-title">
-                    <p class="section-label text-xs font-semibold text-mint uppercase mb-2">Pierre G.</p>
-                    <h3 class="text-4xl sm:text-5xl font-bold tracking-tight">Mes <span class="text-accent">projets</span></h3>
-                </div>
+            <div class="orbit-ring" id="ring">
 
                 <!-- Stimulation cognitive -->
                 <a class="orbit-card" style="--i:0; background:linear-gradient(150deg,#F08A3C,#D96A1B); color:#fff;" href="https://pierreg78-maker.github.io/Atelier/" target="_blank"><span class="orbit-name">Atelier Mémo</span><span class="orbit-tag">Stimulation</span></a>
@@ -299,6 +277,7 @@
                 <a class="orbit-card" style="--i:9; background:linear-gradient(150deg,#A88FD0,#8467B4); color:#fff;" href="https://pierreg78-maker.github.io/convertisseur_github_vers_raw/" target="_blank"><span class="orbit-name">Convertisseur GitHub → Raw</span><span class="orbit-tag">Utilitaires</span></a>
                 <a class="orbit-card" style="--i:10; background:linear-gradient(150deg,#BBA4E2,#9F86C8); color:#16233F;" href="https://pierreg78-maker.github.io/pixelisator/" target="_blank"><span class="orbit-name">Pixelisator</span><span class="orbit-tag">Utilitaires</span></a>
                 <a class="orbit-card" style="--i:11; background:linear-gradient(150deg,#9375C2,#7A5EA8); color:#fff;" href="https://pierreg78-maker.github.io/flipbook_pdf/" target="_blank"><span class="orbit-name">Mon flipbook</span><span class="orbit-tag">Utilitaires</span></a>
+
             </div>
         </div>
     </div>
