@@ -538,26 +538,32 @@
     let EXERCISES = [];
 
     async function loadExercises() {
-      const v = "20260912g";
+      const v = "20260912i";
+      const byId = new Map();
+      async function absorb(url) {
+        try {
+          const r = await fetch(url);
+          if (!r.ok) return;
+          const data = await r.json();
+          const rows = Array.isArray(data) ? data : data.exercises || [data];
+          rows.forEach((ex) => {
+            if (ex && ex.id) byId.set(ex.id, ex);
+          });
+        } catch (e) {}
+      }
+      await absorb("exercises.json?v=" + v);
+      await absorb("exercises-a.json?v=" + v);
+      await absorb("exercises-b.json?v=" + v);
       try {
         const man = await fetch("exercises/manifest.json?v=" + v);
         if (man.ok) {
           const { ids } = await man.json();
-          const list = [];
-          for (const id of ids) {
-            const r = await fetch("exercises/" + id + ".json?v=" + v);
-            if (r.ok) list.push(await r.json());
-          }
-          if (list.length) {
-            EXERCISES = list;
-            return;
+          for (const id of ids || []) {
+            if (!byId.has(id)) await absorb("exercises/" + id + ".json?v=" + v);
           }
         }
       } catch (e) {}
-      const res = await fetch("exercises.json?v=" + v);
-      if (!res.ok) throw new Error("catalogue introuvable");
-      const data = await res.json();
-      EXERCISES = data.exercises || data;
+      EXERCISES = Array.from(byId.values());
       if (!EXERCISES.length) throw new Error("catalogue vide");
     }
 
