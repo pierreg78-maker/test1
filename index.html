@@ -312,7 +312,7 @@
       },
       bpm: {
         title: "bpm — battements par minute",
-        text: "Tempo du métronome. À 60 bpm, un compte dure une seconde. Plus bas (autour de 45), le souffle s’allonge et s’apaise ; plus haut, le rythme se resserre.",
+        text: "Tempo du métronome. À 60 bpm, un temps dure une seconde. Plus bas (autour de 45), le souffle s’allonge et s’apaise ; plus haut, le rythme se resserre.",
       },
       tonique: {
         title: "Respiration tonique",
@@ -352,7 +352,7 @@
       },
       boxlong: {
         title: "Box allongé",
-        text: "Carré à six comptes. Même logique que le Box Breathing, plus exigeant. Revenir au 4–4–4–4 dès que la rétention force.",
+        text: "Carré à six temps. Même logique que le Box Breathing, plus exigeant. Revenir au 4–4–4–4 dès que la rétention force.",
       },
       expire: {
         title: "Expire profonde",
@@ -400,7 +400,7 @@
     function ratioDefinition(label) {
       return {
         title: `Ratio ${label}`,
-        text: "Chaque chiffre est un nombre de comptes du métronome, pas des secondes fixes. L’ordre habituel : inspire — rétention poumons pleins — expire — pause poumons vides. Le tempo (bpm) décide de la durée réelle de chaque compte.",
+        text: "Chaque chiffre est un nombre de temps du métronome, pas des secondes fixes. L’ordre habituel : inspire — rétention poumons pleins — expire — pause poumons vides. Le tempo (bpm) décide de la durée réelle de chaque compte.",
       };
     }
 
@@ -1185,7 +1185,7 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
                     {beatsLeft}
                   </span>
                   <span className="text-[11px] text-white/40 tracking-widest uppercase">
-                    comptes
+                    temps
                   </span>
                 </div>
               </div>
