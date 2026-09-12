@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Air Fitness</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    * {
+* {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -284,22 +285,16 @@
       background: #22d3ee;
       cursor: pointer;
     }
+
   </style>
-  <!-- Chemins relatifs : GitHub Pages est servi sous /<repo>/, pas à la racine du domaine -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#070b14">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#070b14" />
 </head>
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
-    // ─── Récupération des hooks React ───
+// ─── Récupération des hooks React ───
     const { useState, useEffect, useRef, useMemo } = React;
 
     const DEFINITIONS = {
@@ -357,7 +352,7 @@
       },
       boxlong: {
         title: "Box allongé",
-        text: "Carré à six temps. Même logique que le Box Breathing, plus exigeant. Revenir au 4–4–4–4 dès que la rétention force.",
+        text: "Carré à six comptes. Même logique que le Box Breathing, plus exigeant. Revenir au 4–4–4–4 dès que la rétention force.",
       },
       expire: {
         title: "Expire profonde",
@@ -405,7 +400,7 @@
     function ratioDefinition(label) {
       return {
         title: `Ratio ${label}`,
-        text: "Chaque chiffre est un nombre de temps, de comptes, égrénés par le métronome, pas des secondes fixes. L’ordre habituel : inspire — rétention poumons pleins — expire — pause poumons vides. Le tempo (bpm) décide de la durée réelle de chaque compte.",
+        text: "Chaque chiffre est un nombre de comptes du métronome, pas des secondes fixes. L’ordre habituel : inspire — rétention poumons pleins — expire — pause poumons vides. Le tempo (bpm) décide de la durée réelle de chaque compte.",
       };
     }
 
@@ -543,26 +538,26 @@
     let EXERCISES = [];
 
     async function loadExercises() {
-      const files = [
-        "exercises.json?v=20260912f",
-        "exercises-a.json?v=20260912f",
-        "exercises-b.json?v=20260912f",
-      ];
-      const packs = [];
-      for (const u of files) {
-        try {
-          const res = await fetch(u);
-          if (!res.ok) continue;
-          const data = await res.json();
-          packs.push(...(data.exercises || data));
-        } catch (e) {}
-      }
-      const seen = new Set();
-      EXERCISES = packs.filter((ex) => {
-        if (!ex || !ex.id || seen.has(ex.id)) return false;
-        seen.add(ex.id);
-        return true;
-      });
+      const v = "20260912g";
+      try {
+        const man = await fetch("exercises/manifest.json?v=" + v);
+        if (man.ok) {
+          const { ids } = await man.json();
+          const list = [];
+          for (const id of ids) {
+            const r = await fetch("exercises/" + id + ".json?v=" + v);
+            if (r.ok) list.push(await r.json());
+          }
+          if (list.length) {
+            EXERCISES = list;
+            return;
+          }
+        }
+      } catch (e) {}
+      const res = await fetch("exercises.json?v=" + v);
+      if (!res.ok) throw new Error("catalogue introuvable");
+      const data = await res.json();
+      EXERCISES = data.exercises || data;
       if (!EXERCISES.length) throw new Error("catalogue vide");
     }
 
@@ -767,6 +762,7 @@ function Splash() {
       const [selectedTags, setSelectedTags] = useState([]);
       const [intention, setIntention] = useState(() => store.get("af_intention", null));
       const [filtersOpen, setFiltersOpen] = useState(() => !!store.get("af_filters_open", false));
+      const [showCatalog, setShowCatalog] = useState(false);
       const [bpm, setBpm] = useState(() => {
         const saved = store.get("af_bpm", 60);
         const n = Number(saved);
@@ -830,6 +826,24 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
         ? INTENTION_DEFS[intention].tags
         : [];
 
+      const HOME_PICK = {
+        calme: "soupir",
+        energie: "tonique",
+        focus: "ancrage",
+        sommeil: "soir",
+        reveil: "reveil",
+        digestion: "repas",
+      };
+
+      function pickForIntention(intentId) {
+        if (intentId === "exo") return dailyExo;
+        const preferred = HOME_PICK[intentId];
+        const exact = preferred && EXERCISES.find((ex) => ex.id === preferred);
+        if (exact) return exact;
+        const fam = EXERCISES.filter((ex) => (ex.intentions || []).includes(intentId));
+        return fam.slice().sort((a, b) => (LEVEL_RANK[a.level] ?? 9) - (LEVEL_RANK[b.level] ?? 9))[0] || null;
+      }
+
       const filteredExercises = useMemo(() => {
         const exoMode = intention === "exo" || selectedTags.includes("#ExoDuJour");
         let list = exoMode ? [dailyExo] : EXERCISES.slice();
@@ -840,13 +854,21 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
         if (extra.length > 0) {
           list = list.filter((ex) => extra.every((t) => ex.tags.includes(t)));
         }
-        return list.slice().sort((a, b) => {
+        list = list.slice().sort((a, b) => {
           const ra = LEVEL_RANK[a.level] ?? 9;
           const rb = LEVEL_RANK[b.level] ?? 9;
           if (ra !== rb) return ra - rb;
           return a.name.localeCompare(b.name, "fr");
         });
-      }, [selectedTags, intention, dailyExo]);
+        const browsing = !intention && extra.length === 0 && !showCatalog;
+        if (browsing) {
+          const picks = ["calme", "energie", "focus"].map(pickForIntention).filter(Boolean);
+          const fourth = pickForIntention(fourthIntentionId());
+          if (fourth && !picks.some((ex) => ex.id === fourth.id)) picks.push(fourth);
+          return picks;
+        }
+        return list;
+      }, [selectedTags, intention, dailyExo, showCatalog]);
 
       const allTags = useMemo(() => {
         const set = new Set();
@@ -1157,7 +1179,7 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
                     {beatsLeft}
                   </span>
                   <span className="text-[11px] text-white/40 tracking-widest uppercase">
-                    temps
+                    comptes
                   </span>
                 </div>
               </div>
@@ -1384,9 +1406,9 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
             </div>
 
             {/* Super-filtres d’intention */}
-            <div className="px-5 mt-5 border-l-2 border-dotted border-[#FFD700]">
+            <div className="px-5 mt-5">
               <p className="text-slate-400 text-[13px] mb-2.5">
-                De quoi as-tu besoin maintenant ? 
+                De quoi as-tu besoin maintenant ?
               </p>
               <div className="intent-row">
                 {visibleIntentions().map((item) => {
@@ -1492,11 +1514,23 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
 
             {/* Liste exercices */}
             <div className="px-5 mt-6">
-              <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-                {intention || selectedTags.length > 0
-                  ? `${filteredExercises.length} exercice${filteredExercises.length > 1 ? "s" : ""}`
-                  : "Exercices de souffle"}
-              </p>
+              <div className="flex items-center justify-between mb-2.5">
+                <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium">
+                  {intention || selectedTags.length > 0
+                    ? `${filteredExercises.length} exercice${filteredExercises.length > 1 ? "s" : ""}`
+                    : showCatalog
+                    ? "Catalogue"
+                    : "Suggestions"}
+                </p>
+                {!intention && selectedTags.length === 0 && (
+                  <button
+                    onClick={() => setShowCatalog((v) => !v)}
+                    className="text-[11px] text-cyan-400/80"
+                  >
+                    {showCatalog ? "Suggestions" : "Voir tout le catalogue"}
+                  </button>
+                )}
+              </div>
 
               <div className="flex flex-col gap-3">
                 {filteredExercises.map((ex) => (
@@ -1632,6 +1666,7 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
         document.getElementById("root").innerHTML =
           '<p style="color:#94a3b8;padding:24px">Catalogue introuvable. Vérifie exercises.json.</p>';
       });
+
   </script>
 </body>
 </html>
