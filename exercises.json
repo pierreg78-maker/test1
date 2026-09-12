@@ -1,1 +1,922 @@
-{"exercises":[{"id":"box","name":"Box Breathing","subtitle":"Gestion du stress & performance","emoji":"⬜","duration":"4–6 min","level":"Débutant","origin":"US Navy SEALs / Marines","benefits":["Focus","Performance","Concentration"],"tags":["#Focus","#Performance","#Concentration","#Débutant","#NavySEALs"],"intentions":["focus"],"color":"#38bdf8","gradFrom":"#0c4a6e","gradTo":"#075985","description":"Technique tactique utilisée par les forces spéciales. Ratio égal pour stabiliser le système nerveux tout en restant alerte.","ratio":{"inspire":4,"hold":4,"expire":4,"holdEmpty":4},"intensity":{"inspire":"douce et régulière","hold":"neutre, sans tension","expire":"contrôlée et complète","holdEmpty":"neutre"},"cycles":6,"instructions":{"inspire":"Inspire tranquillement par le nez. Le ventre se gonfle.","hold":"Retiens l’air. Corps détendu, épaules relâchées.","expire":"Expire lentement par le nez ou la bouche. Vide complètement.","holdEmpty":"Poumons vides. Reste calme quelques instants."}},{"id":"478","name":"4-7-8","subtitle":"Le tranquillisant naturel","emoji":"🌙","duration":"2–3 min","level":"Débutant","origin":"Andrew Weil / Pranayama","benefits":["Sommeil","Anxiété","Calme"],"tags":["#Sommeil","#Anxiété","#Calme","#Débutant","#Scientifique"],"intentions":["sommeil"],"color":"#a78bfa","gradFrom":"#1e1b4b","gradTo":"#2e1065","description":"Méthode popularisée par le Dr Andrew Weil. L’expiration longue active fortement le système parasympathique. Idéal avant de dormir ou en cas d’anxiété.","ratio":{"inspire":4,"hold":7,"expire":8,"holdEmpty":0},"intensity":{"inspire":"douce","hold":"neutre","expire":"longue et complète"},"cycles":4,"instructions":{"inspire":"Inspire silencieusement par le nez pendant 4 comptes.","hold":"Retiens le souffle sans forcer pendant 7 comptes.","expire":"Expire par la bouche en faisant un léger « whoosh », vide vraiment les poumons."}},{"id":"coherence","name":"Cohérence cardiaque","subtitle":"Équilibre & VFC","emoji":"💗","duration":"5 min","level":"Débutant","origin":"Recherche scientifique (HRV)","benefits":["Stress","VFC","Équilibre"],"tags":["#Stress","#VFC","#Équilibre","#Débutant","#Scientifique"],"intentions":["calme","digestion"],"color":"#2dd4bf","gradFrom":"#042f2e","gradTo":"#134e4a","description":"Respiration à ~5–6 cycles par minute. Maximise la variabilité de la fréquence cardiaque et régule le stress au quotidien.","ratio":{"inspire":5,"hold":0,"expire":5,"holdEmpty":0},"intensity":{"inspire":"douce et fluide","expire":"douce et fluide"},"cycles":30,"instructions":{"inspire":"Inspire doucement par le nez. Laisse le ventre s’ouvrir.","expire":"Expire doucement par le nez ou la bouche. Continu et régulier."}}]}
+{
+  "exercises": [
+    {
+      "id": "box",
+      "name": "Box Breathing",
+      "subtitle": "Gestion du stress & performance",
+      "emoji": "⬜",
+      "duration": "4–6 min",
+      "level": "Débutant",
+      "origin": "US Navy SEALs / Marines",
+      "benefits": [
+        "Focus",
+        "Performance",
+        "Concentration"
+      ],
+      "tags": [
+        "#Focus",
+        "#Performance",
+        "#Concentration",
+        "#Débutant",
+        "#NavySEALs"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#38bdf8",
+      "gradFrom": "#0c4a6e",
+      "gradTo": "#075985",
+      "description": "Technique tactique utilisée par les forces spéciales. Ratio égal pour stabiliser le système nerveux tout en restant alerte.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 4,
+        "expire": 4,
+        "holdEmpty": 4
+      },
+      "intensity": {
+        "inspire": "douce et régulière",
+        "hold": "neutre, sans tension",
+        "expire": "contrôlée et complète",
+        "holdEmpty": "neutre"
+      },
+      "cycles": 6,
+      "instructions": {
+        "inspire": "Inspire tranquillement par le nez. Le ventre se gonfle.",
+        "hold": "Retiens l’air. Corps détendu, épaules relâchées.",
+        "expire": "Expire lentement par le nez ou la bouche. Vide complètement.",
+        "holdEmpty": "Poumons vides. Reste calme quelques instants."
+      }
+    },
+    {
+      "id": "478",
+      "name": "4-7-8",
+      "subtitle": "Le tranquillisant naturel",
+      "emoji": "🌙",
+      "duration": "2–3 min",
+      "level": "Débutant",
+      "origin": "Andrew Weil / Pranayama",
+      "benefits": [
+        "Sommeil",
+        "Anxiété",
+        "Calme"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Anxiété",
+        "#Calme",
+        "#Débutant",
+        "#Scientifique"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#a78bfa",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#2e1065",
+      "description": "Méthode popularisée par le Dr Andrew Weil. L’expiration longue active fortement le système parasympathique. Idéal avant de dormir ou en cas d’anxiété.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 7,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "douce",
+        "hold": "neutre",
+        "expire": "longue et complète"
+      },
+      "cycles": 4,
+      "instructions": {
+        "inspire": "Inspire silencieusement par le nez pendant 4 comptes.",
+        "hold": "Retiens le souffle sans forcer pendant 7 comptes.",
+        "expire": "Expire par la bouche en faisant un léger « whoosh », vide vraiment les poumons."
+      }
+    },
+    {
+      "id": "coherence",
+      "name": "Cohérence cardiaque",
+      "subtitle": "Équilibre & VFC",
+      "emoji": "💗",
+      "duration": "5 min",
+      "level": "Débutant",
+      "origin": "Recherche scientifique (HRV)",
+      "benefits": [
+        "Stress",
+        "VFC",
+        "Équilibre"
+      ],
+      "tags": [
+        "#Stress",
+        "#VFC",
+        "#Équilibre",
+        "#Débutant",
+        "#Scientifique"
+      ],
+      "intentions": [
+        "calme",
+        "digestion"
+      ],
+      "color": "#2dd4bf",
+      "gradFrom": "#042f2e",
+      "gradTo": "#134e4a",
+      "description": "Respiration à ~5–6 cycles par minute. Maximise la variabilité de la fréquence cardiaque et régule le stress au quotidien. À pratiquer 3×5 min par jour idéalement.",
+      "ratio": {
+        "inspire": 5,
+        "hold": 0,
+        "expire": 5,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "douce et fluide",
+        "expire": "douce et fluide"
+      },
+      "cycles": 30,
+      "instructions": {
+        "inspire": "Inspire doucement par le nez. Laisse le ventre s’ouvrir.",
+        "expire": "Expire doucement par le nez ou la bouche. Continu et régulier."
+      }
+    },
+    {
+      "id": "tonique",
+      "name": "Respiration tonique",
+      "subtitle": "Anti-fatigue & éveil",
+      "emoji": "⚡",
+      "duration": "2–3 min",
+      "level": "Débutant",
+      "origin": "Respiration sympathique / pranayama",
+      "benefits": [
+        "Énergie",
+        "Fatigue",
+        "Réveil"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Fatigue",
+        "#Réveil",
+        "#Débutant",
+        "#Matin"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#f59e0b",
+      "gradFrom": "#431407",
+      "gradTo": "#78350f",
+      "description": "Inspire plus longue que l’expire : le système nerveux bascule vers l’éveil. Utile au réveil, après un repas lourd ou quand le brouillard mental s’installe. Assis, dos droit, sans forcer.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 2,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "pleine et dynamique, sans tension",
+        "expire": "courte et nette"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire largement par le nez. Poitrine et ventre s’ouvrent.",
+        "expire": "Expire plus court, toujours contrôlé. Ne vide pas dans la précipitation."
+      }
+    },
+    {
+      "id": "reveil",
+      "name": "Souffle du réveil",
+      "subtitle": "Démarrer la journée",
+      "emoji": "🌅",
+      "duration": "3–4 min",
+      "level": "Débutant",
+      "origin": "Hygiène du matin / yoga",
+      "benefits": [
+        "Réveil",
+        "Énergie",
+        "Focus"
+      ],
+      "tags": [
+        "#Réveil",
+        "#Énergie",
+        "#Matin",
+        "#Focus",
+        "#Débutant"
+      ],
+      "intentions": [
+        "reveil",
+        "energie"
+      ],
+      "color": "#fb923c",
+      "gradFrom": "#7c2d12",
+      "gradTo": "#9a3412",
+      "description": "Petite rétention poumons pleins pour « allumer » le corps sans le brusquer. À faire encore au lit, assis au bord, ou debout près de la fenêtre.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 2,
+        "expire": 3,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "ample et claire",
+        "hold": "légère, épaules basses",
+        "expire": "souple, un peu plus courte"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire par le nez, comme si tu ouvrais la journée.",
+        "hold": "Garde l’air deux comptes. Visage détendu.",
+        "expire": "Expire un peu plus court. Reste présent."
+      }
+    },
+    {
+      "id": "activation",
+      "name": "Activation 3–3",
+      "subtitle": "Tonicité rapide",
+      "emoji": "🔥",
+      "duration": "2 min",
+      "level": "Intermédiaire",
+      "origin": "Préparation sportive",
+      "benefits": [
+        "Énergie",
+        "Fatigue",
+        "Focus"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Fatigue",
+        "#Focus",
+        "#Intermédiaire",
+        "#Sport"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#fbbf24",
+      "gradFrom": "#422006",
+      "gradTo": "#713f12",
+      "description": "Cycles courts à ratio égal. Plus vif que la cohérence cardiaque, moins extrême qu’un souffle de feu. Monte le bpm vers 70–80 si tu veux plus de punch. Stoppe si la tête tourne.",
+      "ratio": {
+        "inspire": 3,
+        "hold": 0,
+        "expire": 3,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "vive et nasale",
+        "expire": "vive et complète"
+      },
+      "cycles": 12,
+      "instructions": {
+        "inspire": "Inspire net par le nez, trois comptes.",
+        "expire": "Expire net par le nez ou la bouche, trois comptes."
+      }
+    },
+    {
+      "id": "soupir",
+      "name": "Soupir physiologique",
+      "subtitle": "Reset express du stress",
+      "emoji": "😮‍💨",
+      "duration": "1–2 min",
+      "level": "Débutant",
+      "origin": "Physiologie / neurosciences",
+      "benefits": [
+        "Anxiété",
+        "Stress",
+        "Calme"
+      ],
+      "tags": [
+        "#Anxiété",
+        "#Stress",
+        "#Calme",
+        "#Reset",
+        "#Débutant"
+      ],
+      "intentions": [
+        "calme"
+      ],
+      "color": "#67e8f9",
+      "gradFrom": "#083344",
+      "gradTo": "#155e75",
+      "description": "Le soupir que le corps fait tout seul, rendu volontaire. Un inspire, un second petit inspire par-dessus, puis une expire longue. Trois à cinq cycles suffisent souvent.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 8,
+        "holdEmpty": 1
+      },
+      "intensity": {
+        "inspire": "double, sans forcer",
+        "expire": "longue et relâchée",
+        "holdEmpty": "neutre"
+      },
+      "cycles": 5,
+      "instructions": {
+        "inspire": "Inspire par le nez, puis un second petit inspire par-dessus pour remplir le haut.",
+        "expire": "Lâche tout par la bouche, longue expire, épaules qui descendent.",
+        "holdEmpty": "Une pause courte. Laisse le calme arriver."
+      }
+    },
+    {
+      "id": "abdominal",
+      "name": "Respiration abdominale",
+      "subtitle": "Le geste de base",
+      "emoji": "🌊",
+      "duration": "3–5 min",
+      "level": "Débutant",
+      "origin": "Respiration diaphragmatique",
+      "benefits": [
+        "Calme",
+        "Digestion",
+        "Stress"
+      ],
+      "tags": [
+        "#Calme",
+        "#Digestion",
+        "#Fondation",
+        "#Stress",
+        "#Débutant"
+      ],
+      "intentions": [
+        "calme",
+        "digestion",
+        "sommeil"
+      ],
+      "color": "#34d399",
+      "gradFrom": "#022c22",
+      "gradTo": "#064e3b",
+      "description": "Le ventre se gonfle à l’inspire, se ramène à l’expire. Le diaphragme travaille, la poitrine reste souple. C’est la fondation de presque toutes les autres techniques.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 6,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "basse et large",
+        "expire": "souple, un peu plus longue"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire par le nez. Le ventre s’ouvre, les côtes suivent.",
+        "expire": "Expire plus long. Le ventre rentre sans se contracter."
+      }
+    },
+    {
+      "id": "nadi",
+      "name": "Nadi Shodhana",
+      "subtitle": "Équilibre des deux côtés",
+      "emoji": "☯️",
+      "duration": "4–6 min",
+      "level": "Intermédiaire",
+      "origin": "Pranayama",
+      "benefits": [
+        "Équilibre",
+        "Focus",
+        "Calme"
+      ],
+      "tags": [
+        "#Équilibre",
+        "#Focus",
+        "#Calme",
+        "#Concentration",
+        "#Yoga",
+        "#Intermédiaire"
+      ],
+      "intentions": [
+        "calme",
+        "focus"
+      ],
+      "color": "#c084fc",
+      "gradFrom": "#2e1065",
+      "gradTo": "#4c1d95",
+      "description": "Respiration alternée. Pouce et annulaire ferment un côté puis l’autre. Le rythme reste égal. Assis, dos droit, sans forcer le passage de l’air.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "fine et nasale",
+        "expire": "fine et nasale"
+      },
+      "cycles": 12,
+      "instructions": {
+        "inspire": "Ferme la narine droite. Inspire à gauche, doucement.",
+        "expire": "Ferme la gauche, ouvre la droite. Expire à droite. Inverse au cycle suivant."
+      }
+    },
+    {
+      "id": "soir",
+      "name": "Souffle du soir",
+      "subtitle": "Préparer le sommeil",
+      "emoji": "🌌",
+      "duration": "4–6 min",
+      "level": "Débutant",
+      "origin": "Hygiène du soir",
+      "benefits": [
+        "Sommeil",
+        "Calme",
+        "Anxiété"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Soir",
+        "#Calme",
+        "#Anxiété",
+        "#Débutant"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#818cf8",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#312e81",
+      "description": "Inspire calme, expire nettement plus longue. On invite le système parasympathique sans technique compliquée. Lumière basse, assis ou allongé.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "douce, par le nez",
+        "expire": "très longue, relâchée"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire tranquillement par le nez, ventre souple.",
+        "expire": "Expire deux fois plus longtemps. Laisse le jour derrière toi."
+      }
+    },
+    {
+      "id": "triangle",
+      "name": "Triangle 4–4–4",
+      "subtitle": "Stabiliser l’attention",
+      "emoji": "△",
+      "duration": "3–4 min",
+      "level": "Débutant",
+      "origin": "Pranayama simplifié",
+      "benefits": [
+        "Focus",
+        "Concentration",
+        "Calme"
+      ],
+      "tags": [
+        "#Focus",
+        "#Concentration",
+        "#Débutant"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#38bdf8",
+      "gradFrom": "#0c4a6e",
+      "gradTo": "#075985",
+      "description": "Trois temps égaux : inspire, retiens, expire. Plus simple que le carré, assez structuré pour ramener l’attention.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 4,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "régulière",
+        "hold": "souple",
+        "expire": "égale à l’inspire"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire par le nez, quatre comptes.",
+        "hold": "Garde l’air, visage détendu.",
+        "expire": "Expire par le nez, même durée."
+      }
+    },
+    {
+      "id": "ancrage",
+      "name": "Ancrage 4–4",
+      "subtitle": "Revenir ici",
+      "emoji": "🎯",
+      "duration": "3 min",
+      "level": "Débutant",
+      "origin": "Attention / pleine présence",
+      "benefits": [
+        "Focus",
+        "Concentration"
+      ],
+      "tags": [
+        "#Focus",
+        "#Concentration",
+        "#Débutant"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#7dd3fc",
+      "gradFrom": "#0c4a6e",
+      "gradTo": "#155e75",
+      "description": "Rythme égal, sans rétention. On pose l’attention sur le passage de l’air. Utile avant un travail qui demande de la précision.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "nasale, précise",
+        "expire": "nasale, précise"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire en sentant l’air au bord des narines.",
+        "expire": "Expire aussi long. Reste sur la sensation."
+      }
+    },
+    {
+      "id": "boxlong",
+      "name": "Box allongé",
+      "subtitle": "Carré profond",
+      "emoji": "◼️",
+      "duration": "6–8 min",
+      "level": "Avancé",
+      "origin": "US Navy SEALs / extension",
+      "benefits": [
+        "Focus",
+        "Performance",
+        "Concentration"
+      ],
+      "tags": [
+        "#Focus",
+        "#Performance",
+        "#Concentration",
+        "#Avancé"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#0284c7",
+      "gradFrom": "#082f49",
+      "gradTo": "#0c4a6e",
+      "description": "Même carré que le Box Breathing, comptes plus longs. Ne force pas la rétention. Si la gorge serre, reviens au 4–4–4–4.",
+      "ratio": {
+        "inspire": 6,
+        "hold": 6,
+        "expire": 6,
+        "holdEmpty": 6
+      },
+      "intensity": {
+        "inspire": "ample et lente",
+        "hold": "calme, sans pousser",
+        "expire": "complète",
+        "holdEmpty": "souple"
+      },
+      "cycles": 5,
+      "instructions": {
+        "inspire": "Inspire six comptes, ventre puis poitrine.",
+        "hold": "Six comptes. Épaules basses.",
+        "expire": "Vide six comptes.",
+        "holdEmpty": "Poumons vides, six comptes. Reste présent."
+      }
+    },
+    {
+      "id": "expire",
+      "name": "Expire profonde",
+      "subtitle": "Allonger le parasympathique",
+      "emoji": "🍃",
+      "duration": "5–7 min",
+      "level": "Avancé",
+      "origin": "Respiration parasympathique",
+      "benefits": [
+        "Calme",
+        "Anxiété",
+        "Stress"
+      ],
+      "tags": [
+        "#Calme",
+        "#Anxiété",
+        "#Stress",
+        "#Avancé"
+      ],
+      "intentions": [
+        "calme"
+      ],
+      "color": "#2dd4bf",
+      "gradFrom": "#042f2e",
+      "gradTo": "#115e59",
+      "description": "Inspire courte, expire très longue. Le système nerveux descend. Assis ou allongé. Stoppe si un vertige apparaît.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 10,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "discrète",
+        "expire": "très longue, filée"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire quatre comptes, sans remplir à bloc.",
+        "expire": "Expire dix comptes, comme un fil continu."
+      }
+    },
+    {
+      "id": "cloche",
+      "name": "Respiration cloche",
+      "subtitle": "Éveil souple",
+      "emoji": "🔔",
+      "duration": "2–3 min",
+      "level": "Débutant",
+      "origin": "Respiration sympathique douce",
+      "benefits": [
+        "Énergie",
+        "Réveil",
+        "Fatigue"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Réveil",
+        "#Fatigue",
+        "#Matin",
+        "#Débutant"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#fbbf24",
+      "gradFrom": "#78350f",
+      "gradTo": "#a16207",
+      "description": "Inspire et expire égales, un peu plus vives que la cohérence. Réveille sans brusquer. Debout près d’une fenêtre, ou assis dos droit.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "claire et ronde",
+        "expire": "claire et ronde"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire par le nez, poitrine ouverte.",
+        "expire": "Expire par le nez, même durée. Reste souple."
+      }
+    },
+    {
+      "id": "feu",
+      "name": "Souffle de feu",
+      "subtitle": "Tonicité franche",
+      "emoji": "🔥",
+      "duration": "1–2 min",
+      "level": "Avancé",
+      "origin": "Kapalabhati adapté",
+      "benefits": [
+        "Énergie",
+        "Fatigue",
+        "Réveil"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Fatigue",
+        "#Réveil",
+        "#Sport",
+        "#Avancé"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#f97316",
+      "gradFrom": "#7c2d12",
+      "gradTo": "#9a3412",
+      "description": "Cycles très courts. L’expire est active, l’inspire revient seule. Assis, trois séries max. Interdit si grossesse, hypertension, vertige.",
+      "ratio": {
+        "inspire": 2,
+        "hold": 0,
+        "expire": 2,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "passive, qui revient",
+        "expire": "active et nette, ventre"
+      },
+      "cycles": 16,
+      "instructions": {
+        "inspire": "Laisse l’air revenir tout seul par le nez.",
+        "expire": "Souffle net par le nez, ventre qui rentre."
+      }
+    },
+    {
+      "id": "soirhold",
+      "name": "Rétention du soir",
+      "subtitle": "Descendre d’un cran",
+      "emoji": "🕯️",
+      "duration": "5 min",
+      "level": "Intermédiaire",
+      "origin": "Hygiène du soir",
+      "benefits": [
+        "Sommeil",
+        "Calme",
+        "Anxiété"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Soir",
+        "#Calme",
+        "#Anxiété",
+        "#Intermédiaire"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#6366f1",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#312e81",
+      "description": "Petite pause poumons pleins, puis expire longue. On ralentit sans s’endormir encore. Lumière basse.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 4,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "douce",
+        "hold": "légère",
+        "expire": "longue et relâchée"
+      },
+      "cycles": 6,
+      "instructions": {
+        "inspire": "Inspire quatre comptes.",
+        "hold": "Garde quatre comptes, mâchoire lâche.",
+        "expire": "Expire huit comptes, laisse le jour partir."
+      }
+    },
+    {
+      "id": "478plus",
+      "name": "4-7-8 profond",
+      "subtitle": "Le tranquillisant allongé",
+      "emoji": "🌘",
+      "duration": "4–6 min",
+      "level": "Avancé",
+      "origin": "Andrew Weil / extension",
+      "benefits": [
+        "Sommeil",
+        "Anxiété",
+        "Calme"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Anxiété",
+        "#Calme",
+        "#Avancé"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#8b5cf6",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#4c1d95",
+      "description": "Même ratio que le 4-7-8, davantage de cycles. Baisse le bpm vers 40–50. Allongé, lumières éteintes.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 7,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "silencieuse",
+        "hold": "sans lutter",
+        "expire": "whoosh très complet"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire par le nez, quatre comptes.",
+        "hold": "Sept comptes. Si c’est trop, reviens au 4-7-8 simple.",
+        "expire": "Expire huit comptes par la bouche."
+      }
+    },
+    {
+      "id": "repas",
+      "name": "Souffle du repas",
+      "subtitle": "Après table",
+      "emoji": "🍵",
+      "duration": "3 min",
+      "level": "Débutant",
+      "origin": "Hygiène digestive",
+      "benefits": [
+        "Digestion",
+        "Calme"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Calme",
+        "#Débutant"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#86efac",
+      "gradFrom": "#14532d",
+      "gradTo": "#166534",
+      "description": "Assis, ventre décompressé. Inspire basse, expire un peu plus longue. On donne de la place à la digestion plutôt que de la contrarier.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 6,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "basse, sans gonfler la poitrine",
+        "expire": "souple"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire dans le ventre, ceinture desserrée.",
+        "expire": "Expire plus long. Laisse le ventre redescendre."
+      }
+    },
+    {
+      "id": "vague",
+      "name": "Vague abdominale",
+      "subtitle": "Masser le centre",
+      "emoji": "〰️",
+      "duration": "4 min",
+      "level": "Intermédiaire",
+      "origin": "Respiration diaphragmatique",
+      "benefits": [
+        "Digestion",
+        "Calme"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Calme",
+        "#Intermédiaire"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#4ade80",
+      "gradFrom": "#14532d",
+      "gradTo": "#166534",
+      "description": "Petite pause poumons pleins, expire plus longue. Le diaphragme masse les organes. Pas juste après un repas très copieux.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 2,
+        "expire": 6,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "ventre d’abord",
+        "hold": "légère",
+        "expire": "lente"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire quatre comptes, vague qui monte.",
+        "hold": "Deux comptes, ventre souple.",
+        "expire": "Expire six comptes, vague qui redescend."
+      }
+    },
+    {
+      "id": "agni",
+      "name": "Souffle digestif",
+      "subtitle": "Activer sans brusquer",
+      "emoji": "🔥",
+      "duration": "2–3 min",
+      "level": "Avancé",
+      "origin": "Yoga / Agni adapté",
+      "benefits": [
+        "Digestion",
+        "Énergie"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Énergie",
+        "#Avancé"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#a3e635",
+      "gradFrom": "#365314",
+      "gradTo": "#3f6212",
+      "description": "Expire un peu active, inspire qui revient. Debout ou assis, loin d’un repas trop lourd. S’arrêter au premier inconfort.",
+      "ratio": {
+        "inspire": 3,
+        "hold": 0,
+        "expire": 3,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "qui revient",
+        "expire": "un peu plus tonique, ventre"
+      },
+      "cycles": 12,
+      "instructions": {
+        "inspire": "Laisse l’inspire revenir par le nez.",
+        "expire": "Expire en rentrant doucement le bas-ventre."
+      }
+    }
+  ]
+}
