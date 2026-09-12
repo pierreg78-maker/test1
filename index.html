@@ -1411,25 +1411,27 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
               </div>
             </div>
 
-            {/* Super-filtres d’intention */}
+                        {/* Super-filtres d’intention */}
             <div className="px-5 mt-5">
-              <p className="text-slate-400 text-[13px] mb-2.5">
-                De quoi as-tu besoin maintenant ?
-              </p>
-              <div className="intent-row">
-                {visibleIntentions().map((item) => {
-                  const active = intention === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => toggleIntention(item.id)}
-                      className="super-tag"
-                      style={superChipStyle(active)}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
+              <div className="border-l-2 border-dotted border-[#FFD700] pl-3.5">
+                <p className="text-slate-400 text-[13px] mb-2.5">
+                  De quoi as-tu besoin maintenant ?
+                </p>
+                <div className="intent-row">
+                  {visibleIntentions().map((item) => {
+                    const active = intention === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleIntention(item.id)}
+                        className="super-tag"
+                        style={superChipStyle(active)}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
