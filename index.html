@@ -9,25 +9,13 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link rel="stylesheet" href="app.css?v=20260912d">
+  <link rel="stylesheet" href="app.css?v=20260912e">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#070b14">
 </head>
 <body>
   <div id="root"></div>
-  <script>
-    (async function () {
-      try {
-        const urls = ["af-part1.js?v=20260912d", "af-part2.js?v=20260912d", "af-part3.js?v=20260912d"];
-        let src = "";
-        for (const u of urls) src += await (await fetch(u)).text() + "\n";
-        eval(Babel.transform(src, { presets: ["react"] }).code);
-      } catch (e) {
-        console.error(e);
-        document.getElementById("root").innerHTML = '<p style="color:#94a3b8;padding:24px">Chargement impossible. Tire pour rafraîchir.</p>';
-      }
-    })();
-  </script>
+  <script type="text/babel" src="app.js?v=20260912e"></script>
 </body>
 </html>
