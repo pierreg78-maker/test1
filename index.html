@@ -188,11 +188,35 @@
       align-items: center;
       justify-content: center;
     }
-    .header-logo img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-      object-position: center;
+    .header-logo svg {
+      display: block;
+    }
+    .intent-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .super-tag,
+    .filter-tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .super-tag:active,
+    .filter-tag:active {
+      transform: scale(0.96);
+    }
+    .filter-line {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .filter-line.open {
+      flex-wrap: wrap;
     }
     .bpm-box {
       width: 44px;
@@ -262,12 +286,14 @@
     }
   </style>
   <!-- Chemins relatifs : GitHub Pages est servi sous /<repo>/, pas à la racine du domaine -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#07202b">
+  <meta name="theme-color" content="#070b14">
 </head>
 <body>
   <div id="root"></div>
@@ -305,13 +331,75 @@
         title: "Activation 3–3",
         text: "Cycles courts et égaux. Le rythme plus serré réveille le corps sans hyperventilation. On peut monter un peu le bpm (70–80) si l’on veut plus de tonicité. S’arrêter dès le moindre étourdissement.",
       },
+      soupir: {
+        title: "Soupir physiologique",
+        text: "Le soupir naturel du corps, rendu volontaire : un inspire, un second petit inspire par-dessus, puis une expire longue. Quelques cycles suffisent souvent à faire redescendre la tension.",
+      },
+      abdominal: {
+        title: "Respiration abdominale",
+        text: "Le geste de base. L’inspire gonfle le ventre, l’expire le ramène. Le diaphragme massage le système nerveux. C’est la fondation de presque toutes les autres techniques.",
+      },
+      nadi: {
+        title: "Nadi Shodhana",
+        text: "Respiration alternée : un côté à l’inspire, l’autre à l’expire. Traditionnellement utilisée pour équilibrer. Ici, version assise, sans forcer, pouce et annulaire sur les ailes du nez.",
+      },
+      soir: {
+        title: "Souffle du soir",
+        text: "Inspire calme, expire nettement plus longue. On bascule le système nerveux vers le repos. Idéal allongé ou assis, lumière basse, dans les minutes qui précèdent le coucher.",
+      },
+      triangle: {
+        title: "Triangle 4–4–4",
+        text: "Trois temps égaux : inspire, rétention, expire. Un cran plus simple que le Box Breathing, assez structuré pour ramener l’attention.",
+      },
+      ancrage: {
+        title: "Ancrage 4–4",
+        text: "Rythme égal sans rétention. On pose toute l’attention sur le passage de l’air au bord des narines.",
+      },
+      boxlong: {
+        title: "Box allongé",
+        text: "Carré à six comptes. Même logique que le Box Breathing, plus exigeant. Revenir au 4–4–4–4 dès que la rétention force.",
+      },
+      expire: {
+        title: "Expire profonde",
+        text: "Inspire courte, expire très longue. Le parasympathique prend le relais. S’arrêter si la tête tourne.",
+      },
+      cloche: {
+        title: "Respiration cloche",
+        text: "Inspire et expire égales, un peu plus vives que la cohérence cardiaque. Éveil souple, sans hyperventilation.",
+      },
+      feu: {
+        title: "Souffle de feu",
+        text: "Cycles courts inspirés du kapalabhati. L’expire est active, l’inspire revient seule. Contre-indiqué grossesse, hypertension, vertige.",
+      },
+      soirhold: {
+        title: "Rétention du soir",
+        text: "Courte pause poumons pleins, puis expire double. On descend d’un cran avant le coucher.",
+      },
+      "478plus": {
+        title: "4-7-8 profond",
+        text: "Même ratio que le 4-7-8, davantage de cycles. Baisser le bpm. Version allongée, lumières basses.",
+      },
+      repas: {
+        title: "Souffle du repas",
+        text: "Respiration basse après table. On donne de la place à la digestion au lieu de la comprimer.",
+      },
+      vague: {
+        title: "Vague abdominale",
+        text: "Inspire, petite pause, expire plus longue. Le diaphragme masse le centre. Éviter juste après un repas très copieux.",
+      },
+      agni: {
+        title: "Souffle digestif",
+        text: "Expire un peu tonique, inspire qui revient. Version douce d’un souffle d’activation digestive. S’arrêter au premier inconfort.",
+      },
     };
 
     function formatRatio(ratio) {
       if (!ratio) return "";
-      if (!ratio.hold && !ratio.holdEmpty) return `${ratio.inspire}–${ratio.expire}`;
-      if (ratio.holdEmpty) return `${ratio.inspire}–${ratio.hold}–${ratio.expire}–${ratio.holdEmpty}`;
-      return `${ratio.inspire}–${ratio.hold}–${ratio.expire}`;
+      const parts = [ratio.inspire];
+      if (ratio.hold) parts.push(ratio.hold);
+      parts.push(ratio.expire);
+      if (ratio.holdEmpty) parts.push(ratio.holdEmpty);
+      return parts.join("–");
     }
 
     function ratioDefinition(label) {
@@ -410,34 +498,39 @@
       );
     }
 
-    function LogoMark({ color = "#67e8f9", glowColor = "#22d3ee", size = 22 }) {
-      const ring  = "M 106.57 78.16 A 49.98 49.98 0 1 1 108.01 46.10";
-      const wave1 = "M 16.65 68.82 C 19.20 65.38, 26.85 51.57, 31.95 48.17 C 37.05 44.76, 42.15 46.96, 47.25 48.39 C 52.35 49.81, 57.45 54.13, 62.55 56.71 C 67.65 59.29, 72.75 62.67, 77.85 63.89 C 82.95 65.11, 88.62 65.11, 93.15 64.03 C 97.68 62.96, 102.22 59.34, 105.05 57.46 C 107.88 55.59, 108.45 54.70, 110.15 52.79 C 111.85 50.88, 114.40 47.13, 115.25 45.99";
-      const wave2 = "M 16.65 68.82 C 19.20 67.80, 26.85 62.71, 31.95 62.69 C 37.05 62.67, 42.15 66.27, 47.25 68.72 C 52.35 71.16, 57.45 75.28, 62.55 77.37 C 67.65 79.45, 73.03 81.09, 77.85 81.23 C 82.67 81.38, 86.92 80.09, 91.45 78.24 C 95.98 76.39, 101.65 71.92, 105.05 70.14 C 108.45 68.37, 110.72 68.02, 111.85 67.59";
+    // Même géométrie que SplashLogo : cercle ouvert gauche/droite + deux ondes
+    const MARK = {
+      ringTop: "M 14.75 44 A 48 48 0 0 1 105.25 44",
+      ringBot: "M 105.25 76 A 48 48 0 0 1 14.75 76",
+      wave1: "M 8 57 C 22 42, 38 42, 54 56 C 70 70, 86 70, 106 55",
+      wave2: "M 8 70 C 22 55, 38 55, 54 69 C 70 83, 86 83, 106 68",
+    };
 
+    function LogoMark({ color = "#67e8f9", glowColor = "#22d3ee", size = 28 }) {
+      const uid = "logoHalo";
       return (
         <svg width={size} height={size} viewBox="0 0 120 120" fill="none" aria-hidden="true">
           <defs>
-            <filter id="logoHalo" x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="3.2" />
+            <filter id={uid} x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="2.5" />
             </filter>
           </defs>
-          <g filter="url(#logoHalo)" stroke={glowColor} strokeWidth="7.5" strokeLinecap="round" fill="none" opacity="0.85">
-            <path d={ring} />
-            <path d={wave1} />
-            <path d={wave2} />
+          <g filter={`url(#${uid})`} stroke={glowColor} strokeWidth="8" strokeLinecap="round" fill="none" opacity="0.4">
+            <path d={MARK.ringTop} />
+            <path d={MARK.ringBot} />
           </g>
           <g stroke={color} strokeWidth="6.5" strokeLinecap="round" fill="none">
-            <path d={ring} />
-            <path d={wave1} />
-            <path d={wave2} />
+            <path d={MARK.ringTop} />
+            <path d={MARK.ringBot} />
           </g>
+          <path d={MARK.wave1} stroke="#7deaf5" strokeWidth="5.5" strokeLinecap="round" fill="none" />
+          <path d={MARK.wave2} stroke="#5bd4e8" strokeWidth="5.5" strokeLinecap="round" fill="none" />
         </svg>
       );
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // DONNÉES — 6 exercices (ratio, intensité, tags)
+    // DONNÉES — 10 exercices (ratio, intensité, tags)
     // ═══════════════════════════════════════════════════════════════════
     const EXERCISES = [
       {
@@ -450,6 +543,7 @@
         origin: "US Navy SEALs / Marines",
         benefits: ["Focus", "Performance", "Concentration"],
         tags: ["#Focus", "#Performance", "#Concentration", "#Débutant", "#NavySEALs"],
+        intentions: ["focus"],
         color: "#38bdf8",
         gradFrom: "#0c4a6e",
         gradTo: "#075985",
@@ -480,6 +574,7 @@
         origin: "Andrew Weil / Pranayama",
         benefits: ["Sommeil", "Anxiété", "Calme"],
         tags: ["#Sommeil", "#Anxiété", "#Calme", "#Débutant", "#Scientifique"],
+        intentions: ["sommeil"],
         color: "#a78bfa",
         gradFrom: "#1e1b4b",
         gradTo: "#2e1065",
@@ -508,6 +603,7 @@
         origin: "Recherche scientifique (HRV)",
         benefits: ["Stress", "VFC", "Équilibre"],
         tags: ["#Stress", "#VFC", "#Équilibre", "#Débutant", "#Scientifique"],
+        intentions: ["calme", "digestion"],
         color: "#2dd4bf",
         gradFrom: "#042f2e",
         gradTo: "#134e4a",
@@ -534,6 +630,7 @@
         origin: "Respiration sympathique / pranayama",
         benefits: ["Énergie", "Fatigue", "Réveil"],
         tags: ["#Énergie", "#Fatigue", "#Réveil", "#Débutant", "#Matin"],
+        intentions: ["energie", "reveil"],
         color: "#f59e0b",
         gradFrom: "#431407",
         gradTo: "#78350f",
@@ -560,6 +657,7 @@
         origin: "Hygiène du matin / yoga",
         benefits: ["Réveil", "Énergie", "Focus"],
         tags: ["#Réveil", "#Énergie", "#Matin", "#Focus", "#Débutant"],
+        intentions: ["reveil", "energie"],
         color: "#fb923c",
         gradFrom: "#7c2d12",
         gradTo: "#9a3412",
@@ -588,6 +686,7 @@
         origin: "Préparation sportive",
         benefits: ["Énergie", "Fatigue", "Focus"],
         tags: ["#Énergie", "#Fatigue", "#Focus", "#Intermédiaire", "#Sport"],
+        intentions: ["energie", "reveil"],
         color: "#fbbf24",
         gradFrom: "#422006",
         gradTo: "#713f12",
@@ -604,7 +703,476 @@
           expire: "Expire net par le nez ou la bouche, trois comptes.",
         },
       },
+      {
+        id: "soupir",
+        name: "Soupir physiologique",
+        subtitle: "Reset express du stress",
+        emoji: "😮‍💨",
+        duration: "1–2 min",
+        level: "Débutant",
+        origin: "Physiologie / neurosciences",
+        benefits: ["Anxiété", "Stress", "Calme"],
+        tags: ["#Anxiété", "#Stress", "#Calme", "#Reset", "#Débutant"],
+        intentions: ["calme"],
+        color: "#67e8f9",
+        gradFrom: "#083344",
+        gradTo: "#155e75",
+        description:
+          "Le soupir que le corps fait tout seul, rendu volontaire. Un inspire, un second petit inspire par-dessus, puis une expire longue. Trois à cinq cycles suffisent souvent.",
+        ratio: { inspire: 4, hold: 0, expire: 8, holdEmpty: 1 },
+        intensity: {
+          inspire: "double, sans forcer",
+          expire: "longue et relâchée",
+          holdEmpty: "neutre",
+        },
+        cycles: 5,
+        instructions: {
+          inspire: "Inspire par le nez, puis un second petit inspire par-dessus pour remplir le haut.",
+          expire: "Lâche tout par la bouche, longue expire, épaules qui descendent.",
+          holdEmpty: "Une pause courte. Laisse le calme arriver.",
+        },
+      },
+      {
+        id: "abdominal",
+        name: "Respiration abdominale",
+        subtitle: "Le geste de base",
+        emoji: "🌊",
+        duration: "3–5 min",
+        level: "Débutant",
+        origin: "Respiration diaphragmatique",
+        benefits: ["Calme", "Digestion", "Stress"],
+        tags: ["#Calme", "#Digestion", "#Fondation", "#Stress", "#Débutant"],
+        intentions: ["calme", "digestion", "sommeil"],
+        color: "#34d399",
+        gradFrom: "#022c22",
+        gradTo: "#064e3b",
+        description:
+          "Le ventre se gonfle à l’inspire, se ramène à l’expire. Le diaphragme travaille, la poitrine reste souple. C’est la fondation de presque toutes les autres techniques.",
+        ratio: { inspire: 4, hold: 0, expire: 6, holdEmpty: 0 },
+        intensity: {
+          inspire: "basse et large",
+          expire: "souple, un peu plus longue",
+        },
+        cycles: 10,
+        instructions: {
+          inspire: "Inspire par le nez. Le ventre s’ouvre, les côtes suivent.",
+          expire: "Expire plus long. Le ventre rentre sans se contracter.",
+        },
+      },
+      {
+        id: "nadi",
+        name: "Nadi Shodhana",
+        subtitle: "Équilibre des deux côtés",
+        emoji: "☯️",
+        duration: "4–6 min",
+        level: "Intermédiaire",
+        origin: "Pranayama",
+        benefits: ["Équilibre", "Focus", "Calme"],
+        tags: ["#Équilibre", "#Focus", "#Calme", "#Concentration", "#Yoga", "#Intermédiaire"],
+        intentions: ["calme", "focus"],
+        color: "#c084fc",
+        gradFrom: "#2e1065",
+        gradTo: "#4c1d95",
+        description:
+          "Respiration alternée. Pouce et annulaire ferment un côté puis l’autre. Le rythme reste égal. Assis, dos droit, sans forcer le passage de l’air.",
+        ratio: { inspire: 4, hold: 0, expire: 4, holdEmpty: 0 },
+        intensity: {
+          inspire: "fine et nasale",
+          expire: "fine et nasale",
+        },
+        cycles: 12,
+        instructions: {
+          inspire: "Ferme la narine droite. Inspire à gauche, doucement.",
+          expire: "Ferme la gauche, ouvre la droite. Expire à droite. Inverse au cycle suivant.",
+        },
+      },
+      {
+        id: "soir",
+        name: "Souffle du soir",
+        subtitle: "Préparer le sommeil",
+        emoji: "🌌",
+        duration: "4–6 min",
+        level: "Débutant",
+        origin: "Hygiène du soir",
+        benefits: ["Sommeil", "Calme", "Anxiété"],
+        tags: ["#Sommeil", "#Soir", "#Calme", "#Anxiété", "#Débutant"],
+        intentions: ["sommeil"],
+        color: "#818cf8",
+        gradFrom: "#1e1b4b",
+        gradTo: "#312e81",
+        description:
+          "Inspire calme, expire nettement plus longue. On invite le système parasympathique sans technique compliquée. Lumière basse, assis ou allongé.",
+        ratio: { inspire: 4, hold: 0, expire: 8, holdEmpty: 0 },
+        intensity: {
+          inspire: "douce, par le nez",
+          expire: "très longue, relâchée",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire tranquillement par le nez, ventre souple.",
+          expire: "Expire deux fois plus longtemps. Laisse le jour derrière toi.",
+        },
+      },
+      {
+        id: "triangle",
+        name: "Triangle 4–4–4",
+        subtitle: "Stabiliser l’attention",
+        emoji: "△",
+        duration: "3–4 min",
+        level: "Débutant",
+        origin: "Pranayama simplifié",
+        benefits: ["Focus", "Concentration", "Calme"],
+        tags: ["#Focus", "#Concentration", "#Débutant"],
+        intentions: ["focus"],
+        color: "#38bdf8",
+        gradFrom: "#0c4a6e",
+        gradTo: "#075985",
+        description:
+          "Trois temps égaux : inspire, retiens, expire. Plus simple que le carré, assez structuré pour ramener l’attention.",
+        ratio: { inspire: 4, hold: 4, expire: 4, holdEmpty: 0 },
+        intensity: {
+          inspire: "régulière",
+          hold: "souple",
+          expire: "égale à l’inspire",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire par le nez, quatre comptes.",
+          hold: "Garde l’air, visage détendu.",
+          expire: "Expire par le nez, même durée.",
+        },
+      },
+      {
+        id: "ancrage",
+        name: "Ancrage 4–4",
+        subtitle: "Revenir ici",
+        emoji: "🎯",
+        duration: "3 min",
+        level: "Débutant",
+        origin: "Attention / pleine présence",
+        benefits: ["Focus", "Concentration"],
+        tags: ["#Focus", "#Concentration", "#Débutant"],
+        intentions: ["focus"],
+        color: "#7dd3fc",
+        gradFrom: "#0c4a6e",
+        gradTo: "#155e75",
+        description:
+          "Rythme égal, sans rétention. On pose l’attention sur le passage de l’air. Utile avant un travail qui demande de la précision.",
+        ratio: { inspire: 4, hold: 0, expire: 4, holdEmpty: 0 },
+        intensity: {
+          inspire: "nasale, précise",
+          expire: "nasale, précise",
+        },
+        cycles: 10,
+        instructions: {
+          inspire: "Inspire en sentant l’air au bord des narines.",
+          expire: "Expire aussi long. Reste sur la sensation.",
+        },
+      },
+      {
+        id: "boxlong",
+        name: "Box allongé",
+        subtitle: "Carré profond",
+        emoji: "◼️",
+        duration: "6–8 min",
+        level: "Avancé",
+        origin: "US Navy SEALs / extension",
+        benefits: ["Focus", "Performance", "Concentration"],
+        tags: ["#Focus", "#Performance", "#Concentration", "#Avancé"],
+        intentions: ["focus"],
+        color: "#0284c7",
+        gradFrom: "#082f49",
+        gradTo: "#0c4a6e",
+        description:
+          "Même carré que le Box Breathing, comptes plus longs. Ne force pas la rétention. Si la gorge serre, reviens au 4–4–4–4.",
+        ratio: { inspire: 6, hold: 6, expire: 6, holdEmpty: 6 },
+        intensity: {
+          inspire: "ample et lente",
+          hold: "calme, sans pousser",
+          expire: "complète",
+          holdEmpty: "souple",
+        },
+        cycles: 5,
+        instructions: {
+          inspire: "Inspire six comptes, ventre puis poitrine.",
+          hold: "Six comptes. Épaules basses.",
+          expire: "Vide six comptes.",
+          holdEmpty: "Poumons vides, six comptes. Reste présent.",
+        },
+      },
+      {
+        id: "expire",
+        name: "Expire profonde",
+        subtitle: "Allonger le parasympathique",
+        emoji: "🍃",
+        duration: "5–7 min",
+        level: "Avancé",
+        origin: "Respiration parasympathique",
+        benefits: ["Calme", "Anxiété", "Stress"],
+        tags: ["#Calme", "#Anxiété", "#Stress", "#Avancé"],
+        intentions: ["calme"],
+        color: "#2dd4bf",
+        gradFrom: "#042f2e",
+        gradTo: "#115e59",
+        description:
+          "Inspire courte, expire très longue. Le système nerveux descend. Assis ou allongé. Stoppe si un vertige apparaît.",
+        ratio: { inspire: 4, hold: 0, expire: 10, holdEmpty: 0 },
+        intensity: {
+          inspire: "discrète",
+          expire: "très longue, filée",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire quatre comptes, sans remplir à bloc.",
+          expire: "Expire dix comptes, comme un fil continu.",
+        },
+      },
+      {
+        id: "cloche",
+        name: "Respiration cloche",
+        subtitle: "Éveil souple",
+        emoji: "🔔",
+        duration: "2–3 min",
+        level: "Débutant",
+        origin: "Respiration sympathique douce",
+        benefits: ["Énergie", "Réveil", "Fatigue"],
+        tags: ["#Énergie", "#Réveil", "#Fatigue", "#Matin", "#Débutant"],
+        intentions: ["energie", "reveil"],
+        color: "#fbbf24",
+        gradFrom: "#78350f",
+        gradTo: "#a16207",
+        description:
+          "Inspire et expire égales, un peu plus vives que la cohérence. Réveille sans brusquer. Debout près d’une fenêtre, ou assis dos droit.",
+        ratio: { inspire: 4, hold: 0, expire: 4, holdEmpty: 0 },
+        intensity: {
+          inspire: "claire et ronde",
+          expire: "claire et ronde",
+        },
+        cycles: 10,
+        instructions: {
+          inspire: "Inspire par le nez, poitrine ouverte.",
+          expire: "Expire par le nez, même durée. Reste souple.",
+        },
+      },
+      {
+        id: "feu",
+        name: "Souffle de feu",
+        subtitle: "Tonicité franche",
+        emoji: "🔥",
+        duration: "1–2 min",
+        level: "Avancé",
+        origin: "Kapalabhati adapté",
+        benefits: ["Énergie", "Fatigue", "Réveil"],
+        tags: ["#Énergie", "#Fatigue", "#Réveil", "#Sport", "#Avancé"],
+        intentions: ["energie", "reveil"],
+        color: "#f97316",
+        gradFrom: "#7c2d12",
+        gradTo: "#9a3412",
+        description:
+          "Cycles très courts. L’expire est active, l’inspire revient seule. Assis, trois séries max. Interdit si grossesse, hypertension, vertige.",
+        ratio: { inspire: 2, hold: 0, expire: 2, holdEmpty: 0 },
+        intensity: {
+          inspire: "passive, qui revient",
+          expire: "active et nette, ventre",
+        },
+        cycles: 16,
+        instructions: {
+          inspire: "Laisse l’air revenir tout seul par le nez.",
+          expire: "Souffle net par le nez, ventre qui rentre.",
+        },
+      },
+      {
+        id: "soirhold",
+        name: "Rétention du soir",
+        subtitle: "Descendre d’un cran",
+        emoji: "🕯️",
+        duration: "5 min",
+        level: "Intermédiaire",
+        origin: "Hygiène du soir",
+        benefits: ["Sommeil", "Calme", "Anxiété"],
+        tags: ["#Sommeil", "#Soir", "#Calme", "#Anxiété", "#Intermédiaire"],
+        intentions: ["sommeil"],
+        color: "#6366f1",
+        gradFrom: "#1e1b4b",
+        gradTo: "#312e81",
+        description:
+          "Petite pause poumons pleins, puis expire longue. On ralentit sans s’endormir encore. Lumière basse.",
+        ratio: { inspire: 4, hold: 4, expire: 8, holdEmpty: 0 },
+        intensity: {
+          inspire: "douce",
+          hold: "légère",
+          expire: "longue et relâchée",
+        },
+        cycles: 6,
+        instructions: {
+          inspire: "Inspire quatre comptes.",
+          hold: "Garde quatre comptes, mâchoire lâche.",
+          expire: "Expire huit comptes, laisse le jour partir.",
+        },
+      },
+      {
+        id: "478plus",
+        name: "4-7-8 profond",
+        subtitle: "Le tranquillisant allongé",
+        emoji: "🌘",
+        duration: "4–6 min",
+        level: "Avancé",
+        origin: "Andrew Weil / extension",
+        benefits: ["Sommeil", "Anxiété", "Calme"],
+        tags: ["#Sommeil", "#Anxiété", "#Calme", "#Avancé"],
+        intentions: ["sommeil"],
+        color: "#8b5cf6",
+        gradFrom: "#1e1b4b",
+        gradTo: "#4c1d95",
+        description:
+          "Même ratio que le 4-7-8, davantage de cycles. Baisse le bpm vers 40–50. Allongé, lumières éteintes.",
+        ratio: { inspire: 4, hold: 7, expire: 8, holdEmpty: 0 },
+        intensity: {
+          inspire: "silencieuse",
+          hold: "sans lutter",
+          expire: "whoosh très complet",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire par le nez, quatre comptes.",
+          hold: "Sept comptes. Si c’est trop, reviens au 4-7-8 simple.",
+          expire: "Expire huit comptes par la bouche.",
+        },
+      },
+      {
+        id: "repas",
+        name: "Souffle du repas",
+        subtitle: "Après table",
+        emoji: "🍵",
+        duration: "3 min",
+        level: "Débutant",
+        origin: "Hygiène digestive",
+        benefits: ["Digestion", "Calme"],
+        tags: ["#Digestion", "#Calme", "#Débutant"],
+        intentions: ["digestion"],
+        color: "#86efac",
+        gradFrom: "#14532d",
+        gradTo: "#166534",
+        description:
+          "Assis, ventre décompressé. Inspire basse, expire un peu plus longue. On donne de la place à la digestion plutôt que de la contrarier.",
+        ratio: { inspire: 4, hold: 0, expire: 6, holdEmpty: 0 },
+        intensity: {
+          inspire: "basse, sans gonfler la poitrine",
+          expire: "souple",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire dans le ventre, ceinture desserrée.",
+          expire: "Expire plus long. Laisse le ventre redescendre.",
+        },
+      },
+      {
+        id: "vague",
+        name: "Vague abdominale",
+        subtitle: "Masser le centre",
+        emoji: "〰️",
+        duration: "4 min",
+        level: "Intermédiaire",
+        origin: "Respiration diaphragmatique",
+        benefits: ["Digestion", "Calme"],
+        tags: ["#Digestion", "#Calme", "#Intermédiaire"],
+        intentions: ["digestion"],
+        color: "#4ade80",
+        gradFrom: "#14532d",
+        gradTo: "#166534",
+        description:
+          "Petite pause poumons pleins, expire plus longue. Le diaphragme masse les organes. Pas juste après un repas très copieux.",
+        ratio: { inspire: 4, hold: 2, expire: 6, holdEmpty: 0 },
+        intensity: {
+          inspire: "ventre d’abord",
+          hold: "légère",
+          expire: "lente",
+        },
+        cycles: 8,
+        instructions: {
+          inspire: "Inspire quatre comptes, vague qui monte.",
+          hold: "Deux comptes, ventre souple.",
+          expire: "Expire six comptes, vague qui redescend.",
+        },
+      },
+      {
+        id: "agni",
+        name: "Souffle digestif",
+        subtitle: "Activer sans brusquer",
+        emoji: "🔥",
+        duration: "2–3 min",
+        level: "Avancé",
+        origin: "Yoga / Agni adapté",
+        benefits: ["Digestion", "Énergie"],
+        tags: ["#Digestion", "#Énergie", "#Avancé"],
+        intentions: ["digestion"],
+        color: "#a3e635",
+        gradFrom: "#365314",
+        gradTo: "#3f6212",
+        description:
+          "Expire un peu active, inspire qui revient. Debout ou assis, loin d’un repas trop lourd. S’arrêter au premier inconfort.",
+        ratio: { inspire: 3, hold: 0, expire: 3, holdEmpty: 0 },
+        intensity: {
+          inspire: "qui revient",
+          expire: "un peu plus tonique, ventre",
+        },
+        cycles: 12,
+        instructions: {
+          inspire: "Laisse l’inspire revenir par le nez.",
+          expire: "Expire en rentrant doucement le bas-ventre.",
+        },
+      },
     ];
+
+    const INTENTION_DEFS = {
+      calme: { id: "calme", label: "Calme", tags: ["#Calme", "#Anxiété", "#Reset", "#Équilibre"] },
+      energie: { id: "energie", label: "Énergie", tags: ["#Énergie", "#Fatigue", "#Sport"] },
+      focus: { id: "focus", label: "Focus", tags: ["#Focus", "#Concentration", "#Performance"] },
+      sommeil: { id: "sommeil", label: "Sommeil", tags: ["#Sommeil", "#Soir"] },
+      reveil: { id: "reveil", label: "Réveil", tags: ["#Réveil", "#Matin"] },
+      digestion: { id: "digestion", label: "Digestion", tags: ["#Digestion"] },
+      exo: { id: "exo", label: "Exo du jour", tags: ["#ExoDuJour"] },
+    };
+
+    const LEVEL_RANK = { Débutant: 0, Intermédiaire: 1, Avancé: 2 };
+
+    function parisHour() {
+      const raw = new Date().toLocaleString("fr-FR", {
+        timeZone: "Europe/Paris",
+        hour: "numeric",
+        hour12: false,
+      });
+      const h = parseInt(raw, 10);
+      return Number.isFinite(h) ? h : new Date().getHours();
+    }
+
+    function fourthIntentionId() {
+      const h = parisHour();
+      if (h < 5) return "sommeil";
+      if (h < 8) return "reveil";
+      if (h < 12) return "exo";
+      if (h < 15) return "digestion";
+      if (h < 20) return "exo";
+      if (h < 22) return "digestion";
+      return "sommeil";
+    }
+
+    function visibleIntentions() {
+      return [
+        INTENTION_DEFS.calme,
+        INTENTION_DEFS.energie,
+        INTENTION_DEFS.focus,
+        INTENTION_DEFS[fourthIntentionId()],
+      ];
+    }
+
+    function greetingLine() {
+      const h = parisHour();
+      if (h >= 5 && h < 12) return "Bonjour";
+      if (h >= 12 && h < 18) return "Bon après-midi";
+      if (h >= 18 && h < 22) return "Bonsoir";
+      return "Cette nuit";
+    }
 
     // ─── Styles des phases ───
     const PHASE_STYLE = {
@@ -633,13 +1201,15 @@
     };
 
     function getTodayKey() {
-      return new Date().toISOString().slice(0, 10);
+      return new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Paris" });
     }
 
     function updateStreak() {
       const s = store.get("af_streak", { count: 0, lastDate: null });
       const today = getTodayKey();
-      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      const yesterday = y.toLocaleDateString("en-CA", { timeZone: "Europe/Paris" });
       if (s.lastDate === today) return s;
       const updated = {
         count: s.lastDate === yesterday ? s.count + 1 : 1,
@@ -681,31 +1251,6 @@
       }
       return seq;
     }
-    // ─── Mode Mix : sonorité selon la phase ───
-function toneForPhase(tone, phase) {
-  if (tone !== "mix") return tone;
-  if (phase === "inspire") return "aigue";
-  if (phase === "expire") return "grave";
-  return "standard"; // hold et holdEmpty → médium
-}
-
-// Tableau : pour chaque beat absolu de la séquence, sa phase
-function buildBeatPhaseMap(seq) {
-  const map = [];
-  seq.forEach((step) => {
-    for (let i = 0; i < step.duration; i++) map.push(step.phase);
-  });
-  return map;
-}
-
-// Position absolue (en beats) d'un step + beats restants
-function absBeatPos(seq, idx, beatsLeft) {
-  let pos = 0;
-  for (let i = 0; i < idx; i++) pos += seq[i].duration;
-  const cur = seq[idx];
-  if (cur) pos += Math.max(0, cur.duration - beatsLeft);
-  return pos;
-}
 // ═══════════════════════════════════════════════════════════════════
 // SPLASH — logo animé (cercle qui se dessine + ondes tourbillonnantes)
 // ═══════════════════════════════════════════════════════════════════
@@ -720,29 +1265,29 @@ function SplashLogo() {
 
       {/* Cercle ouvert gauche/droite */}
       <g filter="url(#splashHalo)" stroke="#22d3ee" strokeWidth="8" strokeLinecap="round" fill="none" opacity="0.4">
-        <path d="M 14.75 44 A 48 48 0 0 1 105.25 44"
+        <path d={MARK.ringTop}
               strokeDasharray="166" strokeDashoffset="166"
               style={{ animation: "drawRing 1.1s 0.2s ease-out forwards" }} />
-        <path d="M 105.25 76 A 48 48 0 0 1 14.75 76"
+        <path d={MARK.ringBot}
               strokeDasharray="166" strokeDashoffset="166"
               style={{ animation: "drawRing 1.1s 0.2s ease-out forwards" }} />
       </g>
       <g stroke="#67e8f9" strokeWidth="6.5" strokeLinecap="round" fill="none">
-        <path d="M 14.75 44 A 48 48 0 0 1 105.25 44"
+        <path d={MARK.ringTop}
               strokeDasharray="166" strokeDashoffset="166"
               style={{ animation: "drawRing 1.1s 0.2s ease-out forwards" }} />
-        <path d="M 105.25 76 A 48 48 0 0 1 14.75 76"
+        <path d={MARK.ringBot}
               strokeDasharray="166" strokeDashoffset="166"
               style={{ animation: "drawRing 1.1s 0.2s ease-out forwards" }} />
       </g>
 
       {/* Vague inspire */}
-      <path d="M 8 57 C 22 42, 38 42, 54 56 C 70 70, 86 70, 106 55"
+      <path d={MARK.wave1}
             stroke="#7deaf5" strokeWidth="5.5" strokeLinecap="round" fill="none"
             strokeDasharray="150" strokeDashoffset="150"
             style={{ animation: "drawWave 1.4s 0.9s ease-out forwards" }} />
       {/* Vague expire */}
-      <path d="M 8 70 C 22 55, 38 55, 54 69 C 70 83, 86 83, 106 68"
+      <path d={MARK.wave2}
             stroke="#5bd4e8" strokeWidth="5.5" strokeLinecap="round" fill="none"
             strokeDasharray="150" strokeDashoffset="150"
             style={{ animation: "drawWave 1.4s 1.15s ease-out forwards" }} />
@@ -778,6 +1323,8 @@ function Splash() {
       const [beatsLeft, setBeatsLeft] = useState(0);
       const [running, setRunning] = useState(false);
       const [selectedTags, setSelectedTags] = useState([]);
+      const [intention, setIntention] = useState(() => store.get("af_intention", null));
+      const [filtersOpen, setFiltersOpen] = useState(() => !!store.get("af_filters_open", false));
       const [bpm, setBpm] = useState(() => {
         const saved = store.get("af_bpm", 60);
         const n = Number(saved);
@@ -821,32 +1368,57 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
       const nextBeatTimeRef = useRef(0);
       const beatQueueRef = useRef([]);
       const wakeLockRef = useRef(null);
-      const beatPhaseRef = useRef([]);   // phase de chaque beat
-      const schedPosRef = useRef(0);     // position absolue du scheduler
 
       const today = getTodayKey();
       const doneToday = streak.lastDate === today;
 
+      const dailyExo = useMemo(() => {
+        const today = getTodayKey();
+        const saved = store.get("af_exo_du_jour", null);
+        if (saved && saved.date === today) {
+          const found = EXERCISES.find((ex) => ex.id === saved.id);
+          if (found) return found;
+        }
+        const pick = EXERCISES[Math.floor(Math.random() * EXERCISES.length)];
+        store.set("af_exo_du_jour", { date: today, id: pick.id });
+        return pick;
+      }, []);
+
+      const familyTags = intention && INTENTION_DEFS[intention]
+        ? INTENTION_DEFS[intention].tags
+        : [];
+
       const filteredExercises = useMemo(() => {
-        if (selectedTags.length === 0) return EXERCISES;
-        return EXERCISES.filter((ex) =>
-          selectedTags.every((t) => ex.tags.includes(t))
-        );
-      }, [selectedTags]);
+        const exoMode = intention === "exo" || selectedTags.includes("#ExoDuJour");
+        let list = exoMode ? [dailyExo] : EXERCISES.slice();
+        if (!exoMode && intention) {
+          list = list.filter((ex) => (ex.intentions || []).includes(intention));
+        }
+        const extra = selectedTags.filter((t) => t !== "#ExoDuJour");
+        if (extra.length > 0) {
+          list = list.filter((ex) => extra.every((t) => ex.tags.includes(t)));
+        }
+        return list.slice().sort((a, b) => {
+          const ra = LEVEL_RANK[a.level] ?? 9;
+          const rb = LEVEL_RANK[b.level] ?? 9;
+          if (ra !== rb) return ra - rb;
+          return a.name.localeCompare(b.name, "fr");
+        });
+      }, [selectedTags, intention, dailyExo]);
 
       const allTags = useMemo(() => {
         const set = new Set();
         EXERCISES.forEach((ex) => ex.tags.forEach((t) => set.add(t)));
-        return Array.from(set).sort();
+        set.add("#ExoDuJour");
+        return Array.from(set).sort((a, b) => a.localeCompare(b, "fr"));
       }, []);
+
+      const closedFilterTags = ["#Débutant", "#Stress"];
 
       // ─── Synchronisation refs + persistance ───
       useEffect(() => { runningRef.current = running; }, [running]);
       useEffect(() => { stepRef.current = stepIdx; }, [stepIdx]);
-           useEffect(() => { seqRef.current = sequence; }, [sequence]);
-      useEffect(() => {
-        beatPhaseRef.current = buildBeatPhaseMap(sequence);
-      }, [sequence]);
+      useEffect(() => { seqRef.current = sequence; }, [sequence]);
       useEffect(() => { beatsRef.current = beatsLeft; }, [beatsLeft]);
       useEffect(() => {
         bpmRef.current = bpm;
@@ -860,6 +1432,12 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
         volumeRef.current = volume;
         store.set("af_volume", volume);
       }, [volume]);
+      useEffect(() => {
+        store.set("af_intention", intention);
+      }, [intention]);
+      useEffect(() => {
+        store.set("af_filters_open", filtersOpen);
+      }, [filtersOpen]);
 
       // ─── Anti-veille : garder l’écran allumé pendant la session ───
       useEffect(() => {
@@ -880,7 +1458,7 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
       // ─── Vibration courte à chaque changement de phase ───
       useEffect(() => {
         if (running && "vibrate" in navigator) {
-          try { navigator.vibrate(60); } catch (e) {}
+          try { navigator.vibrate(30); } catch (e) {}
         }
       }, [stepIdx]); // eslint-disable-line
 
@@ -912,23 +1490,15 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
         if (!ctx) return;
         if (ctx.state === "suspended") ctx.resume();
 
-        // Position de départ dans la séquence (pour le mode Mix)
-        schedPosRef.current = absBeatPos(seqRef.current, stepRef.current, beatsRef.current);
         nextBeatTimeRef.current = ctx.currentTime + 0.12;
         beatQueueRef.current = [];
 
+        // Boucle de planification audio (25 ms de lookahead)
         schedulerTimerRef.current = setInterval(() => {
           while (nextBeatTimeRef.current < ctx.currentTime + 0.15) {
-            const phase = beatPhaseRef.current[schedPosRef.current] || null;
-            playBell(
-              ctx,
-              nextBeatTimeRef.current,
-              toneForPhase(toneRef.current, phase),
-              volumeRef.current
-            );
+            playBell(ctx, nextBeatTimeRef.current, toneRef.current, volumeRef.current);
             beatQueueRef.current.push(nextBeatTimeRef.current);
             nextBeatTimeRef.current += 60 / (bpmRef.current || 60);
-            if (schedPosRef.current < beatPhaseRef.current.length) schedPosRef.current++;
           }
         }, 25);
 
@@ -983,9 +1553,38 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
       }
 
       function toggleTag(tag) {
+        if (tag === "#ExoDuJour") {
+          setIntention((cur) => (cur === "exo" ? null : "exo"));
+          return;
+        }
         setSelectedTags((prev) =>
           prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
         );
+      }
+
+      function toggleIntention(id) {
+        setIntention((cur) => (cur === id ? null : id));
+      }
+
+      function tagIsActive(tag) {
+        if (tag === "#ExoDuJour") return intention === "exo";
+        return selectedTags.includes(tag) || familyTags.includes(tag);
+      }
+
+      function filterChipStyle(active) {
+        return {
+          background: active ? "#0ea5e920" : "#0f1524",
+          color: active ? "#38bdf8" : "#64748b",
+          border: active ? "1px solid #0ea5e940" : "1px solid #1a2236",
+        };
+      }
+
+      function superChipStyle(active) {
+        return {
+          background: active ? "#eab30822" : "#1a223099",
+          color: active ? "#facc15" : "#cbd5e1",
+          border: active ? "1px solid #eab30866" : "1px solid #33415566",
+        };
       }
 
       // ─── Écran exercice ───
@@ -1074,7 +1673,6 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
               >
                 <option value="grave">Grave (Bol tibétain)</option>
                 <option value="standard">Standard (Médium)</option>
-                <option value="mix">Mix — Inspire aigu · Expire grave</option>
                 <option value="aigue">Aiguë (Carillon)</option>
               </select>
               <span className="text-slate-500 text-sm" aria-hidden="true">🔊</span>
@@ -1163,13 +1761,12 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
                   ← Précédent
                 </button>
                 <button
-                                 onClick={() => {
-                  if (stepIdx < sequence.length - 1) {
-                    const n = stepIdx + 1;
-                    setStepIdx(n);
-                    setBeatsLeft(sequence[n].duration);
-                    schedPosRef.current = absBeatPos(sequence, n, sequence[n].duration); // ← ajout
-                  } else {
+                  onClick={() => {
+                    if (stepIdx < sequence.length - 1) {
+                      const n = stepIdx + 1;
+                      setStepIdx(n);
+                      setBeatsLeft(sequence[n].duration);
+                    } else {
                       setRunning(false);
                       finishExercise();
                     }
@@ -1336,13 +1933,36 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
                   Souffle · Présence · Santé 
                 </p>
               </div>
-              <div className="header-logo">
-                <img
-                  src="images/logo_sans_texte_modif.png"
-                  alt="Air Fitness"
-                  width="36"
-                  height="36"
-                />
+              <div
+                className="header-logo"
+                style={{
+                  background: "#0b1220",
+                  border: "1px solid #1e3a4a",
+                }}
+              >
+                <LogoMark size={30} />
+              </div>
+            </div>
+
+            {/* Super-filtres d’intention */}
+            <div className="px-5 mt-5">
+              <p className="text-slate-400 text-[13px] mb-2.5">
+                De quoi as-tu besoin maintenant ?
+              </p>
+              <div className="intent-row">
+                {visibleIntentions().map((item) => {
+                  const active = intention === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => toggleIntention(item.id)}
+                      className="super-tag"
+                      style={superChipStyle(active)}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1391,37 +2011,41 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
               </p>
             </div>
 
-            {/* Filtres */}
+            {/* Filtres escamotables */}
             <div className="px-5 mt-6">
-              <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-                FILTRES
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {allTags.map((tag) => {
-                  const active = selectedTags.includes(tag);
+              <div className={filtersOpen ? "filter-line open" : "filter-line"}>
+                <span className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium flex-shrink-0">
+                  Filtres
+                </span>
+                {(filtersOpen ? allTags : closedFilterTags).map((tag) => {
+                  const active = tagIsActive(tag);
+                  const label = tag === "#ExoDuJour" ? "Exo du jour" : tag;
                   return (
                     <button
                       key={tag}
                       onClick={() => toggleTag(tag)}
-                      className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
-                      style={{
-                        background: active ? "#0ea5e920" : "#0f1524",
-                        color: active ? "#38bdf8" : "#64748b",
-                        border: active
-                          ? "1px solid #0ea5e940"
-                          : "1px solid #1a2236",
-                      }}
+                      className="filter-tag flex-shrink-0"
+                      style={filterChipStyle(active)}
                     >
-                      {tag}
+                      {label}
                     </button>
                   );
                 })}
-                {selectedTags.length > 0 && (
+                {filtersOpen ? (
                   <button
-                    onClick={() => setSelectedTags([])}
-                    className="px-3 py-1.5 rounded-full text-xs text-slate-500"
+                    onClick={() => setFiltersOpen(false)}
+                    className="filter-tag flex-shrink-0"
+                    style={filterChipStyle(false)}
                   >
-                    Effacer
+                    ---
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setFiltersOpen(true)}
+                    className="filter-tag flex-shrink-0"
+                    style={filterChipStyle(false)}
+                  >
+                    +++
                   </button>
                 )}
               </div>
@@ -1430,7 +2054,7 @@ const t2 = setTimeout(() => setSplash(false), 4700);       // fin
             {/* Liste exercices */}
             <div className="px-5 mt-6">
               <p className="text-slate-500 text-[11px] uppercase tracking-[0.15em] font-medium mb-2.5">
-                {selectedTags.length > 0
+                {intention || selectedTags.length > 0
                   ? `${filteredExercises.length} exercice${filteredExercises.length > 1 ? "s" : ""}`
                   : "Exercices de souffle"}
               </p>
