@@ -1,0 +1,25 @@
+{
+  "id": "box",
+  "name": "Box Breathing",
+  "subtitle": "Gestion du stress & performance",
+  "emoji": "⬜",
+  "duration": "4–6 min",
+  "level": "Débutant",
+  "origin": "US Navy SEALs / Marines",
+  "benefits": ["Focus", "Performance", "Concentration"],
+  "tags": ["#Focus", "#Performance", "#Concentration", "#Débutant", "#NavySEALs"],
+  "intentions": ["focus"],
+  "color": "#38bdf8",
+  "gradFrom": "#0c4a6e",
+  "gradTo": "#075985",
+  "description": "Technique tactique utilisée par les forces spéciales. Ratio égal pour stabiliser le système nerveux tout en restant alerte.",
+  "ratio": {"inspire": 4, "hold": 4, "expire": 4, "holdEmpty": 4},
+  "intensity": {"inspire": "douce et régulière", "hold": "neutre, sans tension", "expire": "contrôlée et complète", "holdEmpty": "neutre"},
+  "cycles": 6,
+  "instructions": {
+    "inspire": "Inspire tranquillement par le nez. Le ventre se gonfle.",
+    "hold": "Retiens l’air. Corps détendu, épaules relâchées.",
+    "expire": "Expire lentement par le nez ou la bouche. Vide complètement.",
+    "holdEmpty": "Poumons vides. Reste calme quelques instants."
+  }
+}
