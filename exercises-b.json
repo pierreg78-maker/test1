@@ -1,1 +1,431 @@
-{"exercises":[{"id":"ancrage","name":"Ancrage 4–4","subtitle":"Revenir ici","emoji":"🎯","duration":"3 min","level":"Débutant","origin":"Attention / pleine présence","benefits":["Focus","Concentration"],"tags":["#Focus","#Concentration","#Débutant"],"intentions":["focus"],"color":"#7dd3fc","gradFrom":"#0c4a6e","gradTo":"#155e75","description":"Rythme égal, sans rétention. On pose l’attention sur le passage de l’air.","ratio":{"inspire":4,"hold":0,"expire":4,"holdEmpty":0},"intensity":{"inspire":"nasale, précise","expire":"nasale, précise"},"cycles":10,"instructions":{"inspire":"Inspire en sentant l’air au bord des narines.","expire":"Expire aussi long. Reste sur la sensation."}},{"id":"expire","name":"Expire profonde","subtitle":"Allonger le parasympathique","emoji":"🍃","duration":"5–7 min","level":"Avancé","origin":"Respiration parasympathique","benefits":["Calme","Anxiété","Stress"],"tags":["#Calme","#Anxiété","#Stress","#Avancé"],"intentions":["calme"],"color":"#2dd4bf","gradFrom":"#042f2e","gradTo":"#115e59","description":"Inspire courte, expire très longue.","ratio":{"inspire":4,"hold":0,"expire":10,"holdEmpty":0},"intensity":{"inspire":"discrète","expire":"très longue, filée"},"cycles":8,"instructions":{"inspire":"Inspire quatre comptes, sans remplir à bloc.","expire":"Expire dix comptes, comme un fil continu."}}]}
+{
+  "exercises": [
+    {
+      "id": "ancrage",
+      "name": "Ancrage 4–4",
+      "subtitle": "Revenir ici",
+      "emoji": "🎯",
+      "duration": "3 min",
+      "level": "Débutant",
+      "origin": "Attention / pleine présence",
+      "benefits": [
+        "Focus",
+        "Concentration"
+      ],
+      "tags": [
+        "#Focus",
+        "#Concentration",
+        "#Débutant"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#7dd3fc",
+      "gradFrom": "#0c4a6e",
+      "gradTo": "#155e75",
+      "description": "Rythme égal, sans rétention. On pose l’attention sur le passage de l’air. Utile avant un travail qui demande de la précision.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "nasale, précise",
+        "expire": "nasale, précise"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire en sentant l’air au bord des narines.",
+        "expire": "Expire aussi long. Reste sur la sensation."
+      }
+    },
+    {
+      "id": "boxlong",
+      "name": "Box allongé",
+      "subtitle": "Carré profond",
+      "emoji": "◼️",
+      "duration": "6–8 min",
+      "level": "Avancé",
+      "origin": "US Navy SEALs / extension",
+      "benefits": [
+        "Focus",
+        "Performance",
+        "Concentration"
+      ],
+      "tags": [
+        "#Focus",
+        "#Performance",
+        "#Concentration",
+        "#Avancé"
+      ],
+      "intentions": [
+        "focus"
+      ],
+      "color": "#0284c7",
+      "gradFrom": "#082f49",
+      "gradTo": "#0c4a6e",
+      "description": "Même carré que le Box Breathing, comptes plus longs. Ne force pas la rétention. Si la gorge serre, reviens au 4–4–4–4.",
+      "ratio": {
+        "inspire": 6,
+        "hold": 6,
+        "expire": 6,
+        "holdEmpty": 6
+      },
+      "intensity": {
+        "inspire": "ample et lente",
+        "hold": "calme, sans pousser",
+        "expire": "complète",
+        "holdEmpty": "souple"
+      },
+      "cycles": 5,
+      "instructions": {
+        "inspire": "Inspire six comptes, ventre puis poitrine.",
+        "hold": "Six comptes. Épaules basses.",
+        "expire": "Vide six comptes.",
+        "holdEmpty": "Poumons vides, six comptes. Reste présent."
+      }
+    },
+    {
+      "id": "expire",
+      "name": "Expire profonde",
+      "subtitle": "Allonger le parasympathique",
+      "emoji": "🍃",
+      "duration": "5–7 min",
+      "level": "Avancé",
+      "origin": "Respiration parasympathique",
+      "benefits": [
+        "Calme",
+        "Anxiété",
+        "Stress"
+      ],
+      "tags": [
+        "#Calme",
+        "#Anxiété",
+        "#Stress",
+        "#Avancé"
+      ],
+      "intentions": [
+        "calme"
+      ],
+      "color": "#2dd4bf",
+      "gradFrom": "#042f2e",
+      "gradTo": "#115e59",
+      "description": "Inspire courte, expire très longue. Le système nerveux descend. Assis ou allongé. Stoppe si un vertige apparaît.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 10,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "discrète",
+        "expire": "très longue, filée"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire quatre comptes, sans remplir à bloc.",
+        "expire": "Expire dix comptes, comme un fil continu."
+      }
+    },
+    {
+      "id": "cloche",
+      "name": "Respiration cloche",
+      "subtitle": "Éveil souple",
+      "emoji": "🔔",
+      "duration": "2–3 min",
+      "level": "Débutant",
+      "origin": "Respiration sympathique douce",
+      "benefits": [
+        "Énergie",
+        "Réveil",
+        "Fatigue"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Réveil",
+        "#Fatigue",
+        "#Matin",
+        "#Débutant"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#fbbf24",
+      "gradFrom": "#78350f",
+      "gradTo": "#a16207",
+      "description": "Inspire et expire égales, un peu plus vives que la cohérence. Réveille sans brusquer. Debout près d’une fenêtre, ou assis dos droit.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 4,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "claire et ronde",
+        "expire": "claire et ronde"
+      },
+      "cycles": 10,
+      "instructions": {
+        "inspire": "Inspire par le nez, poitrine ouverte.",
+        "expire": "Expire par le nez, même durée. Reste souple."
+      }
+    },
+    {
+      "id": "feu",
+      "name": "Souffle de feu",
+      "subtitle": "Tonicité franche",
+      "emoji": "🔥",
+      "duration": "1–2 min",
+      "level": "Avancé",
+      "origin": "Kapalabhati adapté",
+      "benefits": [
+        "Énergie",
+        "Fatigue",
+        "Réveil"
+      ],
+      "tags": [
+        "#Énergie",
+        "#Fatigue",
+        "#Réveil",
+        "#Sport",
+        "#Avancé"
+      ],
+      "intentions": [
+        "energie",
+        "reveil"
+      ],
+      "color": "#f97316",
+      "gradFrom": "#7c2d12",
+      "gradTo": "#9a3412",
+      "description": "Cycles très courts. L’expire est active, l’inspire revient seule. Assis, trois séries max. Interdit si grossesse, hypertension, vertige.",
+      "ratio": {
+        "inspire": 2,
+        "hold": 0,
+        "expire": 2,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "passive, qui revient",
+        "expire": "active et nette, ventre"
+      },
+      "cycles": 16,
+      "instructions": {
+        "inspire": "Laisse l’air revenir tout seul par le nez.",
+        "expire": "Souffle net par le nez, ventre qui rentre."
+      }
+    },
+    {
+      "id": "soirhold",
+      "name": "Rétention du soir",
+      "subtitle": "Descendre d’un cran",
+      "emoji": "🕯️",
+      "duration": "5 min",
+      "level": "Intermédiaire",
+      "origin": "Hygiène du soir",
+      "benefits": [
+        "Sommeil",
+        "Calme",
+        "Anxiété"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Soir",
+        "#Calme",
+        "#Anxiété",
+        "#Intermédiaire"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#6366f1",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#312e81",
+      "description": "Petite pause poumons pleins, puis expire longue. On ralentit sans s’endormir encore. Lumière basse.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 4,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "douce",
+        "hold": "légère",
+        "expire": "longue et relâchée"
+      },
+      "cycles": 6,
+      "instructions": {
+        "inspire": "Inspire quatre comptes.",
+        "hold": "Garde quatre comptes, mâchoire lâche.",
+        "expire": "Expire huit comptes, laisse le jour partir."
+      }
+    },
+    {
+      "id": "478plus",
+      "name": "4-7-8 profond",
+      "subtitle": "Le tranquillisant allongé",
+      "emoji": "🌘",
+      "duration": "4–6 min",
+      "level": "Avancé",
+      "origin": "Andrew Weil / extension",
+      "benefits": [
+        "Sommeil",
+        "Anxiété",
+        "Calme"
+      ],
+      "tags": [
+        "#Sommeil",
+        "#Anxiété",
+        "#Calme",
+        "#Avancé"
+      ],
+      "intentions": [
+        "sommeil"
+      ],
+      "color": "#8b5cf6",
+      "gradFrom": "#1e1b4b",
+      "gradTo": "#4c1d95",
+      "description": "Même ratio que le 4-7-8, davantage de cycles. Baisse le bpm vers 40–50. Allongé, lumières éteintes.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 7,
+        "expire": 8,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "silencieuse",
+        "hold": "sans lutter",
+        "expire": "whoosh très complet"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire par le nez, quatre comptes.",
+        "hold": "Sept comptes. Si c’est trop, reviens au 4-7-8 simple.",
+        "expire": "Expire huit comptes par la bouche."
+      }
+    },
+    {
+      "id": "repas",
+      "name": "Souffle du repas",
+      "subtitle": "Après table",
+      "emoji": "🍵",
+      "duration": "3 min",
+      "level": "Débutant",
+      "origin": "Hygiène digestive",
+      "benefits": [
+        "Digestion",
+        "Calme"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Calme",
+        "#Débutant"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#86efac",
+      "gradFrom": "#14532d",
+      "gradTo": "#166534",
+      "description": "Assis, ventre décompressé. Inspire basse, expire un peu plus longue. On donne de la place à la digestion plutôt que de la contrarier.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 0,
+        "expire": 6,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "basse, sans gonfler la poitrine",
+        "expire": "souple"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire dans le ventre, ceinture desserrée.",
+        "expire": "Expire plus long. Laisse le ventre redescendre."
+      }
+    },
+    {
+      "id": "vague",
+      "name": "Vague abdominale",
+      "subtitle": "Masser le centre",
+      "emoji": "〰️",
+      "duration": "4 min",
+      "level": "Intermédiaire",
+      "origin": "Respiration diaphragmatique",
+      "benefits": [
+        "Digestion",
+        "Calme"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Calme",
+        "#Intermédiaire"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#4ade80",
+      "gradFrom": "#14532d",
+      "gradTo": "#166534",
+      "description": "Petite pause poumons pleins, expire plus longue. Le diaphragme masse les organes. Pas juste après un repas très copieux.",
+      "ratio": {
+        "inspire": 4,
+        "hold": 2,
+        "expire": 6,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "ventre d’abord",
+        "hold": "légère",
+        "expire": "lente"
+      },
+      "cycles": 8,
+      "instructions": {
+        "inspire": "Inspire quatre comptes, vague qui monte.",
+        "hold": "Deux comptes, ventre souple.",
+        "expire": "Expire six comptes, vague qui redescend."
+      }
+    },
+    {
+      "id": "agni",
+      "name": "Souffle digestif",
+      "subtitle": "Activer sans brusquer",
+      "emoji": "🔥",
+      "duration": "2–3 min",
+      "level": "Avancé",
+      "origin": "Yoga / Agni adapté",
+      "benefits": [
+        "Digestion",
+        "Énergie"
+      ],
+      "tags": [
+        "#Digestion",
+        "#Énergie",
+        "#Avancé"
+      ],
+      "intentions": [
+        "digestion"
+      ],
+      "color": "#a3e635",
+      "gradFrom": "#365314",
+      "gradTo": "#3f6212",
+      "description": "Expire un peu active, inspire qui revient. Debout ou assis, loin d’un repas trop lourd. S’arrêter au premier inconfort.",
+      "ratio": {
+        "inspire": 3,
+        "hold": 0,
+        "expire": 3,
+        "holdEmpty": 0
+      },
+      "intensity": {
+        "inspire": "qui revient",
+        "expire": "un peu plus tonique, ventre"
+      },
+      "cycles": 12,
+      "instructions": {
+        "inspire": "Laisse l’inspire revenir par le nez.",
+        "expire": "Expire en rentrant doucement le bas-ventre."
+      }
+    }
+  ]
+}
