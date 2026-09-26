@@ -1,1 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citations américaines — lire mot à mot</title>
+<style>
+  :root {
+    --ink: #1c1612;
+    --paper: #f4efe6;
+    --panel: #fffdf8;
+    --line: #d9cfc0;
+    --accent: #8b2e1f;
+    --accent-2: #2c4a3e;
+    --muted: #6b5e52;
+    --word-hover: #f3d7a3;
+    --word-on: #e8c07a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; }
+  header {
+    padding: 1.6rem 1.4rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #faf6ef, #f4efe6);
+  }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+  header h1 { margin: 0 0 .35rem; font-size: 1.55rem; letter-spacing: .02em; font-weight: 600; }
+  header p { margin: 0; color: var(--muted); font-size: .95rem; max-width: 46rem; line-height: 1.45; }
+  .hdr-actions { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .filters {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: .75rem; padding: 1rem 1.4rem; border-bottom: 1px solid var(--line);
+    background: #efe8dc;
+  }
+  label { display: flex; flex-direction: column; gap: .28rem; font-size: .72rem;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-family: system-ui, sans-serif; }
+  select {
+    font: inherit; font-size: 1rem; padding: .45rem .55rem; border: 1px solid var(--line);
+    background: var(--panel); color: var(--ink); border-radius: 4px;
+  }
+  .layout { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; min-height: calc(100vh - 180px); }
+  .list { border-right: 1px solid var(--line); overflow: auto; max-height: calc(100vh - 180px); background: #efe9de; }
+  .list button {
+    display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line);
+    background: transparent; padding: .75rem .9rem; cursor: pointer; font: inherit; color: inherit;
+  }
+  .list button:hover { background: #e7ddcc; }
+  .list button.active { background: #e4d2b0; box-shadow: inset 3px 0 0 var(--accent); }
+  .list .meta { font-size: .78rem; color: var(--muted); margin-bottom: .2rem; font-family: system-ui, sans-serif; }
+  .list .snip { font-size: .92rem; line-height: 1.35; }
+  .reader { padding: 1.3rem 1.5rem 2.5rem; }
+  .empty { color: var(--muted); padding: 2rem 0; }
+  .src { font-family: system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin-bottom: .8rem; }
+  .src strong { color: var(--ink); font-weight: 650; }
+  .quote {
+    font-size: 1.22rem; line-height: 1.7; background: var(--panel);
+    border: 1px solid var(--line); padding: 1.1rem 1.2rem; border-radius: 6px;
+  }
+  .word {
+    cursor: pointer; border-radius: 3px; padding: 0 .08em;
+    border-bottom: 1px dotted rgba(139,46,31,.45);
+  }
+  .word:hover { background: var(--word-hover); }
+  .word.on { background: var(--word-on); }
+  .hint { margin: .7rem 0 1rem; font-size: .88rem; color: var(--muted); font-family: system-ui, sans-serif; }
+  .wordbox {
+    min-height: 3.2rem; border: 1px dashed var(--line); background: #fff;
+    padding: .7rem .9rem; border-radius: 6px; margin-bottom: 1rem;
+    font-family: system-ui, sans-serif; font-size: .92rem; line-height: 1.45;
+  }
+  .wordbox .en { font-weight: 650; font-family: Georgia, serif; font-size: 1.15rem; }
+  .wordbox .fr { color: var(--accent-2); }
+  .wordbox .miss { color: var(--muted); font-style: italic; }
+  .wordbox .wait { color: var(--muted); }
+  .wordbox .pos { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .wordbox ul { margin: .35rem 0 .5rem; padding-left: 1.15rem; }
+  .wordbox li { margin: .15rem 0; }
+  .dict-links { display: flex; flex-wrap: wrap; gap: .4rem .7rem; margin-top: .55rem; }
+  .dict-links a {
+    color: var(--accent); font-size: .8rem; text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .dict-links a:hover { border-bottom-color: var(--accent); }
+  .actions { display: flex; gap: .6rem; flex-wrap: wrap; margin: .2rem 0 1rem; }
+  button.btn {
+    font-family: system-ui, sans-serif; font-size: .92rem; padding: .5rem .85rem;
+    border-radius: 4px; border: 1px solid var(--accent); background: var(--accent);
+    color: #fff; cursor: pointer;
+  }
+  button.btn.ghost { background: transparent; color: var(--accent); }
+  button.btn:disabled { opacity: .45; cursor: default; }
+  .trad {
+    display: none; font-size: 1.08rem; line-height: 1.65;
+    border-left: 3px solid var(--accent-2); padding: .2rem 0 .2rem 1rem; color: #2a241e;
+  }
+  .trad.show { display: block; }
+  .theme { margin-top: 1.1rem; font-size: .85rem; color: var(--muted); font-family: system-ui, sans-serif; }
+  button.btn.pin { border-color: var(--accent-2); background: var(--accent-2); }
+  button.btn.pin.on { background: #1e3a30; }
+  .drawer-bg {
+    display: none; position: fixed; inset: 0; background: rgba(28,22,18,.35); z-index: 20;
+  }
+  .drawer-bg.open { display: block; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw);
+    background: var(--panel); border-left: 1px solid var(--line); z-index: 21;
+    transform: translateX(105%); transition: transform .2s ease; display: flex; flex-direction: column;
+    font-family: system-ui, sans-serif;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer header.dh { padding: 1rem 1.1rem .7rem; border-bottom: 1px solid var(--line); }
+  .drawer h2 { margin: 0; font-size: 1.1rem; font-family: Georgia, serif; }
+  .drawer .count { color: var(--muted); font-size: .8rem; }
+  .drawer .body { overflow: auto; padding: .7rem 1.1rem 1.4rem; flex: 1; }
+  .pin-item {
+    border: 1px solid var(--line); border-radius: 6px; padding: .65rem .7rem; margin-bottom: .55rem; background: #fff;
+  }
+  .pin-item .k { font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .pin-item p { margin: .25rem 0; font-size: .9rem; line-height: 1.4; font-family: Georgia, serif; }
+  .pin-item .meta { font-size: .75rem; color: var(--muted); }
+  .pin-item .row { display: flex; justify-content: space-between; gap: .4rem; align-items: center; }
+  .pin-item button { font-size: .75rem; }
+  .toast {
+    position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #f4efe6; padding: .5rem .8rem; border-radius: 4px;
+    font-family: system-ui, sans-serif; font-size: .85rem; z-index: 30; display: none;
+  }
+  .toast.show { display: block; }
+  @media (max-width: 800px) {
+    .filters { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: 1fr; }
+    .list { max-height: 38vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Citations des grands auteurs américains</h1>
+  <p>Choisissez un auteur, une année ou un ouvrage. Cliquez un mot : glose locale, puis fiche du dictionnaire en ligne. Épinglez une citation ou un mot dans la mémoire — exportable et publiable en ligne.</p>
+  <div class="hdr-actions">
+    <button class="btn ghost" type="button" id="btnMem">Mémoire (<span id="memCount">0</span>)</button>
+  </div>
+</header>
+<div class="filters">
+  <label>Auteur
+    <select id="auteur"><option value="">Tous les auteurs</option></select>
+  </label>
+  <label>Année de parution
+    <select id="annee"><option value="">Toutes les années</option></select>
+  </label>
+  <label>Ouvrage
+    <select id="livre"><option value="">Tous les ouvrages</option></select>
+  </label>
+</div>
+<div class="layout">
+  <aside class="list" id="list"></aside>
+  <main class="reader" id="reader"><p class="empty">Sélectionnez une citation dans la liste.</p></main>
+</div>
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer" aria-label="Mémoire épinglée">
+  <header class="dh">
+    <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem">
+      <div>
+        <h2>Mémoire</h2>
+        <div class="count" id="memSummary">Rien d’épinglé</div>
+      </div>
+      <button class="btn ghost" type="button" id="btnCloseMem">Fermer</button>
+    </div>
+  </header>
+  <div class="body">
+    <div class="actions" style="margin-bottom:.8rem">
+      <button class="btn" type="button" id="expJson">Export JSON</button>
+      <button class="btn ghost" type="button" id="expMd">Export Markdown</button>
+      <button class="btn ghost" type="button" id="expCsv">Export CSV</button>
+      <button class="btn ghost" type="button" id="copyJson">Copier JSON</button>
+      <button class="btn pin" type="button" id="pubOnline">Publier en ligne</button>
+      <button class="btn ghost" type="button" id="loadOnline">Charger URL</button>
+      <button class="btn ghost" type="button" id="impJson">Importer JSON</button>
+      <button class="btn ghost" type="button" id="clrMem">Vider</button>
+    </div>
+    <p class="hint" id="cloudHint" style="margin-top:0"></p>
+    <input type="file" id="impFile" accept="application/json,.json" hidden>
+    <div id="pinsQuotes"></div>
+    <div id="pinsWords"></div>
+  </div>
+</aside>
+<div class="toast" id="toast"></div>
+<script>
+const DATA = [{"id": 0, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "You don't know about me without you have read a book by the name of The Adventures of Tom Sawyer; but that ain't no matter. That book was made by Mr. Mark Twain, and he told the truth, mainly. There was things which he stretched, but mainly he told the truth.", "traduction": "Vous ne savez rien de moi si vous n'avez pas lu un livre intitulé Les Aventures de Tom Sawyer ; mais peu importe. Ce livre a été écrit par M. Mark Twain, et il a dit la vérité, pour l'essentiel. Il y a des choses qu'il a un peu arrangées, mais pour l'essentiel il a dit la vérité.", "livre": "Adventures of Huckleberry Finn", "annee": 1885, "theme": "Vérité, fiction et narration"}, {"id": 1, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "We said there warn't no home like a raft, after all. Other places do seem so cramped up and smothery, but a raft don't. You feel mighty free and easy and comfortable on a raft.", "traduction": "On se disait qu'il n'y avait pas de foyer comparable à un radeau, après tout. Les autres endroits paraissent si étroits et étouffants, mais pas un radeau. On se sent terriblement libre, à l'aise et bien sur un radeau.", "livre": "Adventures of Huckleberry Finn", "annee": 1885, "theme": "Liberté et nature"}, {"id": 2, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "All right, then, I'll go to hell.", "traduction": "Très bien, alors, j'irai en enfer.", "livre": "Adventures of Huckleberry Finn", "annee": 1885, "theme": "Conscience morale contre la société esclavagiste"}, {"id": 3, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "But I reckon I got to light out for the Territory ahead of the rest, because Aunt Sally she's going to adopt me and sivilize me, and I can't stand it. I been there before.", "traduction": "Mais je crois que je dois filer vers le Territoire avant les autres, parce que tante Sally va m'adopter et me « siviliser », et je ne peux pas le supporter. J'y suis déjà passé.", "livre": "Adventures of Huckleberry Finn", "annee": 1885, "theme": "Civilisation contre liberté individuelle"}, {"id": 4, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "He had discovered a great law of human action, without knowing it — namely, that in order to make a man or a boy covet a thing, it is only necessary to make the thing difficult to obtain.", "traduction": "Il avait découvert une grande loi de l'action humaine, sans le savoir — à savoir que, pour qu'un homme ou un garçon convoite une chose, il suffit de rendre cette chose difficile à obtenir.", "livre": "The Adventures of Tom Sawyer", "annee": 1876, "theme": "Désir, psychologie et ruse"}, {"id": 5, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "Work consists of whatever a body is obliged to do, and Play consists of whatever a body is not obliged to do.", "traduction": "Le travail consiste en tout ce qu'un corps est obligé de faire, et le jeu consiste en tout ce qu'un corps n'est pas obligé de faire.", "livre": "The Adventures of Tom Sawyer", "annee": 1876, "theme": "Travail, jeu et contrainte sociale"}, {"id": 6, "auteur": "Mark Twain", "nom_complet": "Samuel Langhorne Clemens", "dates": "1835–1910", "justification": "Fondateur du roman américain moderne par la langue parlée, l'ironie et le regard sur l'esclavage, la frontière et l'hypocrisie sociale. Hemingway a pu écrire que toute la littérature américaine moderne sort d'un seul livre : Huckleberry Finn.", "quintette": "Quintette 1", "texte": "THERE comes a time in every rightly-constructed boy's life when he has a raging desire to go somewhere and dig for hidden treasure.", "traduction": "Il vient un moment, dans la vie de tout garçon bien constitué, où il éprouve un désir furieux d'aller quelque part creuser pour trouver un trésor caché.", "livre": "The Adventures of Tom Sawyer", "annee": 1876, "theme": "Enfance, aventure et imagination"}, {"id": 7, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "Call me Ishmael.", "traduction": "Appelez-moi Ishmaël.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Identité et narration"}, {"id": 8, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people's hats off—then, I account it high time to get to sea as soon as I can.", "traduction": "Chaque fois que je me sens devenir sombre autour de la bouche ; chaque fois que c'est un novembre humide et pluvieux dans mon âme ; chaque fois que je m'arrête malgré moi devant les entrepôts de cercueils, et que je ferme la marche de chaque enterrement que je rencontre ; et surtout chaque fois que mes humeurs noires prennent sur moi un tel empire qu'il me faut un ferme principe moral pour m'empêcher de descendre exprès dans la rue et d'envoyer méthodiquement valser les chapeaux des passants — alors je juge qu'il est grand temps de prendre la mer dès que je le peux.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Mélancolie et vocation de la mer"}, {"id": 9, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "Better sleep with a sober cannibal than a drunken Christian.", "traduction": "Mieux vaut dormir avec un cannibale à jeun qu'avec un chrétien ivre.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Préjugés, camaraderie et religion"}, {"id": 10, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "It is not down on any map; true places never are.", "traduction": "Cela n'est inscrit sur aucune carte ; les vrais lieux ne le sont jamais.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Vérité, cartographie et mystère"}, {"id": 11, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "Talk not to me of blasphemy, man; I'd strike the sun if it insulted me.", "traduction": "Ne me parle pas de blasphème, l'ami ; je frapperais le soleil s'il m'insultait.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Orgueil, défi et révolte contre Dieu"}, {"id": 12, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "All visible objects, man, are but as pasteboard masks. But in each event—in the living act, the undoubted deed—there, some unknown but still reasoning thing puts forth the mouldings of its features from behind the unreasoning mask. If man will strike, strike through the mask!", "traduction": "Tous les objets visibles, l'ami, ne sont que des masques de carton. Mais dans chaque événement — dans l'acte vivant, le geste indubitable — là, quelque chose d'inconnu mais encore pensant fait saillir les contours de ses traits derrière le masque sans raison. Si l'homme veut frapper, qu'il frappe à travers le masque !", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Métaphysique, apparence et mal"}, {"id": 13, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "Towards thee I roll, thou all-destroying but unconquering whale; to the last I grapple with thee; from hell's heart I stab at thee; for hate's sake I spit my last breath at thee.", "traduction": "Vers toi je roule, toi, baleine qui tout détruit mais que rien ne conquiert ; jusqu'au bout je lutte avec toi ; du cœur de l'enfer je te frappe ; pour l'amour de la haine je crache mon dernier souffle sur toi.", "livre": "Moby-Dick; or, The Whale", "annee": 1851, "theme": "Obsession, haine et destin"}, {"id": 14, "auteur": "Herman Melville", "nom_complet": "Herman Melville", "dates": "1819–1891", "justification": "Auteur de Moby-Dick, souvent cité comme le roman américain le plus ambitieux : cosmologie, obsession, démocratie du navire, mal et connaissance. Figure centrale du canon savant.", "quintette": "Quintette 1", "texte": "I would prefer not to.", "traduction": "Je préférerais ne pas.", "livre": "Bartleby, the Scrivener", "annee": 1853, "theme": "Refus, aliénation et travail moderne"}, {"id": 15, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "Clocks slay time. He said time is dead as long as it is being clicked off by little wheels; only when the clock stops does time come to life.", "traduction": "Les horloges tuent le temps. Il disait que le temps est mort tant qu'on le découpe à petits clics de roues ; ce n'est que lorsque l'horloge s'arrête que le temps revient à la vie.", "livre": "The Sound and the Fury", "annee": 1929, "theme": "Temps, mémoire et mort"}, {"id": 16, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "Because no battle is ever won he said. They are not even fought. The field only reveals to man his own folly and despair, and victory is an illusion of philosophers and fools.", "traduction": "Parce qu'aucune bataille n'est jamais gagnée, disait-il. Elles ne sont même pas livrées. Le champ ne révèle à l'homme que sa propre folie et son désespoir, et la victoire est une illusion de philosophes et d'imbéciles.", "livre": "The Sound and the Fury", "annee": 1929, "theme": "Défaite, illusion et condition humaine"}, {"id": 17, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "How often have I lain beneath rain on a strange roof, thinking of home.", "traduction": "Combien de fois me suis-je étendu sous la pluie, sur un toit étranger, en pensant à la maison.", "livre": "As I Lay Dying", "annee": 1930, "theme": "Exil, foyer et nostalgie"}, {"id": 18, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "The reason for living was to get ready to stay dead a long time.", "traduction": "La raison de vivre était de se préparer à rester mort longtemps.", "livre": "As I Lay Dying", "annee": 1930, "theme": "Mort, existence et stoïcisme rural"}, {"id": 19, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "People to whom sin is just a matter of words, to them salvation is just words too.", "traduction": "Les gens pour qui le péché n'est qu'une affaire de mots, pour eux le salut n'est aussi que des mots.", "livre": "As I Lay Dying", "annee": 1930, "theme": "Péché, langage et foi"}, {"id": 20, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "Memory believes before knowing remembers. Believes longer than recollects, longer than knowing even wonders.", "traduction": "La mémoire croit avant que le savoir se souvienne. Elle croit plus longtemps qu'elle ne se rappelle, plus longtemps même que le savoir ne s'étonne.", "livre": "Light in August", "annee": 1932, "theme": "Mémoire, croyance et identité"}, {"id": 21, "auteur": "William Faulkner", "nom_complet": "William Cuthbert Faulkner", "dates": "1897–1962", "justification": "Prix Nobel 1949. Inventeur d'un Sud mythique (Yoknapatawpha) et d'une prose qui tord le temps, la mémoire et la faute collective. Souvent le romancier américain le plus étudié au XXe siècle.", "quintette": "Quintette 1", "texte": "The past is never dead. It's not even past.", "traduction": "Le passé n'est jamais mort. Il n'est même pas passé.", "livre": "Requiem for a Nun", "annee": 1951, "theme": "Histoire, héritage et Sud"}, {"id": 22, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "You can't get away from yourself by moving from one place to another.", "traduction": "On ne peut pas se fuir soi-même en changeant de lieu.", "livre": "The Sun Also Rises", "annee": 1926, "theme": "Fuite, identité et génération perdue"}, {"id": 23, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "I did not care what it was all about. All I wanted to know was how to live in it. Maybe if you found out how to live in it you learned from that what it was all about.", "traduction": "Je ne me souciais pas de ce que tout cela voulait dire. Je voulais seulement savoir comment y vivre. Peut-être qu'en découvrant comment y vivre, on apprenait par là ce que tout cela voulait dire.", "livre": "The Sun Also Rises", "annee": 1926, "theme": "Sens de la vie et conduite"}, {"id": 24, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "The world breaks everyone and afterward many are strong at the broken places. But those that will not break it kills. It kills the very good and the very gentle and the very brave impartially. If you are none of these you can be sure it will kill you too but there will be no special hurry.", "traduction": "Le monde brise tout le monde et ensuite beaucoup sont forts aux endroits brisés. Mais ceux qui ne veulent pas se briser, il les tue. Il tue les très bons, les très doux et les très braves, sans partialité. Si vous n'êtes rien de tout cela, vous pouvez être sûr qu'il vous tuera aussi, mais sans se presser particulièrement.", "livre": "A Farewell to Arms", "annee": 1929, "theme": "Guerre, blessure et destin"}, {"id": 25, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "But life isn't hard to manage when you've nothing to lose.", "traduction": "Mais la vie n'est pas difficile à mener quand on n'a plus rien à perdre.", "livre": "A Farewell to Arms", "annee": 1929, "theme": "Perte, amour et détachement"}, {"id": 26, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "The world is a fine place and worth the fighting for and I hate very much to leave it.", "traduction": "Le monde est un bel endroit et il vaut la peine qu'on se batte pour lui, et je déteste beaucoup devoir le quitter.", "livre": "For Whom the Bell Tolls", "annee": 1940, "theme": "Guerre civile, engagement et amour de la vie"}, {"id": 27, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "But man is not made for defeat. A man can be destroyed but not defeated.", "traduction": "Mais l'homme n'est pas fait pour la défaite. Un homme peut être détruit, mais pas vaincu.", "livre": "The Old Man and the Sea", "annee": 1952, "theme": "Courage, dignité et lutte contre la nature"}, {"id": 28, "auteur": "Ernest Hemingway", "nom_complet": "Ernest Miller Hemingway", "dates": "1899–1961", "justification": "Prix Nobel 1954. A transformé la prose américaine par la phrase courte, l'iceberg theory, et une éthique de l'épreuve (guerre, mer, amour). Influence stylistique immense au XXe siècle.", "quintette": "Quintette 1", "texte": "Now is no time to think of what you do not have. Think of what you can do with what there is.", "traduction": "Ce n'est pas le moment de penser à ce que l'on n'a pas. Pense à ce que tu peux faire avec ce qu'il y a.", "livre": "The Old Man and the Sea", "annee": 1952, "theme": "Résilience et présent"}, {"id": 29, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "In my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since. \"Whenever you feel like criticizing any one,\" he told me, \"just remember that all the people in this world haven't had the advantages that you've had.\"", "traduction": "Dans mes années plus jeunes et plus vulnérables, mon père me donna un conseil que je retourne dans mon esprit depuis lors. « Chaque fois que tu as envie de critiquer quelqu'un, me dit-il, souviens-toi seulement que toutes les personnes de ce monde n'ont pas eu les avantages que tu as eus. »", "livre": "The Great Gatsby", "annee": 1925, "theme": "Jugement moral et privilège"}, {"id": 30, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "I'm glad it's a girl. And I hope she'll be a fool—that's the best thing a girl can be in this world, a beautiful little fool.", "traduction": "Je suis contente que ce soit une fille. Et j'espère qu'elle sera une sotte — c'est la meilleure chose qu'une fille puisse être dans ce monde, une belle petite sotte.", "livre": "The Great Gatsby", "annee": 1925, "theme": "Genre, cynisme et société"}, {"id": 31, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "This is a valley of ashes—a fantastic farm where ashes grow like wheat into ridges and hills and grotesque gardens; where ashes take the forms of houses and chimneys and rising smoke and, finally, with a transcendent effort, of men who move dimly and already crumbling through the powdery air.", "traduction": "C'est une vallée de cendres — une ferme fantastique où les cendres poussent comme le blé en crêtes, en collines et en jardins grotesques ; où les cendres prennent la forme de maisons et de cheminées et de fumée montante et, enfin, par un effort transcendant, d'hommes qui se meuvent confusément, déjà en train de s'effriter dans l'air poudreux.", "livre": "The Great Gatsby", "annee": 1925, "theme": "Déchet industriel, classe et désenchantement"}, {"id": 32, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "In his blue gardens men and girls came and went like moths among the whisperings and the champagne and the stars.", "traduction": "Dans ses jardins bleus, hommes et jeunes filles allaient et venaient comme des papillons de nuit parmi les chuchotements, le champagne et les étoiles.", "livre": "The Great Gatsby", "annee": 1925, "theme": "Faste, fête et vacuité"}, {"id": 33, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "Gatsby believed in the green light, the orgastic future that year by year recedes before us. It eluded us then, but that's no matter—tomorrow we will run faster, stretch out our arms farther. . . . And one fine morning— So we beat on, boats against the current, borne back ceaselessly into the past.", "traduction": "Gatsby croyait à la lumière verte, à l'avenir orgastique qui, d'année en année, recule devant nous. Elle nous échappa alors, mais peu importe — demain nous courrons plus vite, nous tendrons les bras plus loin. … Et un beau matin — Ainsi nous avançons, bateaux contre le courant, sans cesse ramenés vers le passé.", "livre": "The Great Gatsby", "annee": 1925, "theme": "Rêve américain, temps et nostalgie"}, {"id": 34, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "They slipped briskly into an intimacy from which they never recovered.", "traduction": "Ils glissèrent vivement dans une intimité dont ils ne se relevèrent jamais.", "livre": "This Side of Paradise", "annee": 1920, "theme": "Amour, jeunesse et désillusion"}, {"id": 35, "auteur": "F. Scott Fitzgerald", "nom_complet": "Francis Scott Key Fitzgerald", "dates": "1896–1940", "justification": "Chroniqueur de l'âge du jazz et de l'échec du rêve américain. The Great Gatsby reste l'un des romans les plus lus, enseignés et cités des États-Unis.", "quintette": "Quintette 1", "texte": "I don't ask you to love me always like this, but I ask you to remember. Somewhere inside me there'll always be the person I am to-night.", "traduction": "Je ne te demande pas de m'aimer toujours comme cela, mais je te demande de te souvenir. Quelque part en moi il y aura toujours la personne que je suis ce soir.", "livre": "Tender Is the Night", "annee": 1934, "theme": "Amour, mémoire et déclin"}, {"id": 36, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore— While I nodded, nearly napping, suddenly there came a tapping, As of some one gently rapping, rapping at my chamber door.", "traduction": "Une fois, en une minuit morne, tandis que je méditais, faible et las, Sur maint volume bizarre et curieux d'un savoir oublié — Tandis que je dodelinais, presque assoupi, soudain vint un tapotement, Comme de quelqu'un frappant doucement, frappant à la porte de ma chambre.", "livre": "The Raven", "annee": 1845, "theme": "Deuil, insomnia et irruption du surnaturel"}, {"id": 37, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "Deep into that darkness peering, long I stood there wondering, fearing, Doubting, dreaming dreams no mortal ever dared to dream before.", "traduction": "Plongeant le regard au fond de cette ténèbre, longtemps je restai là, m'étonnant, craignant, Doutant, rêvant des rêves qu'aucun mortel n'avait jamais osé rêver auparavant.", "livre": "The Raven", "annee": 1845, "theme": "Ténèbres, rêve et terreur"}, {"id": 38, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "Quoth the Raven, \"Nevermore.\"", "traduction": "Dit le Corbeau : « Jamais plus. »", "livre": "The Raven", "annee": 1845, "theme": "Irrémédiable, répétition et perte"}, {"id": 39, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "True!—nervous—very, very dreadfully nervous I had been and am; but why will you say that I am mad? The disease had sharpened my senses—not destroyed—not dulled them. Above all was the sense of hearing acute.", "traduction": "C'est vrai ! — nerveux — très, très affreusement nerveux j'avais été et je le suis ; mais pourquoi direz-vous que je suis fou ? La maladie avait aiguisé mes sens — non détruit — non émoussé. Par-dessus tout, le sens de l'ouïe était aigu.", "livre": "The Tell-Tale Heart", "annee": 1843, "theme": "Folie, culpabilité et perceptivité"}, {"id": 40, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "There was an iciness, a sinking, a sickening of the heart—an unredeemed dreariness of thought which no goading of the imagination could torture into aught of the sublime. What was it—I paused to think—what was it that so unnerved me in the contemplation of the House of Usher?", "traduction": "Il y avait une glaciation, un affaissement, un haut-le-cœur — une morosité irrémédiable de la pensée qu'aucune stimulation de l'imagination ne pouvait torturer jusqu'à quelque chose du sublime. Qu'était-ce — je m'arrêtai pour réfléchir — qu'était-ce qui me dérangeait tant dans la contemplation de la Maison Usher ?", "livre": "The Fall of the House of Usher", "annee": 1839, "theme": "Décadence, maison et psyché"}, {"id": 41, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "The boundaries which divide Life from Death are at best shadowy and vague. Who shall say where the one ends, and where the other begins?", "traduction": "Les frontières qui séparent la Vie de la Mort sont au mieux ombreuses et vagues. Qui dira où l'une finit, et où l'autre commence ?", "livre": "The Premature Burial", "annee": 1844, "theme": "Vie, mort et seuil"}, {"id": 42, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "All that we see or seem Is but a dream within a dream.", "traduction": "Tout ce que nous voyons ou semblons n'est qu'un rêve au-dedans d'un rêve.", "livre": "A Dream Within a Dream", "annee": 1849, "theme": "Illusion, temps et réalité"}, {"id": 43, "auteur": "Edgar Allan Poe", "nom_complet": "Edgar Allan Poe", "dates": "1809–1849", "justification": "Inventeur américain de la nouvelle moderne, du récit policier et d'une poétique de l'effet. Influence mondiale sur le fantastique, le gothique et le roman d'enquête.", "quintette": "Quintette 2", "texte": "We loved with a love that was more than love.", "traduction": "Nous aimâmes d'un amour qui était plus que l'amour.", "livre": "Annabel Lee", "annee": 1849, "theme": "Amour, mort et idéalisation"}, {"id": 44, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "I celebrate myself, and sing myself, And what I assume you shall assume, For every atom belonging to me as good belongs to you.", "traduction": "Je me célèbre moi-même, et je me chante moi-même, Et ce que je suppose, tu le supposeras, Car chaque atome qui m'appartient t'appartient aussi bien.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Soi, égalité et corps démocratique"}, {"id": 45, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "I loafe and invite my soul, I lean and loafe at my ease observing a spear of summer grass.", "traduction": "Je flâne et j'invite mon âme, Je m'accoude et je flâne à mon aise, observant un brin d'herbe d'été.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Oisiveté contemplative et nature"}, {"id": 46, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "You shall no longer take things at second or third hand, nor look through the eyes of the dead, nor feed on the spectres in books, You shall not look through my eyes either, nor take things from me, You shall listen to all sides and filter them from your self.", "traduction": "Tu ne prendras plus les choses de seconde ou de troisième main, ni ne regarderas par les yeux des morts, ni ne te nourriras des spectres des livres, Tu ne regarderas pas non plus par mes yeux, ni ne prendras les choses de moi, Tu écouteras tous les côtés et tu les filtreras à partir de toi-même.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Expérience directe et autonomie"}, {"id": 47, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "I believe a leaf of grass is no less than the journey-work of the stars.", "traduction": "Je crois qu'une feuille d'herbe n'est pas moindre que l'ouvrage de voyage des étoiles.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Nature, cosmos et égalité des êtres"}, {"id": 48, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "I too am not a bit tamed, I too am untranslatable, I sound my barbaric yawp over the roofs of the world.", "traduction": "Moi aussi je ne suis pas un peu apprivoisé, moi aussi je suis intraduisible, Je lance mon cri barbare par-dessus les toits du monde.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Sauvage, voix et indomptable"}, {"id": 49, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "I bequeath myself to the dirt to grow from the grass I love, If you want me again look for me under your boot-soles.", "traduction": "Je me lègue à la terre pour pousser de l'herbe que j'aime, Si tu me veux encore, cherche-moi sous les semelles de tes bottes.", "livre": "Leaves of Grass (Song of Myself)", "annee": 1855, "theme": "Mort, cycle et présence"}, {"id": 50, "auteur": "Walt Whitman", "nom_complet": "Walter Whitman", "dates": "1819–1892", "justification": "Poète fondateur d'une voix américaine démocratique, corporelle et expansive. Leaves of Grass refonde le vers libre et une idée d'Amérique inclusive.", "quintette": "Quintette 2", "texte": "O Captain! my Captain! our fearful trip is done, The ship has weather'd every rack, the prize we sought is won.", "traduction": "Ô Capitaine ! mon Capitaine ! notre terrible voyage est fini, Le navire a essuyé toutes les bourrasques, le prix que nous cherchions est gagné.", "livre": "Sequel to Drum-Taps (O Captain! My Captain!)", "annee": 1865, "theme": "Deuil national et Lincoln"}, {"id": 51, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "Because I could not stop for Death — He kindly stopped for me — The Carriage held but just Ourselves — And Immortality.", "traduction": "Parce que je ne pouvais m'arrêter pour la Mort — Il s'arrêta gentiment pour moi — La calèche ne contenait que Nous-mêmes — Et l'Immortalité.", "livre": "Poems (Because I could not stop for Death)", "annee": 1890, "theme": "Mort, civilité et éternité"}, {"id": 52, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "I'm Nobody! Who are you? Are you — Nobody — too? Then there's a pair of us! Don't tell! they'd advertise — you know!", "traduction": "Je ne suis Personne ! Qui es-tu ? Es-tu — Personne — toi aussi ? Alors nous faisons la paire ! Ne le dis pas ! ils feraient de la publicité — tu sais !", "livre": "Poems: Second Series (I'm Nobody! Who are you?)", "annee": 1891, "theme": "Anonymat, intimité et publicité"}, {"id": 53, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "\"Hope\" is the thing with feathers — That perches in the soul — And sings the tune without the words — And never stops — at all —", "traduction": "« L'espoir » est la chose à plumes — Qui se perche dans l'âme — Et chante l'air sans les paroles — Et ne s'arrête jamais — du tout —", "livre": "Poems: Second Series (Hope is the thing with feathers)", "annee": 1891, "theme": "Espérance et endurance intérieure"}, {"id": 54, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "The Soul selects her own Society — Then — shuts the Door — To her divine Majority — Present no more —", "traduction": "L'Âme choisit sa propre Société — Puis — ferme la Porte — À sa Majority divine — Plus présente —", "livre": "Poems (The Soul selects her own Society)", "annee": 1890, "theme": "Choix, solitude et souveraineté du moi"}, {"id": 55, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "Success is counted sweetest By those who ne'er succeed. To comprehend a nectar Requires sorest need.", "traduction": "Le succès est compté le plus doux Par ceux qui jamais ne réussissent. Comprendre un nectar Exige le besoin le plus cuisant.", "livre": "Poems (Success is counted sweetest)", "annee": 1890, "theme": "Échec, désir et connaissance"}, {"id": 56, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "I heard a Fly buzz — when I died — The Stillness in the Room Was like the Stillness in the Air — Between the Heaves of Storm —", "traduction": "J'entendis une Mouche bourdonner — quand je mourus — Le Silence dans la Chambre Était comme le Silence dans l'Air — Entre les Souffles de l'Orage —", "livre": "Poems: Third Series (I heard a Fly buzz — when I died)", "annee": 1896, "theme": "Agonie, trivial et sublime"}, {"id": 57, "auteur": "Emily Dickinson", "nom_complet": "Emily Elizabeth Dickinson", "dates": "1830–1886", "justification": "Poète radicale de l'intériorité, de la mort, de la foi et de la forme brève. Presque inédite de son vivant, elle est devenue l'une des voix les plus étudiées de la littérature américaine.", "quintette": "Quintette 2", "texte": "This is my letter to the World That never wrote to Me — The simple News that Nature told — With tender Majesty.", "traduction": "Ceci est ma lettre au Monde Qui jamais ne m'écrivit — La simple Nouvelle que la Nature dit — Avec une tendre Majesté.", "livre": "Poems (This is my letter to the World)", "annee": 1890, "theme": "Poésie, nature et adresse au monde"}, {"id": 58, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "Maybe ever'body in the whole damn world is scared of each other.", "traduction": "Peut-être que tout le monde dans ce satané monde a peur les uns des autres.", "livre": "Of Mice and Men", "annee": 1937, "theme": "Peur, solitude et fraternité"}, {"id": 59, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "There ain't no sin and there ain't no virtue. There's just stuff people do.", "traduction": "Il n'y a pas de péché et il n'y a pas de vertu. Il n'y a que des trucs que les gens font.", "livre": "The Grapes of Wrath", "annee": 1939, "theme": "Morale populaire et religion"}, {"id": 60, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "The bank is something more than men, I tell you. It's the monster. Men made it, but they can't control it.", "traduction": "La banque est quelque chose de plus que des hommes, je te le dis. C'est le monstre. Les hommes l'ont faite, mais ils ne peuvent pas la contrôler.", "livre": "The Grapes of Wrath", "annee": 1939, "theme": "Capital, dépossession et système"}, {"id": 61, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "How can we live without our lives? How will we know it's us without our past?", "traduction": "Comment vivre sans nos vies ? Comment saurons-nous que c'est nous sans notre passé ?", "livre": "The Grapes of Wrath", "annee": 1939, "theme": "Exil, mémoire et identité"}, {"id": 62, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "In the souls of the people the grapes of wrath are filling and growing heavy, growing heavy for the vintage.", "traduction": "Dans les âmes du peuple les raisins de la colère se remplissent et s'alourdissent, s'alourdissent pour la vendange.", "livre": "The Grapes of Wrath", "annee": 1939, "theme": "Colère collective et justice"}, {"id": 63, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "And now that you don't have to be perfect, you can be good.", "traduction": "Et maintenant que tu n'as plus à être parfait, tu peux être bon.", "livre": "East of Eden", "annee": 1952, "theme": "Liberté morale et bien"}, {"id": 64, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "But the Hebrew word, the word timshel—'Thou mayest'—that gives a choice. It might be the most important word in the world. That says the way is open.", "traduction": "Mais le mot hébreu, le mot timshel — « Tu peux » — cela donne un choix. C'est peut-être le mot le plus important du monde. Cela dit que la voie est ouverte.", "livre": "East of Eden", "annee": 1952, "theme": "Libre arbitre, bien et mal"}, {"id": 65, "auteur": "John Steinbeck", "nom_complet": "John Ernst Steinbeck Jr.", "dates": "1902–1968", "justification": "Prix Nobel 1962. Romanciel de la terre californienne, des pauvres, de la Dépression et du bien et du mal (timshel). Voix sociale majeure du XXe siècle américain.", "quintette": "Quintette 2", "texte": "All great and precious things are lonely.", "traduction": "Toutes les choses grandes et précieuses sont solitaires.", "livre": "East of Eden", "annee": 1952, "theme": "Grandeur et solitude"}, {"id": 66, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "124 was spiteful. Full of a baby's venom.", "traduction": "124 était rancunière. Pleine du venin d'un bébé.", "livre": "Beloved", "annee": 1987, "theme": "Maison hantée, infanticide et passé"}, {"id": 67, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "Freeing yourself was one thing; claiming ownership of that freed self was another.", "traduction": "Se libérer était une chose ; revendiquer la propriété de ce soi libéré en était une autre.", "livre": "Beloved", "annee": 1987, "theme": "Liberté et possession de soi"}, {"id": 68, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "Anything dead coming back to life hurts.", "traduction": "Tout ce qui est mort et qui revient à la vie fait mal.", "livre": "Beloved", "annee": 1987, "theme": "Résurrection, douleur et mémoire"}, {"id": 69, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "To get to a place where you could love anything you chose—not to need permission for desire—well now, that was freedom.", "traduction": "Parvenir à un endroit où l'on pouvait aimer n'importe quoi que l'on choisissait — ne pas avoir besoin de permission pour le désir — eh bien voilà, c'était la liberté.", "livre": "Beloved", "annee": 1987, "theme": "Désir, amour et liberté"}, {"id": 70, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "Love is never any better than the lover. Wicked people love wickedly, violent people love violently, weak people love weakly, stupid people love stupidly.", "traduction": "L'amour n'est jamais meilleur que l'amant. Les méchants aiment méchamment, les violents aiment violemment, les faibles aiment faiblement, les stupides aiment stupidement.", "livre": "The Bluest Eye", "annee": 1970, "theme": "Amour, caractère et violence"}, {"id": 71, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "You wanna fly, you got to give up the shit that weighs you down.", "traduction": "Si tu veux voler, il faut lâcher la merde qui te tire vers le bas.", "livre": "Song of Solomon", "annee": 1977, "theme": "Envol, fardeau et émancipation"}, {"id": 72, "auteur": "Toni Morrison", "nom_complet": "Chloe Anthony Wofford Morrison", "dates": "1931–2019", "justification": "Prix Nobel 1993. Romancière de l'esclavage, de la mémoire incarnée, de la beauté et de la langue noire américaine. Beloved s'est imposé comme un pilier du canon contemporain.", "quintette": "Quintette 2", "texte": "What difference do it make if the thing you scared of is real or not?", "traduction": "Quelle différence ça fait, que la chose dont tu as peur soit réelle ou non ?", "livre": "Song of Solomon", "annee": 1977, "theme": "Peur et réel"}];
+const LEX = {"a": "un / une", "about": "au sujet de ; autour de", "above": "au-dessus", "account": "juger / considérer", "act": "acte", "action": "action", "acute": "aigu", "adopt": "adopter", "advantages": "avantages", "adventures": "aventures", "advertise": "faire de la publicité", "advice": "conseil", "after": "après", "afterward": "ensuite", "again": "encore", "against": "contre", "ahead": "en avant", "ain't": "n'est pas / n'a pas (populaire)", "air": "air", "all": "tout / tous", "already": "déjà", "always": "toujours", "am": "suis", "among": "parmi", "an": "un / une", "and": "et", "another": "un autre", "any": "n'importe quel", "anything": "n'importe quoi", "are": "sont / es / êtes", "arms": "bras", "as": "comme / alors que", "ashes": "cendres", "ask": "demander", "assume": "supposer", "at": "à", "atom": "atome", "aught": "quoi que ce soit", "aunt": "tante", "away": "loin", "baby's": "d'un bébé", "back": "en arrière / dos", "bank": "banque", "barbaric": "barbare", "battle": "bataille", "be": "être", "beat": "avancer / battre", "beautiful": "beau / belle", "because": "parce que", "been": "été", "before": "avant / devant", "begins": "commence", "behind": "derrière", "being": "étant", "believe": "croire", "believed": "croyait", "believes": "croit", "belonging": "appartenant", "belongs": "appartient", "beneath": "sous", "bequeath": "léguer", "best": "meilleur", "better": "meilleur / mieux", "between": "entre", "bit": "un peu", "blasphemy": "blasphème", "blue": "bleu", "boats": "bateaux", "body": "corps", "book": "livre", "books": "livres", "boot": "botte", "borne": "porté / ramené", "boundaries": "frontières", "boy": "garçon", "boy's": "de garçon", "brave": "brave", "break": "briser", "breaks": "brise", "breath": "souffle", "bringing": "amenant", "briskly": "vivement", "broken": "brisés", "but": "mais", "buzz": "bourdonner", "by": "par / de", "call": "appeler", "came": "vint / venaient", "can": "pouvoir", "can't": "ne peut pas", "cannibal": "cannibale", "captain": "capitaine", "care": "se soucier", "carriage": "calèche", "ceaselessly": "sans cesse", "celebrate": "célébrer", "chamber": "chambre", "champagne": "champagne", "chimneys": "cheminées", "choice": "choix", "chose": "choisissait", "christian": "chrétien", "claiming": "revendiquer", "clicked": "décliqué / cadencé", "clock": "horloge", "clocks": "horloges", "coffin": "cercueil", "come": "venir", "comes": "vient", "comfortable": "confortable", "coming": "venant", "comprehend": "comprendre", "consists": "consiste", "constructed": "constitué", "contemplation": "contemplation", "control": "contrôler", "could": "pouvait", "counted": "compté", "covet": "convoiter", "cramped": "à l'étroit", "criticizing": "critiquer", "crumbling": "s'effritant", "curious": "curieux", "current": "courant", "damn": "satané", "damp": "humide", "dared": "osa", "darkness": "ténèbres", "dead": "mort", "death": "mort", "deed": "geste / acte", "deep": "profond", "defeat": "défaite", "defeated": "vaincu", "deliberately": "exprès", "desire": "désir", "despair": "désespoir", "destroyed": "détruit", "destroying": "détruisant", "did": "fit / aux. passé", "died": "mourut", "difference": "différence", "difficult": "difficile", "dig": "creuser", "dimly": "confusément", "dirt": "terre / poussière", "discovered": "découvert", "disease": "maladie", "divide": "séparer", "divine": "divin", "do": "faire", "does": "fait", "don't": "ne … pas", "done": "fini", "door": "porte", "doubting": "doutant", "down": "en bas", "dreadfully": "affreusement", "dream": "rêve", "dreaming": "rêvant", "dreams": "rêves", "dreariness": "morosité", "dreary": "morne", "drizzly": "bruineux", "drunken": "ivre", "dulled": "émoussés", "each": "chaque", "ease": "aise", "easy": "facile", "effort": "effort", "either": "non plus", "eluded": "échappa", "ends": "finit", "especially": "surtout", "even": "même", "event": "événement", "ever": "jamais / toujours", "ever'body": "tout le monde (populaire)", "every": "chaque", "everyone": "tout le monde", "eyes": "yeux", "fantastic": "fantastique", "farm": "ferme", "farther": "plus loin", "faster": "plus vite", "father": "père", "fearful": "terrible", "fearing": "craignant", "feathers": "plumes", "features": "traits", "feed": "se nourrir", "feel": "sentir", "field": "champ", "fighting": "combat", "filling": "se remplissant", "filter": "filtrer", "finally": "enfin", "find": "trouver", "fine": "beau", "fly": "mouche / voler", "folly": "folie", "fool": "sot / sotte", "fools": "imbéciles", "for": "pour", "forgotten": "oublié", "forms": "formes", "forth": "en avant", "fought": "livrées", "found": "trouvé", "free": "libre", "freed": "libéré", "freedom": "liberté", "freeing": "libérer", "from": "de / depuis", "full": "plein", "funeral": "enterrement", "future": "avenir", "gardens": "jardins", "gatsby": "Gatsby", "gave": "donna", "gentle": "doux", "gently": "doucement", "get": "obtenir / aller", "girl": "fille", "girls": "jeunes filles", "give": "donner", "gives": "donne", "glad": "content", "go": "aller", "goading": "aiguillon", "going": "va", "good": "bon", "got": "ai / dois", "grapes": "raisins", "grapple": "lutter", "grass": "herbe", "great": "grand", "green": "vert", "grim": "sombre", "grotesque": "grotesque", "grow": "pousser", "growing": "devenant / croissant", "had": "avait", "hand": "main", "hard": "difficile", "has": "a", "hate": "haïr / haine", "hate's": "de la haine", "hats": "chapeaux", "have": "avoir", "haven't": "n'ont pas", "he": "il", "heard": "entendit", "hearing": "ouïe", "heart": "cœur", "heaves": "soulèvements", "heavy": "lourd", "hebrew": "hébreu", "held": "contenait", "hell": "enfer", "hell's": "de l'enfer", "her": "son / sa / elle", "hidden": "caché", "high": "haut / grand", "hills": "collines", "his": "son / sa", "home": "maison / foyer", "hope": "espoir / espérer", "house": "maison", "houses": "maisons", "how": "comment", "human": "humain", "hurry": "hâte", "hurts": "fait mal", "hypos": "humeurs noires (hypocondrie)", "i": "je", "i'd": "je … rais", "i'll": "je vais / je … rai", "i'm": "je suis", "i've": "j'ai", "iciness": "glace / glaciation", "if": "si", "illusion": "illusion", "imagination": "imagination", "immortality": "immortalité", "impartially": "sans partialité", "important": "important", "in": "dans", "inside": "à l'intérieur", "intimacy": "intimité", "into": "dans", "invite": "inviter", "involuntarily": "malgré soi", "is": "est", "isn't": "n'est pas", "ishmael": "Ishmaël", "it": "il / ce / le", "it's": "c'est", "just": "juste / seulement", "kindly": "gentiment", "kills": "tue", "knocking": "frappant / faisant tomber", "know": "savoir", "knowing": "savoir (gérondif)", "lain": "étendu", "last": "dernier", "law": "loi", "leaf": "feuille", "lean": "s'accouder", "learned": "appris", "leave": "quitter", "letter": "lettre", "life": "vie", "light": "lumière / filer", "like": "comme / aimer", "listen": "écouter", "little": "petit", "live": "vivre", "living": "vivant / vivre", "loafe": "flâner", "lonely": "solitaire", "long": "longtemps / long", "longer": "plus longtemps", "look": "regarder", "lore": "savoir légendaire", "lose": "perdre", "love": "amour / aimer", "loved": "aimâmes", "lover": "amant", "mad": "fou", "made": "fait / créé", "majority": "majorité", "man": "homme", "manage": "mener", "many": "beaucoup", "map": "carte", "masks": "masques", "matter": "importe / affaire", "mayest": "peux (archaïque)", "maybe": "peut-être", "me": "moi / me", "meet": "rencontrer", "memory": "mémoire", "men": "hommes", "methodically": "méthodiquement", "might": "pourrait", "mighty": "terriblement", "mind": "esprit", "midnight": "minuit", "monster": "monstre", "more": "plus", "morning": "matin", "mortal": "mortel", "most": "le plus", "moths": "papillons de nuit", "mouldings": "moulures / contours", "mouth": "bouche", "move": "se mouvoir", "moving": "en se déplaçant", "mr": "monsieur", "my": "mon / ma / mes", "myself": "moi-même", "name": "nom", "namely": "à savoir", "napping": "somnolant", "nature": "nature", "nearly": "presque", "necessary": "nécessaire", "nectar": "nectar", "need": "besoin", "ne'er": "jamais (poét.)", "nervous": "nerveux", "never": "jamais", "nevermore": "jamais plus", "news": "nouvelle", "no": "pas / non", "nobody": "personne", "nodded": "dodelinait", "none": "aucun", "nor": "ni", "not": "ne … pas", "nothing": "rien", "november": "novembre", "now": "maintenant", "objects": "objets", "obliged": "obligé", "obtain": "obtenir", "of": "de", "off": "de / loin", "often": "souvent", "on": "sur", "once": "une fois", "one": "un / on", "only": "seulement", "open": "ouvert", "or": "ou", "order": "afin de", "orgastic": "orgastique", "other": "autre", "our": "notre", "ourselves": "nous-mêmes", "out": "dehors / découvrir", "over": "sur / par-dessus", "own": "propre", "ownership": "propriété", "pair": "paire", "past": "passé", "pasteboard": "carton", "paused": "s'arrêta", "pausing": "s'arrêtant", "peering": "scrutant", "people": "gens", "people's": "des gens", "perches": "se perche", "perfect": "parfait", "permission": "permission", "person": "personne", "philosophers": "philosophes", "place": "lieu", "places": "endroits", "play": "jeu", "pondered": "méditais", "powdery": "poudreux", "precious": "précieux", "prefer": "préférer", "present": "présent", "prevent": "empêcher", "principle": "principe", "prize": "prix", "puts": "fait saillir / met", "quaint": "singulier", "quoth": "dit (archaïque)", "rack": "bourrasque / épreuve", "raft": "radeau", "raging": "furieux", "rain": "pluie", "rapping": "frappant", "raven": "corbeau", "read": "lu / lire", "ready": "prêt", "real": "réel", "rear": "arrière", "reason": "raison", "reasoning": "pensant / raisonnant", "recedes": "recule", "reckon": "croire / estimer", "recollects": "se rappelle", "recovered": "se relevèrent", "remember": "se souvenir", "remembers": "se souvient", "requires": "exige", "rest": "reste", "reveals": "révèle", "ridges": "crêtes", "right": "juste / bien", "rightly": "bien", "rising": "montante", "roll": "roule", "roof": "toit", "roofs": "toits", "room": "chambre", "run": "courir", "said": "dit", "sake": "pour l'amour de", "sally": "Sally", "salvation": "salut", "sawyer": "Sawyer", "say": "dire", "says": "dit", "scared": "effrayé", "sea": "mer", "second": "seconde", "see": "voir", "seem": "sembler", "selects": "choisit", "self": "soi", "sense": "sens", "senses": "sens", "shadowy": "ombreux", "shall": "tu … ras / devra", "sharpened": "aiguisé", "she'll": "elle sera", "she's": "elle va / elle est", "ship": "navire", "shit": "merde", "shuts": "ferme", "sickening": "écœurant", "sides": "côtés", "simple": "simple", "sin": "péché", "since": "depuis", "sing": "chanter", "sings": "chante", "sinking": "affaissement", "sivilize": "civiliser (orth. de Huck)", "slay": "tuer", "sleep": "dormir", "slipped": "glissèrent", "smoke": "fumée", "smothery": "étouffant", "so": "si / ainsi", "sober": "sobre / à jeun", "society": "société", "soles": "semelles", "some": "quelque", "something": "quelque chose", "somewhere": "quelque part", "soon": "bientôt", "sorest": "le plus cuisant", "sought": "cherchions", "soul": "âme", "souls": "âmes", "sound": "lancer / son", "spear": "brin / lance", "special": "particulier", "spectres": "spectres", "spit": "cracher", "spiteful": "rancunier", "stab": "frapper / poignarder", "stand": "supporter", "stars": "étoiles", "stay": "rester", "stepping": "entrant", "still": "encore", "stillness": "silence", "stood": "restai / me tins", "stop": "s'arrêter", "stopped": "s'arrêta", "stops": "s'arrête", "storm": "orage", "strange": "étranger", "street": "rue", "stretch": "tendre", "stretched": "exagéré", "strike": "frapper", "strong": "fort", "stuff": "trucs", "stupid": "stupide", "stupidly": "stupidement", "sublime": "sublime", "succeed": "réussir", "success": "succès", "such": "tel", "suddenly": "soudain", "summer": "été", "sun": "soleil", "sure": "sûr", "sweetest": "le plus doux", "take": "prendre", "talk": "parler", "tamed": "apprivoisé", "tapping": "tapotement", "tell": "dire / raconter", "tender": "tendre", "territory": "territoire", "than": "que", "that": "que / cela", "that's": "c'est", "the": "le / la / les", "thee": "toi (archaïque)", "them": "les / eux", "then": "alors", "there": "là / il y a", "there'll": "il y aura", "there's": "il y a", "these": "ceux-ci", "they": "ils", "they'd": "ils … raient", "thing": "chose", "things": "choses", "think": "penser", "thinking": "pensant", "third": "troisième", "this": "ceci / ce", "those": "ceux", "thou": "tu (archaïque)", "thought": "pensée", "through": "à travers", "time": "temps / moment", "timshel": "timshel (« tu peux », hébreu)", "to": "à / de", "told": "dit / raconta", "tom": "Tom", "tomorrow": "demain", "too": "aussi / trop", "torture": "torturer", "towards": "vers", "transcendent": "transcendant", "treasure": "trésor", "trip": "voyage", "true": "vrai", "truth": "vérité", "tune": "air (musique)", "turning": "retournant", "twain": "Twain", "unconquering": "invaincue", "under": "sous", "undoubted": "indubitable", "unknown": "inconnu", "unnerved": "ébranlait", "unreasoning": "sans raison", "unredeemed": "irrémédiable", "untranslatable": "intraduisible", "up": "en haut", "upon": "sur", "upper": "supérieur", "us": "nous", "usher": "Usher", "vague": "vague", "valley": "vallée", "venom": "venin", "very": "très", "victory": "victoire", "vintage": "vendange", "violent": "violent", "violently": "violemment", "virtue": "vertu", "visible": "visible", "volume": "volume", "vulnerable": "vulnérable", "wanna": "vouloir (familier)", "want": "vouloir", "wanted": "voulais", "warehouses": "entrepôts", "warn't": "n'était pas (populaire)", "was": "était", "way": "voie / manière", "we": "nous", "weak": "faible", "weakly": "faiblement", "weary": "las", "weather'd": "a essuyé (contraction)", "weighs": "pèse", "well": "eh bien", "went": "allaient", "whale": "baleine", "what": "ce que / quel", "whatever": "tout ce que", "wheat": "blé", "wheels": "roues", "when": "quand", "whenever": "chaque fois que", "where": "où", "which": "qui / lequel", "while": "tandis que", "whisperings": "chuchotements", "who": "qui", "whole": "tout entier", "whom": "à qui", "why": "pourquoi", "wicked": "méchant", "wickedly": "méchamment", "will": "va / vouloir", "with": "avec", "within": "au-dedans", "without": "sans", "won": "gagné(e)", "wondering": "s'étonnant", "wonders": "s'étonne", "word": "mot", "words": "mots / paroles", "work": "travail", "world": "monde", "worth": "valoir", "would": "voudrait", "wrath": "colère", "wrote": "écrivit", "yawp": "cri rauque", "year": "année", "years": "années", "you": "tu / vous", "you've": "tu as", "younger": "plus jeune", "your": "ton / votre", "yourself": "toi-même", "all-destroying": "qui tout détruit", "boot-soles": "semelles de bottes", "journey-work": "ouvrage de voyage", "rightly-constructed": "bien constitué", "to-night": "ce soir", "mark": "Mark"};
 
+const $auteur = document.getElementById("auteur");
+const $annee = document.getElementById("annee");
+const $livre = document.getElementById("livre");
+const $list = document.getElementById("list");
+const $reader = document.getElementById("reader");
+
+const auteurs = [...new Set(DATA.map(d => d.auteur))];
+const annees = [...new Set(DATA.map(d => d.annee))].sort((a,b)=>a-b);
+auteurs.forEach(a => { const o=document.createElement("option"); o.value=a; o.textContent=a; $auteur.appendChild(o); });
+annees.forEach(a => { const o=document.createElement("option"); o.value=a; o.textContent=a; $annee.appendChild(o); });
+
+function livresFor() {
+  const a = $auteur.value, y = $annee.value;
+  return [...new Set(DATA.filter(d => (!a || d.auteur===a) && (!y || String(d.annee)===y)).map(d => d.livre))].sort();
+}
+function refillLivres(keep) {
+  const cur = keep ? $livre.value : "";
+  $livre.innerHTML = '<option value="">Tous les ouvrages</option>';
+  livresFor().forEach(l => { const o=document.createElement("option"); o.value=l; o.textContent=l; $livre.appendChild(o); });
+  if (cur && [...$livre.options].some(o => o.value===cur)) $livre.value = cur;
+}
+
+function filtered() {
+  const a=$auteur.value, y=$annee.value, l=$livre.value;
+  return DATA.filter(d =>
+    (!a || d.auteur===a) &&
+    (!y || String(d.annee)===y) &&
+    (!l || d.livre===l)
+  );
+}
+
+function snip(t){ return t.length>110 ? t.slice(0,110)+"…" : t; }
+
+let currentId = null;
+function renderList() {
+  const rows = filtered();
+  $list.innerHTML = "";
+  if (!rows.length) {
+    $list.innerHTML = '<p class="empty" style="padding:1rem">Aucune citation pour ce filtre.</p>';
+    return;
+  }
+  rows.forEach(d => {
+    const b = document.createElement("button");
+    b.className = d.id===currentId ? "active" : "";
+    b.innerHTML = `<div class="meta">${d.auteur} · ${d.annee} · ${d.livre}</div><div class="snip">${snip(d.texte)}</div>`;
+    b.addEventListener("click", () => openQuote(d.id));
+    $list.appendChild(b);
+  });
+}
+
+function tokenize(text) {
+  return text.split(/(\s+|[—–]|[“”"«»])/).filter(s => s !== "");
+}
+
+const QUERY_MAP = {
+  "ain't": "ain't", "aren't": "are", "can't": "cannot", "don't": "do",
+  "haven't": "have", "i'll": "will", "i'm": "am", "i've": "have",
+  "isn't": "is", "she'd": "would", "she'll": "will", "she's": "is",
+  "that's": "that", "there'd": "would", "there'll": "will", "there's": "there",
+  "they'd": "would", "wanna": "want", "warn't": "were", "weather'd": "weathered",
+  "won't": "will", "you've": "have", "ne'er": "never", "ever'body": "everybody",
+  "sivilize": "civilize", "loafe": "loaf", "quoth": "said", "mayest": "may",
+  "to-night": "tonight", "boot-soles": "sole", "journey-work": "journeywork",
+  "all-destroying": "destroy", "rightly-constructed": "constructed",
+  "hate's": "hate", "hell's": "hell", "baby's": "baby", "boy's": "boy",
+  "people's": "people", "i'd": "would"
+};
+
+const dictCache = {};
+let lookupToken = 0;
+let lastWord = null;
+
+const MEM_KEY = "citations_americaines_memoire_v1";
+const BLOB_API = "https://jsonblob.com/api/jsonBlob";
+
+function emptyMem() {
+  return { version: 1, updated_at: null, blob_id: null, blob_url: null, quotes: [], words: [] };
+}
+function loadMem() {
+  try { return Object.assign(emptyMem(), JSON.parse(localStorage.getItem(MEM_KEY) || "{}")); }
+  catch (e) { return emptyMem(); }
+}
+function saveMem(mem) {
+  mem.updated_at = new Date().toISOString();
+  localStorage.setItem(MEM_KEY, JSON.stringify(mem));
+  renderMemory();
+}
+function isQuotePinned(id) { return loadMem().quotes.some(q => q.quote_id === id); }
+function isWordPinned(qid, word) {
+  const w = (word || "").toLowerCase();
+  return loadMem().words.some(x => x.quote_id === qid && String(x.mot).toLowerCase() === w);
+}
+function toggleQuotePin(d) {
+  const mem = loadMem();
+  const i = mem.quotes.findIndex(q => q.quote_id === d.id);
+  if (i >= 0) mem.quotes.splice(i, 1);
+  else mem.quotes.unshift({
+    type: "citation",
+    quote_id: d.id,
+    auteur: d.auteur,
+    livre: d.livre,
+    annee: d.annee,
+    theme: d.theme,
+    texte: d.texte,
+    traduction: d.traduction,
+    pinned_at: new Date().toISOString()
+  });
+  saveMem(mem);
+  toast(i >= 0 ? "Citation retirée" : "Citation épinglée");
+}
+function toggleWordPin(d, pack) {
+  const mem = loadMem();
+  const word = pack.info.word;
+  const i = mem.words.findIndex(x => x.quote_id === d.id && String(x.mot).toLowerCase() === word.toLowerCase());
+  if (i >= 0) mem.words.splice(i, 1);
+  else {
+    const defs = ((pack.online && pack.online.defs) || []).flatMap(m => m.defs).slice(0, 3);
+    mem.words.unshift({
+      type: "mot",
+      quote_id: d.id,
+      mot: word,
+      glose: pack.info.fr || "",
+      traduction_en_ligne: (pack.online && pack.online.onlineFr) || "",
+      definitions: defs,
+      auteur: d.auteur,
+      livre: d.livre,
+      annee: d.annee,
+      contexte: d.texte,
+      pinned_at: new Date().toISOString()
+    });
+  }
+  saveMem(mem);
+  toast(i >= 0 ? "Mot retiré" : "Mot épinglé");
+}
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 1800);
+}
+function openMem(on) {
+  document.getElementById("drawer").classList.toggle("open", on);
+  document.getElementById("drawerBg").classList.toggle("open", on);
+}
+function payload() {
+  const mem = loadMem();
+  return {
+    titre: "Mémoire — citations américaines",
+    version: mem.version,
+    updated_at: mem.updated_at,
+    blob_id: mem.blob_id,
+    citations: mem.quotes,
+    mots: mem.words
+  };
+}
+function download(name, text, mime) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type: mime }));
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 800);
+}
+function toMarkdown(p) {
+  let md = `# ${p.titre}\n\nMis à jour : ${p.updated_at || "—"}\n\n## Citations\n\n`;
+  (p.citations || []).forEach(q => {
+    md += `### ${q.auteur}, *${q.livre}* (${q.annee})\n\n> ${q.texte}\n\n${q.traduction}\n\n_Thème : ${q.theme}_\n\n`;
+  });
+  md += `## Mots\n\n`;
+  (p.mots || []).forEach(w => {
+    md += `- **${w.mot}** — ${w.glose || w.traduction_en_ligne || "—"}${w.auteur ? ` (${w.auteur})` : ""}\n`;
+  });
+  return md;
+}
+function csvEscape(s) { return '"' + String(s || "").replace(/"/g, '""') + '"'; }
+function toCsv(p) {
+  const rows = [["type","auteur","livre","annee","anglais","francais","theme"]];
+  (p.citations || []).forEach(q => rows.push(["citation", q.auteur, q.livre, q.annee, q.texte, q.traduction, q.theme]));
+  (p.mots || []).forEach(w => rows.push(["mot", w.auteur, w.livre, w.annee, w.mot, w.glose || w.traduction_en_ligne, ""]));
+  return rows.map(r => r.map(csvEscape).join(",")).join("\n");
+}
+function renderMemory() {
+  const mem = loadMem();
+  const n = mem.quotes.length + mem.words.length;
+  const cnt = document.getElementById("memCount");
+  if (cnt) cnt.textContent = n;
+  const sum = document.getElementById("memSummary");
+  if (sum) sum.textContent = n ? `${mem.quotes.length} citation(s), ${mem.words.length} mot(s)` : "Rien d’épinglé";
+  const hint = document.getElementById("cloudHint");
+  if (hint) hint.textContent = mem.blob_url
+    ? "Copie en ligne : " + mem.blob_url
+    : "La mémoire vit dans ce navigateur. « Publier en ligne » crée une URL JSONBlob partageable.";
+  const qBox = document.getElementById("pinsQuotes");
+  const wBox = document.getElementById("pinsWords");
+  if (!qBox || !wBox) return;
+  qBox.innerHTML = mem.quotes.length ? "<h3 style='font-size:.9rem'>Citations</h3>" : "";
+  mem.quotes.forEach(q => {
+    qBox.innerHTML += `<article class="pin-item">
+      <div class="row"><span class="k">Citation</span>
+        <button class="btn ghost" type="button" data-unpin-q="${q.quote_id}">Retirer</button></div>
+      <div class="meta">${esc(q.auteur)} · ${esc(q.livre)} · ${q.annee}</div>
+      <p>${esc(q.texte)}</p>
+    </article>`;
+  });
+  wBox.innerHTML = mem.words.length ? "<h3 style='font-size:.9rem'>Mots</h3>" : "";
+  mem.words.forEach((w, idx) => {
+    wBox.innerHTML += `<article class="pin-item">
+      <div class="row"><span class="k">Mot</span>
+        <button class="btn ghost" type="button" data-unpin-w="${idx}">Retirer</button></div>
+      <p><strong>${esc(w.mot)}</strong> → ${esc(w.glose || w.traduction_en_ligne || "—")}</p>
+      <div class="meta">${esc(w.auteur || "")} · ${esc(w.livre || "")}</div>
+    </article>`;
+  });
+  qBox.querySelectorAll("[data-unpin-q]").forEach(b => b.addEventListener("click", () => {
+    const mem2 = loadMem();
+    mem2.quotes = mem2.quotes.filter(q => String(q.quote_id) !== b.dataset.unpinQ);
+    saveMem(mem2);
+    if (currentId !== null) {
+      const btn = document.getElementById("pinQuote");
+      if (btn) btn.textContent = isQuotePinned(currentId) ? "Citation épinglée" : "Épingler la citation";
+    }
+  }));
+  wBox.querySelectorAll("[data-unpin-w]").forEach(b => b.addEventListener("click", () => {
+    const mem2 = loadMem();
+    mem2.words.splice(Number(b.dataset.unpinW), 1);
+    saveMem(mem2);
+  }));
+}
+async function publishOnline() {
+  const mem = loadMem();
+  const body = JSON.stringify(payload());
+  const url = mem.blob_id ? `${BLOB_API}/${mem.blob_id}` : BLOB_API;
+  const method = mem.blob_id ? "PUT" : "POST";
+  try {
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json", "Accept": "application/json" }, body });
+    if (!res.ok) throw new Error(res.status);
+    const loc = res.headers.get("Location") || res.headers.get("X-jsonblob") || "";
+    let id = mem.blob_id;
+    if (loc) {
+      const m = loc.match(/jsonBlob\/([A-Za-z0-9-]+)/);
+      if (m) id = m[1];
+      else if (/^[A-Za-z0-9-]+$/.test(loc.trim())) id = loc.trim();
+    }
+    if (!id) {
+      try { const j = await res.json(); id = j.id || j.blobId || id; } catch (e) {}
+    }
+    if (!id) throw new Error("pas d'identifiant");
+    mem.blob_id = id;
+    mem.blob_url = `https://jsonblob.com/api/jsonBlob/${id}`;
+    saveMem(mem);
+    await navigator.clipboard.writeText(mem.blob_url).catch(() => {});
+    toast("Publié — URL copiée");
+  } catch (e) {
+    toast("Publication impossible — exportez le JSON");
+  }
+}
+async function loadFromUrl() {
+  const raw = prompt("Collez l’URL JSONBlob (ou un identifiant) :", loadMem().blob_url || "");
+  if (!raw) return;
+  let url = raw.trim();
+  if (!/^https?:/i.test(url)) url = `${BLOB_API}/${url}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const mem = loadMem();
+    mem.quotes = data.citations || data.quotes || [];
+    mem.words = data.mots || data.words || [];
+    const m = url.match(/jsonBlob\/([A-Za-z0-9-]+)/);
+    if (m) { mem.blob_id = m[1]; mem.blob_url = url; }
+    saveMem(mem);
+    toast("Mémoire chargée");
+  } catch (e) { toast("Chargement impossible"); }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+}
+
+function lookup(raw) {
+  const cleaned = raw.replace(/^[“”"«»'(\[]+|[“”"«»')\].,;:!?…]+$/g, "");
+  if (!cleaned) return null;
+  const key = cleaned.toLowerCase();
+  if (LEX[key]) return { word: cleaned, key, query: QUERY_MAP[key] || key.replace(/'s$/,""), fr: LEX[key] };
+  if (LEX[key.replace(/-/g,"")]) return { word: cleaned, key, query: key.replace(/-/g,""), fr: LEX[key.replace(/-/g,"")] };
+  const parts = key.split("-").map(p => LEX[p] || p);
+  if (key.includes("-") && parts.some(p => LEX[p])) {
+    return { word: cleaned, key, query: key.split("-").pop(), fr: parts.join(" — ") };
+  }
+  return { word: cleaned, key, query: QUERY_MAP[key] || key.replace(/'s$/,""), fr: null };
+}
+
+function stripTags(html) {
+  const d = document.createElement("div");
+  d.innerHTML = html || "";
+  return (d.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+async function fetchOnline(query) {
+  if (dictCache[query]) return dictCache[query];
+  const out = { defs: [], phonetic: "", onlineFr: "" };
+  const dictUrl = "https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(query);
+  const wikiUrl = "https://en.wiktionary.org/api/rest_v1/page/definition/" + encodeURIComponent(query);
+  const trUrl = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(query) + "&langpair=en|fr";
+  const [dRes, wRes, tRes] = await Promise.allSettled([
+    fetch(dictUrl).then(r => r.ok ? r.json() : Promise.reject()),
+    fetch(wikiUrl).then(r => r.ok ? r.json() : Promise.reject()),
+    fetch(trUrl).then(r => r.ok ? r.json() : Promise.reject())
+  ]);
+  if (dRes.status === "fulfilled" && Array.isArray(dRes.value)) {
+    const entry = dRes.value[0];
+    out.phonetic = entry.phonetic || (entry.phonetics || []).map(p => p.text).filter(Boolean)[0] || "";
+    (entry.meanings || []).forEach(m => {
+      const defs = (m.definitions || []).slice(0, 2).map(def => def.definition).filter(Boolean);
+      if (defs.length) out.defs.push({ pos: m.partOfSpeech || "", defs });
+    });
+  }
+  if (!out.defs.length && wRes.status === "fulfilled" && wRes.value && wRes.value.en) {
+    wRes.value.en.slice(0, 3).forEach(m => {
+      const defs = (m.definitions || []).slice(0, 2).map(def => stripTags(def.definition)).filter(Boolean);
+      if (defs.length) out.defs.push({ pos: m.partOfSpeech || "", defs });
+    });
+  }
+  if (tRes.status === "fulfilled" && tRes.value && tRes.value.responseData) {
+    const txt = (tRes.value.responseData.translatedText || "").trim();
+    if (txt && txt.toLowerCase() !== query.toLowerCase()) out.onlineFr = txt;
+  }
+  dictCache[query] = out;
+  return out;
+}
+
+function dictLinks(word, query) {
+  const q = encodeURIComponent(query || word);
+  const w = encodeURIComponent(word);
+  return `<div class="dict-links">
+    <a href="https://www.wordreference.com/enfr/${q}" target="_blank" rel="noopener">WordReference EN→FR</a>
+    <a href="https://fr.wiktionary.org/wiki/${w}" target="_blank" rel="noopener">Wiktionnaire</a>
+    <a href="https://en.wiktionary.org/wiki/${q}" target="_blank" rel="noopener">Wiktionary</a>
+    <a href="https://dictionary.cambridge.org/dictionary/english/${q}" target="_blank" rel="noopener">Cambridge</a>
+  </div>`;
+}
+
+function renderWordPanel(info, online, loading) {
+  const gloss = info.fr
+    ? `<span class="en">${esc(info.word)}</span> → <span class="fr">${esc(info.fr)}</span>`
+    : `<span class="en">${esc(info.word)}</span> → <span class="miss">pas de glose locale</span>`;
+  let extra = "";
+  if (loading) extra = `<p class="wait">Consultation du dictionnaire en ligne…</p>`;
+  else if (online) {
+    const bits = [];
+    if (online.phonetic) bits.push(`<p class="miss">${esc(online.phonetic)}</p>`);
+    if (online.onlineFr) bits.push(`<p><span class="fr">Traduction en ligne :</span> ${esc(online.onlineFr)}</p>`);
+    online.defs.slice(0, 3).forEach(m => {
+      bits.push(`<div><span class="pos">${esc(m.pos)}</span><ul>${m.defs.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>`);
+    });
+    if (!online.defs.length && !online.onlineFr) {
+      bits.push(`<p class="miss">Pas d’entrée API pour « ${esc(info.query)} » — ouvrez un dictionnaire ci-dessous.</p>`);
+    }
+    extra = bits.join("");
+  }
+  return gloss + extra + dictLinks(info.word, info.query);
+}
+
+function renderQuoteText(text) {
+  return tokenize(text).map(tok => {
+    if (/^\s+$/.test(tok) || tok === "—" || tok === "–") return tok === "—" || tok === "–" ? " — " : tok;
+    if (/^[“”"«»]$/.test(tok)) return tok;
+    const info = lookup(tok);
+    if (!info) return tok;
+    const safe = tok.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    return `<span class="word" data-w="${info.word.replace(/"/g,"&quot;")}">${safe}</span>`;
+  }).join("");
+}
+
+function openQuote(id) {
+  currentId = id;
+  renderList();
+  const d = DATA.find(x => x.id === id);
+  $reader.innerHTML = `
+    <div class="src"><strong>${d.auteur}</strong> (${d.dates}) · <em>${d.livre}</em> · ${d.annee}</div>
+    <div class="quote" id="qeng">${renderQuoteText(d.texte)}</div>
+    <p class="hint">Cliquez un mot : glose locale d’abord, puis fiche en ligne. La traduction de la citation reste cachée.</p>
+    <div class="wordbox" id="wordbox"><span class="miss">Aucun mot sélectionné.</span></div>
+    <div class="actions">
+      <button class="btn" id="reveal" type="button">Afficher la traduction</button>
+      <button class="btn ghost" id="hide" type="button" disabled>Masquer la traduction</button>
+      <button class="btn pin" id="pinQuote" type="button">${isQuotePinned(d.id) ? "Citation épinglée" : "Épingler la citation"}</button>
+      <button class="btn ghost" id="pinWord" type="button" disabled>Épingler le mot</button>
+    </div>
+    <div class="trad" id="trad">${d.traduction.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</div>
+    <div class="theme">Thème : ${d.theme} · ${d.quintette}</div>
+  `;
+  const box = document.getElementById("wordbox");
+  const pinWordBtn = document.getElementById("pinWord");
+  $reader.querySelectorAll(".word").forEach(el => {
+    el.addEventListener("click", async () => {
+      $reader.querySelectorAll(".word.on").forEach(w => w.classList.remove("on"));
+      el.classList.add("on");
+      const info = lookup(el.dataset.w);
+      if (!info) return;
+      const token = ++lookupToken;
+      lastWord = { info, online: null, quoteId: d.id };
+      pinWordBtn.disabled = false;
+      pinWordBtn.textContent = isWordPinned(d.id, info.word) ? "Mot épinglé" : "Épingler le mot";
+      box.innerHTML = renderWordPanel(info, null, true);
+      try {
+        const online = await fetchOnline(info.query);
+        if (token !== lookupToken) return;
+        lastWord.online = online;
+        box.innerHTML = renderWordPanel(info, online, false);
+      } catch (err) {
+        if (token !== lookupToken) return;
+        lastWord.online = { defs: [], phonetic: "", onlineFr: "" };
+        box.innerHTML = renderWordPanel(info, lastWord.online, false);
+      }
+    });
+  });
+  const trad = document.getElementById("trad");
+  const reveal = document.getElementById("reveal");
+  const hide = document.getElementById("hide");
+  reveal.addEventListener("click", () => { trad.classList.add("show"); reveal.disabled = true; hide.disabled = false; });
+  hide.addEventListener("click", () => { trad.classList.remove("show"); reveal.disabled = false; hide.disabled = true; });
+  document.getElementById("pinQuote").addEventListener("click", () => {
+    toggleQuotePin(d);
+    document.getElementById("pinQuote").textContent = isQuotePinned(d.id) ? "Citation épinglée" : "Épingler la citation";
+  });
+  pinWordBtn.addEventListener("click", () => {
+    if (!lastWord || lastWord.quoteId !== d.id) return;
+    toggleWordPin(d, lastWord);
+    pinWordBtn.textContent = isWordPinned(d.id, lastWord.info.word) ? "Mot épinglé" : "Épingler le mot";
+  });
+}
+
+function onFilter() {
+  refillLivres(true);
+  const rows = filtered();
+  if (currentId !== null && !rows.some(r => r.id === currentId)) {
+    currentId = null;
+    $reader.innerHTML = '<p class="empty">Sélectionnez une citation dans la liste.</p>';
+  }
+  renderList();
+  if (rows.length === 1) openQuote(rows[0].id);
+}
+
+$auteur.addEventListener("change", () => { $livre.value = ""; onFilter(); });
+$annee.addEventListener("change", () => { $livre.value = ""; onFilter(); });
+$livre.addEventListener("change", onFilter);
+
+refillLivres(false);
+renderList();
+renderMemory();
+
+document.getElementById("btnMem").addEventListener("click", () => openMem(true));
+document.getElementById("btnCloseMem").addEventListener("click", () => openMem(false));
+document.getElementById("drawerBg").addEventListener("click", () => openMem(false));
+document.getElementById("expJson").addEventListener("click", () => {
+  download("memoire-citations.json", JSON.stringify(payload(), null, 2), "application/json");
+});
+document.getElementById("expMd").addEventListener("click", () => {
+  download("memoire-citations.md", toMarkdown(payload()), "text/markdown");
+});
+document.getElementById("expCsv").addEventListener("click", () => {
+  download("memoire-citations.csv", toCsv(payload()), "text/csv");
+});
+document.getElementById("copyJson").addEventListener("click", async () => {
+  await navigator.clipboard.writeText(JSON.stringify(payload(), null, 2));
+  toast("JSON copié");
+});
+document.getElementById("pubOnline").addEventListener("click", publishOnline);
+document.getElementById("loadOnline").addEventListener("click", loadFromUrl);
+document.getElementById("impJson").addEventListener("click", () => document.getElementById("impFile").click());
+document.getElementById("impFile").addEventListener("change", async ev => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    const mem = loadMem();
+    mem.quotes = data.citations || data.quotes || [];
+    mem.words = data.mots || data.words || [];
+    saveMem(mem);
+    toast("Fichier importé");
+  } catch (e) { toast("JSON invalide"); }
+  ev.target.value = "";
+});
+document.getElementById("clrMem").addEventListener("click", () => {
+  if (confirm("Vider toute la mémoire de ce navigateur ?")) {
+    const keep = loadMem();
+    const next = emptyMem();
+    next.blob_id = keep.blob_id;
+    next.blob_url = keep.blob_url;
+    saveMem(next);
+    toast("Mémoire vidée");
+  }
+});
+</script>
+</body>
+</html>
