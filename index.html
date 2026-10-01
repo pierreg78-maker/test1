@@ -1,11 +1,1749 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Test1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POLYPOP — Petites bêtes imprimées en 3D</title>
+<meta name="description" content="Figurines articulées imprimées en 3D, couleurs pop, fabriquées à l'atelier en PLA végétal. Pieuvres, dragons, lions et autres compagnons de poche.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ FONDATIONS ============ */
+:root{
+  --paper:#FFF4E2;
+  --ink:#241A12;
+  --orange:#FF5A1F;
+  --pink:#FF3D8A;
+  --yellow:#FFC531;
+  --green:#19C37D;
+  --teal:#12B5BC;
+  --grape:#9B5DE5;
+  --r:22px;
+  --sh:6px 6px 0 var(--ink);
+  --sh-sm:4px 4px 0 var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+::selection{background:var(--yellow);color:var(--ink)}
+img,svg{display:block}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit}
+h1,h2,h3,.disp{font-family:'Fredoka',sans-serif;line-height:1.1;letter-spacing:-.01em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* ============ BOUTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  border:2.5px solid var(--ink);border-radius:14px;
+  background:#fff;color:var(--ink);
+  font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;
+  padding:12px 22px;box-shadow:var(--sh-sm);
+  transition:transform .14s ease,box-shadow .14s ease,background .14s;
+  text-decoration:none;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn--ink{background:var(--ink);color:var(--paper)}
+.btn--yellow{background:var(--yellow)}
+.btn--pink{background:var(--pink);color:#fff}
+.btn--paypal{background:#FFC439}
+.btn--full{width:100%;justify-content:center}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn svg{flex:none}
+.ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ico--fill{fill:currentColor;stroke:none}
+
+/* ============ HEADER ============ */
+header{
+  position:sticky;top:0;z-index:60;
+  background:var(--paper);
+  border-bottom:2.5px solid var(--ink);
+}
+.hd{display:flex;align-items:center;gap:28px;height:72px}
+.logo{display:flex;align-items:center;gap:2px;font-family:'Fredoka';font-weight:700;font-size:26px;text-decoration:none;user-select:none}
+.logo b{font-weight:700}
+.logo .pop{
+  background:var(--pink);color:var(--paper);
+  padding:1px 10px 3px;border-radius:11px;border:2.5px solid var(--ink);
+  transform:rotate(-4deg);margin-left:6px;display:inline-block;
+  box-shadow:2px 2px 0 var(--ink);
+}
+nav.main{display:flex;gap:4px;margin-left:8px}
+nav.main a{
+  text-decoration:none;font-weight:500;padding:8px 14px;border-radius:12px;
+  transition:background .15s;
+}
+nav.main a:hover{background:var(--yellow)}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.cart-btn{position:relative;padding:10px 16px}
+.cart-badge{
+  position:absolute;top:-9px;right:-9px;min-width:23px;height:23px;
+  background:var(--pink);color:#fff;border:2.5px solid var(--ink);border-radius:99px;
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  padding:0 4px;transition:transform .2s cubic-bezier(.34,1.8,.5,1);
+}
+.cart-badge.bump{transform:scale(1.45)}
+.burger{display:none;padding:9px 11px}
+.mnav{display:none}
+@media (max-width:900px){
+  nav.main{display:none}
+  .burger{display:inline-flex}
+  .mnav.open{display:flex;flex-direction:column;gap:2px;padding:10px 24px 18px;border-top:2.5px solid var(--ink);background:var(--paper)}
+  .mnav a{text-decoration:none;font-family:'Fredoka';font-weight:600;font-size:19px;padding:10px 6px;border-bottom:2px dashed rgba(36,26,18,.2)}
+}
+
+/* ============ HERO ============ */
+.hero{padding:64px 0 56px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  border:2.5px solid var(--ink);border-radius:99px;background:#fff;
+  padding:6px 15px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+  box-shadow:3px 3px 0 var(--ink);margin-bottom:22px;
+}
+.kicker .dot{width:9px;height:9px;border-radius:50%;background:var(--green);border:1.5px solid var(--ink)}
+.hero h1{font-size:clamp(42px,5.6vw,68px);font-weight:700}
+.hero h1 .hl{color:var(--orange)}
+.hero h1 .hl2{color:var(--pink)}
+.hero p.lead{margin:20px 0 28px;font-size:18px;max-width:46ch}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.stage{
+  position:relative;background:var(--yellow);
+  border:2.5px solid var(--ink);border-radius:34px;
+  box-shadow:var(--sh);transform:rotate(-1.5deg);
+  padding:34px 26px 22px;
+}
+.stage svg.dragon{width:100%;height:auto}
+.price-tag{
+  position:absolute;top:-18px;right:-14px;
+  background:var(--pink);color:#fff;font-family:'Fredoka';font-weight:700;font-size:21px;
+  border:2.5px solid var(--ink);border-radius:16px;padding:8px 16px;
+  transform:rotate(5deg);box-shadow:var(--sh-sm);
+}
+.size-tag{
+  position:absolute;bottom:-14px;left:22px;
+  background:#fff;border:2.5px solid var(--ink);border-radius:99px;
+  font-weight:700;font-size:13px;padding:6px 14px;transform:rotate(-3deg);
+  box-shadow:3px 3px 0 var(--ink);
+  display:flex;align-items:center;gap:7px;
+}
+.float-deco{position:absolute;animation:floaty 4.5s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-12px) rotate(6deg)}}
+.hero-panel{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.swatch{
+  width:32px;height:32px;border-radius:50%;
+  border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);
+  transition:transform .15s;
+}
+.swatch:hover{transform:scale(1.12)}
+.swatch.on{outline:3px solid var(--ink);outline-offset:3px}
+.color-name{font-weight:700;font-size:14px;margin-left:2px}
+.hero-add{margin-left:auto}
+/* Animation de la bête : elle respire, segment par segment */
+.dragon .dseg{animation:bob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.dragon .d2{animation-delay:0s}.dragon .d3{animation-delay:.18s}.dragon .d4{animation-delay:.36s}
+.dragon .d5{animation-delay:.54s}.dragon .d6{animation-delay:.72s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.dragon .pupil{transition:transform .12s ease-out}
+
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:44px}
+.stat{
+  display:flex;align-items:center;gap:11px;
+  border:2.5px solid var(--ink);border-radius:16px;background:#fff;
+  padding:11px 18px;font-weight:500;font-size:15px;box-shadow:var(--sh-sm);
+}
+.stat .ico{width:24px;height:24px}
+
+@media (max-width:960px){
+  .hero{padding:44px 0 40px}
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .hero-add{margin-left:0}
+}
+
+/* ============ MARQUEE ============ */
+.marquee{
+  background:var(--ink);color:var(--yellow);
+  border-top:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);
+  overflow:hidden;padding:13px 0;
+}
+.mq-track{display:flex;gap:0;width:max-content;animation:mq 26s linear infinite}
+.marquee:hover .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.mq-item{
+  display:flex;align-items:center;gap:26px;padding:0 13px;
+  font-family:'Fredoka';font-weight:600;font-size:17px;letter-spacing:.05em;white-space:nowrap;
+}
+.mq-item svg{width:15px;height:15px}
+
+/* ============ SECTIONS ============ */
+section{scroll-margin-top:90px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:30px}
+.sec-head h2{font-size:clamp(30px,3.6vw,44px);font-weight:700}
+.sec-head .sub{max-width:44ch;color:rgba(36,26,18,.75)}
+.sec-pad{padding:76px 0}
+
+/* ---- Boutique ---- */
+#boutique{border-top:2.5px solid var(--ink)}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.chip{
+  border:2.5px solid var(--ink);border-radius:99px;background:#fff;
+  font-family:'Fredoka';font-weight:600;font-size:14px;padding:8px 18px;
+  box-shadow:3px 3px 0 var(--ink);transition:all .15s;
+}
+.chip:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.chip.on{background:var(--ink);color:var(--paper);transform:none}
+.shop-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  grid-auto-rows:190px;grid-auto-flow:dense;gap:22px;
+}
+.card{
+  grid-column:span 2;position:relative;
+  border:2.5px solid var(--ink);border-radius:var(--r);
+  box-shadow:var(--sh);overflow:hidden;cursor:pointer;
+  display:flex;flex-direction:column;
+  transition:transform .18s ease,box-shadow .18s ease;
+  background:#fff;
+}
+.card:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+.card--big{grid-row:span 2}
+.card--wide{grid-column:span 4;flex-direction:row}
+.card--wide .art{width:44%;height:100%}
+.card--wide .card-body{flex:1;justify-content:center}
+.shop-grid.filtered .card--big{grid-row:span 1}
+.card.hidden{display:none}
+.art{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:18px;position:relative}
+.art svg{width:min(100%,170px);height:100%;max-height:150px;transition:transform .2s}
+.card--big .art svg{width:min(100%,210px);max-height:210px}
+.card--wide .art svg{width:min(100%,190px);max-height:160px}
+.card:hover .art svg{animation:wig .55s ease}
+@keyframes wig{25%{transform:rotate(4deg) scale(1.04)}65%{transform:rotate(-3deg) scale(1.04)}}
+.tag-num{
+  position:absolute;top:12px;left:12px;
+  background:#fff;border:2px solid var(--ink);border-radius:9px;
+  font-size:11.5px;font-weight:700;padding:3px 9px;letter-spacing:.04em;
+}
+.card-body{padding:14px 18px 18px;border-top:2.5px solid var(--ink);background:#fff;display:flex;flex-direction:column;gap:3px}
+.card--big .card-body{flex:none}
+.card-body h3{font-size:20px;font-weight:600}
+.card-body .desc{font-size:13.5px;color:rgba(36,26,18,.72);line-height:1.4}
+.card-row{display:flex;align-items:center;justify-content:space-between;margin-top:9px;gap:10px}
+.price{font-family:'Fredoka';font-weight:700;font-size:19px}
+.meta{font-size:12.5px;font-weight:500;color:rgba(36,26,18,.6)}
+.add-mini{
+  width:38px;height:38px;flex:none;border-radius:12px;
+  border:2.5px solid var(--ink);background:var(--yellow);box-shadow:3px 3px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;transition:all .14s;
+}
+.add-mini:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.add-mini:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.tile{
+  grid-column:span 2;background:var(--ink);color:var(--paper);
+  border:2.5px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);
+  padding:22px;display:flex;flex-direction:column;justify-content:center;gap:12px;cursor:default;
+}
+.tile h3{font-size:21px}
+.tile p{font-size:13.5px;opacity:.85}
+.tile .btn{background:var(--ink);color:var(--paper);border-color:var(--paper);box-shadow:4px 4px 0 var(--paper);align-self:flex-start;font-size:14px;padding:9px 16px}
+.tile .btn:hover{box-shadow:6px 6px 0 var(--paper)}
+@media (max-width:860px){
+  .shop-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:auto}
+  .card,.card--big,.card--wide,.tile{grid-column:span 1;grid-row:auto}
+  .card--big,.card--wide,.tile{grid-column:span 2}
+  .card--wide{flex-direction:column}
+  .card--wide .art{width:100%;height:180px}
+  .art svg{max-height:170px}
+}
+
+/* ---- Atelier ---- */
+#atelier{border-top:2.5px solid var(--ink);background:#FFECF4}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step{
+  border:2.5px solid var(--ink);border-radius:var(--r);background:#fff;
+  box-shadow:var(--sh);padding:26px;position:relative;
+}
+.step:nth-child(2){transform:translateY(22px)}
+.step:nth-child(3){transform:translateY(44px)}
+.step .n{
+  font-family:'Fredoka';font-weight:700;font-size:15px;
+  background:var(--green);border:2.5px solid var(--ink);border-radius:99px;
+  display:inline-flex;padding:5px 14px;margin-bottom:16px;box-shadow:2px 2px 0 var(--ink);
+}
+.step:nth-child(2) .n{background:var(--yellow)}
+.step:nth-child(3) .n{background:var(--pink);color:#fff}
+.step .s-ico{width:46px;height:46px;border:2.5px solid var(--ink);border-radius:14px;background:var(--paper);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.step .s-ico svg{width:26px;height:26px}
+.step h3{font-size:22px;margin-bottom:9px}
+.step p{font-size:14.5px;color:rgba(36,26,18,.78)}
+@media (max-width:860px){
+  .steps{grid-template-columns:1fr}
+  .step:nth-child(2),.step:nth-child(3){transform:none}
+}
+
+/* ---- Avis ---- */
+.reviews{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.rev{
+  border:2.5px solid var(--ink);border-radius:var(--r);padding:24px;
+  box-shadow:var(--sh);flex:1 1 260px;max-width:380px;background:#fff;
+}
+.rev:nth-child(1){transform:rotate(-1.6deg);background:#FFF9E8}
+.rev:nth-child(2){transform:rotate(1.2deg);background:#EFFBF3}
+.rev:nth-child(3){transform:rotate(-.8deg);background:#FFF0F6}
+.stars{display:flex;gap:3px;margin-bottom:12px}
+.stars svg{width:19px;height:19px;fill:var(--yellow);stroke:var(--ink);stroke-width:1.6}
+.rev p{font-size:15.5px;font-weight:500}
+.rev .who{margin-top:14px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:9px}
+.rev .who .av{width:34px;height:34px;border-radius:50%;border:2.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Fredoka';font-weight:700;color:#fff;font-size:15px}
+.rev:nth-child(1) .av{background:var(--orange)}
+.rev:nth-child(2) .av{background:var(--teal)}
+.rev:nth-child(3) .av{background:var(--grape)}
+
+/* ---- FAQ ---- */
+.faq{max-width:760px}
+.faq-item{border:2.5px solid var(--ink);border-radius:18px;background:#fff;box-shadow:var(--sh-sm);margin-bottom:14px;overflow:hidden}
+.faq-item button{
+  width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  background:none;border:none;padding:18px 22px;text-align:left;
+  font-family:'Fredoka';font-weight:600;font-size:17.5px;color:var(--ink);
+}
+.faq-item .chev{transition:transform .25s;flex:none}
+.faq-item.open .chev{transform:rotate(180deg)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.faq-a>div{overflow:hidden}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a p{padding:0 22px 20px;font-size:15px;color:rgba(36,26,18,.8)}
+
+/* ---- Newsletter ---- */
+.news{
+  border-top:2.5px solid var(--ink);background:var(--teal);color:var(--paper);
+  padding:56px 0;
+}
+.news h2{font-size:clamp(26px,3vw,38px);margin-bottom:8px}
+.news p{opacity:.9;max-width:52ch}
+.news-form{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.news-form input{
+  flex:1;min-width:240px;max-width:420px;
+  border:2.5px solid var(--ink);border-radius:14px;padding:13px 18px;
+  font-family:inherit;font-size:15px;background:var(--paper);color:var(--ink);
+}
+.news-form input:focus{outline:3px solid var(--ink);outline-offset:2px}
+.news .btn{background:var(--yellow);color:var(--ink)}
+.news-ok{display:none;margin-top:24px;font-family:'Fredoka';font-weight:600;font-size:18px;align-items:center;gap:10px}
+.news.done .news-form{display:none}
+.news.done .news-ok{display:flex}
+
+/* ---- Footer ---- */
+footer{background:var(--ink);color:var(--paper);padding:54px 0 30px}
+.ft{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px}
+.ft h4{font-family:'Fredoka';font-weight:600;font-size:16px;margin-bottom:14px;color:var(--yellow)}
+.ft a{display:block;text-decoration:none;opacity:.85;margin-bottom:9px;font-size:14.5px}
+.ft a:hover{opacity:1;text-decoration:underline;text-underline-offset:3px}
+.ft .logo{color:var(--paper)}
+.ft .baseline{opacity:.7;font-size:14px;max-width:32ch;margin-top:12px}
+.ft-bottom{
+  border-top:1.5px solid rgba(255,244,226,.25);margin-top:40px;padding-top:22px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:13px;opacity:.75;
+}
+@media (max-width:760px){.ft{grid-template-columns:1fr}}
+
+/* ============ PANIER (drawer) ============ */
+.scrim{
+  position:fixed;inset:0;background:rgba(36,26,18,.55);z-index:80;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(430px,100%);z-index:90;
+  background:var(--paper);border-left:2.5px solid var(--ink);
+  transform:translateX(102%);transition:transform .32s cubic-bezier(.32,.9,.35,1);
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0)}
+.dr-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:2.5px solid var(--ink)}
+.dr-head h3{font-size:23px}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;border:2.5px solid var(--ink);background:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:2px 2px 0 var(--ink);transition:all .14s;
+}
+.icon-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.icon-btn:active{transform:translate(1px,1px);box-shadow:0 0 0 var(--ink)}
+.dr-items{flex:1;overflow-y:auto;padding:18px 24px;display:flex;flex-direction:column;gap:14px}
+.dr-empty{text-align:center;margin:auto;opacity:.75}
+.dr-empty svg{width:70px;height:70px;margin:0 auto 14px;opacity:.5}
+.ci{display:flex;gap:14px;align-items:center;border:2.5px solid var(--ink);border-radius:16px;background:#fff;padding:10px;box-shadow:3px 3px 0 var(--ink)}
+.ci-art{width:74px;height:74px;flex:none;border:2px solid var(--ink);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:6px}
+.ci-art svg{width:100%;height:100%}
+.ci-mid{flex:1;min-width:0}
+.ci-mid b{font-family:'Fredoka';font-weight:600;font-size:15.5px;display:block}
+.ci-mid .v{font-size:12px;opacity:.65}
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.qty{display:flex;align-items:center;gap:2px;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.qty button{width:26px;height:26px;border:none;background:var(--paper);display:flex;align-items:center;justify-content:center}
+.qty button:hover{background:var(--yellow)}
+.qty span{min-width:26px;text-align:center;font-weight:700;font-size:13.5px}
+.ci .del{border:none;background:none;opacity:.55;padding:2px}
+.ci .del:hover{opacity:1;color:var(--pink)}
+.dr-foot{border-top:2.5px solid var(--ink);padding:18px 24px 22px;background:#fff}
+.ship-bar{margin-bottom:14px}
+.ship-bar .lbl{font-size:13px;font-weight:700;display:flex;gap:7px;align-items:center;margin-bottom:7px}
+.ship-track{height:13px;border:2px solid var(--ink);border-radius:99px;background:var(--paper);overflow:hidden}
+.ship-fill{height:100%;background:var(--green);border-right:2px solid var(--ink);transition:width .4s ease;width:0}
+.dr-line{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.dr-line.total{font-family:'Fredoka';font-weight:700;font-size:19px;border-top:2px dashed rgba(36,26,18,.3);padding-top:9px;margin-top:9px}
+.dr-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.pp-logo{display:inline-flex;font-family:'Fredoka';font-weight:700;font-style:italic;letter-spacing:-.02em}
+.pp-logo .p1{color:#003087}.pp-logo .p2{color:#0070BA}
+
+/* ============ MODALES ============ */
+.modal{
+  position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:22px;opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.modal.show{opacity:1;pointer-events:auto}
+.modal .scrim2{position:absolute;inset:0;background:rgba(36,26,18,.6)}
+.sheet{
+  position:relative;background:var(--paper);border:2.5px solid var(--ink);border-radius:26px;
+  box-shadow:10px 10px 0 var(--ink);width:100%;max-width:860px;max-height:calc(100vh - 44px);
+  overflow:auto;transform:translateY(16px) scale(.98);transition:transform .25s cubic-bezier(.32,1.2,.4,1);
+}
+.modal.show .sheet{transform:none}
+.sheet-close{position:absolute;top:14px;right:14px;z-index:5}
+.pd-grid{display:grid;grid-template-columns:1fr 1.1fr;min-height:440px}
+.pd-art{display:flex;align-items:center;justify-content:center;padding:40px;border-right:2.5px solid var(--ink)}
+.pd-art svg{width:min(100%,300px);height:auto}
+.pd-info{padding:36px 34px}
+.pd-info h3{font-size:31px;margin:4px 0 4px}
+.pd-info .price{font-size:24px}
+.pd-desc{margin:14px 0;font-size:15px;color:rgba(36,26,18,.8)}
+.pd-specs{list-style:none;margin:0 0 20px;display:flex;flex-wrap:wrap;gap:8px}
+.pd-specs li{
+  border:2px solid var(--ink);border-radius:99px;font-size:12.5px;font-weight:700;
+  padding:5px 12px;background:#fff;display:flex;gap:6px;align-items:center;
+}
+.pd-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.qty-lg{display:flex;align-items:center;border:2.5px solid var(--ink);border-radius:14px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
+.qty-lg button{width:40px;height:46px;border:none;background:none;font-size:20px;display:flex;align-items:center;justify-content:center}
+.qty-lg button:hover{background:var(--yellow)}
+.qty-lg span{min-width:34px;text-align:center;font-weight:700}
+@media (max-width:760px){
+  .pd-grid{grid-template-columns:1fr}
+  .pd-art{border-right:none;border-bottom:2.5px solid var(--ink);padding:26px}
+  .pd-art svg{width:min(100%,210px)}
+}
+
+/* ---- Checkout ---- */
+.ck-sheet{max-width:520px;padding:0}
+.ck-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:2.5px solid var(--ink);background:var(--yellow);border-radius:24px 24px 0 0}
+.ck-head h3{font-size:21px}
+.ck-body{padding:26px 26px 28px}
+.ck-step{display:none}
+.ck-step.active{display:block;animation:stepIn .3s ease}
+@keyframes stepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px;letter-spacing:.03em}
+.field input{
+  width:100%;border:2.5px solid var(--ink);border-radius:12px;padding:11px 14px;
+  font-family:inherit;font-size:15px;background:#fff;color:var(--ink);
+}
+.field input:focus{outline:3px solid var(--ink);outline-offset:1px}
+.field.err input{border-color:var(--orange);background:#FFF0EA}
+.field .fmsg{display:none;color:#D63301;font-size:12.5px;font-weight:700;margin-top:5px}
+.field.err .fmsg{display:block}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.demo-note{
+  display:flex;gap:9px;align-items:flex-start;
+  background:#FFF9E8;border:2px dashed var(--ink);border-radius:12px;
+  padding:11px 14px;font-size:13px;margin-bottom:18px;
+}
+.demo-note svg{flex:none;margin-top:1px}
+.paypal-frame{
+  border:2.5px solid var(--ink);border-radius:18px;overflow:hidden;background:#fff;margin-bottom:18px;
+}
+.pp-banner{background:#F5F7FA;border-bottom:2px solid var(--ink);padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.pp-banner .amount{font-family:'Fredoka';font-weight:700;font-size:19px;color:#003087}
+.pp-body{padding:22px 20px}
+.pp-body .field label{color:#2C2E2F}
+.pp-btn{background:#FFC439;border-radius:99px!important;justify-content:center;border-color:#B8860B00}
+.pp-secure{display:flex;gap:8px;align-items:center;justify-content:center;font-size:12.5px;color:#666;margin-top:14px}
+.ck-summary{border:2.5px solid var(--ink);border-radius:16px;background:#fff;padding:16px 18px;margin-bottom:18px}
+.ck-summary .dr-line{margin-bottom:7px}
+.spinner{
+  width:44px;height:44px;border-radius:50%;margin:0 auto 18px;
+  border:4.5px solid var(--paper);border-top-color:var(--ink);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ck-loading{text-align:center;padding:26px 0}
+.ck-loading .lbl{font-family:'Fredoka';font-weight:600;font-size:17px}
+.success-ico{width:78px;height:78px;border-radius:50%;background:var(--green);border:2.5px solid var(--ink);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:var(--sh-sm);animation:popIn .45s cubic-bezier(.3,1.8,.5,1)}
+.success-ico svg{width:40px;height:40px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.ck-success{text-align:center}
+.ck-success h3{font-size:26px;margin-bottom:8px}
+.ord-num{display:inline-block;background:var(--yellow);border:2.5px solid var(--ink);border-radius:12px;padding:8px 16px;font-family:'Fredoka';font-weight:700;letter-spacing:.06em;margin:10px 0 14px;box-shadow:3px 3px 0 var(--ink)}
+
+/* ============ MENTIONS LÉGALES ============ */
+.legal-view{
+  position:fixed;inset:0;z-index:120;background:var(--paper);
+  overflow-y:auto;display:none;
+}
+.legal-view.open{display:block}
+.lg-top{
+  position:sticky;top:0;background:var(--paper);border-bottom:2.5px solid var(--ink);
+  padding:16px 0;z-index:5;
+}
+.lg-top .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.lg-wrap{max-width:780px;margin:0 auto;padding:44px 24px 90px}
+.lg-wrap h1{font-size:clamp(32px,4vw,46px);margin-bottom:10px}
+.lg-note{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--yellow);border:2.5px solid var(--ink);border-radius:16px;
+  padding:16px 18px;margin:22px 0 34px;box-shadow:var(--sh-sm);font-size:14.5px;font-weight:500;
+}
+.lg-wrap h2{font-family:'Fredoka';font-weight:700;font-size:24px;margin:38px 0 12px;padding-top:14px;border-top:2.5px dashed rgba(36,26,18,.25)}
+.lg-wrap h3{font-size:18px;margin:20px 0 6px}
+.lg-wrap p,.lg-wrap li{font-size:15px;margin-bottom:9px;color:rgba(36,26,18,.88)}
+.lg-wrap ul{padding-left:22px;margin-bottom:12px}
+mark.fill{
+  background:#F8F13B;border:1.5px dashed var(--ink);border-radius:5px;
+  padding:0 5px;font-weight:700;color:var(--ink);
+}
+
+/* ============ TOASTS ============ */
+.toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{
+  display:flex;align-items:center;gap:11px;
+  background:var(--ink);color:var(--paper);
+  border:2.5px solid var(--ink);border-radius:14px;padding:12px 20px;
+  font-family:'Fredoka';font-weight:600;font-size:15px;
+  box-shadow:4px 4px 0 rgba(36,26,18,.35);
+  animation:toastIn .3s cubic-bezier(.3,1.5,.5,1);
+}
+.toast.out{animation:toastOut .3s ease forwards}
+.toast .t-ico{width:26px;height:26px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex:none}
+.toast .t-ico svg{width:15px;height:15px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+
+/* ============ REVEAL ============ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+#confetti{position:fixed;inset:0;z-index:300;pointer-events:none}
+</style>
 </head>
 <body>
-<h1><a href="https://pierreg78-maker.github.io/citations_us_english/">Les citations ont déménagé ici</a></h1>  
+
+<!-- ============ EN-TÊTE ============ -->
+<header>
+  <div class="wrap hd">
+    <a class="logo" href="#" aria-label="POLYPOP, retour en haut">POLY<b>POP</b><span class="pop">!</span></a>
+    <nav class="main" aria-label="Navigation principale">
+      <a href="#boutique">La ménagerie</a>
+      <a href="#atelier">L’atelier</a>
+      <a href="#avis">Ils adoptent</a>
+      <a href="#faq">FAQ</a>
+      <a href="#" data-legal="mentions">Mentions légales</a>
+    </nav>
+    <div class="hd-right">
+      <button class="btn cart-btn" id="cartOpen" aria-label="Ouvrir le panier">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M3 4h2l2.6 11.2a1.5 1.5 0 0 0 1.5 1.1h7.9a1.5 1.5 0 0 0 1.4-1L21 8H6.2"/><circle cx="10" cy="20.2" r="1.6"/><circle cx="17" cy="20.2" r="1.6"/></svg>
+        Panier
+        <span class="cart-badge" id="cartBadge" hidden>0</span>
+      </button>
+      <button class="btn burger" id="burger" aria-label="Menu">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="mnav" id="mnav" aria-label="Navigation mobile">
+    <a href="#boutique">La ménagerie</a>
+    <a href="#atelier">L’atelier</a>
+    <a href="#avis">Ils adoptent</a>
+    <a href="#faq">FAQ</a>
+    <a href="#" data-legal="mentions">Mentions légales</a>
+  </nav>
+</header>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker"><span class="dot"></span> Imprimé à l’atelier · PLA végétal</span>
+        <h1>Des petites <span class="hl">bêtes</span> nées d’une <span class="hl2">imprimante</span>.</h1>
+        <p class="lead">Figurines articulées imprimées couche par couche, dans des couleurs qui piquent les yeux. Elles ne mangent rien, ne boudent jamais, et tiennent dans une poche (sauf Drako, il a le droit d’être long).</p>
+        <div class="hero-cta">
+          <a class="btn btn--ink" href="#boutique">Voir la ménagerie
+            <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn" href="#atelier">L’atelier, c’est ici</a>
+        </div>
+      </div>
+      <div>
+        <div class="stage" id="heroStage" style="--c1:#6FCF2E;--c2:#FF8A00">
+          <svg class="float-deco" style="top:12px;left:-24px" width="42" height="42" viewBox="0 0 24 24"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z" fill="#FFC531" stroke="#241A12" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <svg class="float-deco" style="bottom:30px;right:-20px;animation-delay:1.4s" width="34" height="34" viewBox="0 0 24 24"><path d="M13 2L5 13h5l-2 9 9-12h-5l1-8z" fill="#FF3D8A" stroke="#241A12" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <div id="heroDragon"></div>
+          <span class="price-tag">34,90 €</span>
+          <span class="size-tag">
+            <svg class="ico" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M3 17L17 3l4 4L7 21z M8 12l2 2M11 9l2 2M14 6l2 2"/></svg>
+            45 cm d’articulations
+          </span>
+        </div>
+        <div class="hero-panel">
+          <span style="font-weight:700;font-size:14px">Coloris :</span>
+          <button class="swatch on" style="background:#6FCF2E" data-c1="#6FCF2E" data-c2="#FF8A00" data-name="Pomme" aria-label="Coloris Pomme"></button>
+          <button class="swatch" style="background:#FF5CA8" data-c1="#FF5CA8" data-c2="#FFC531" data-name="Flamingo" aria-label="Coloris Flamingo"></button>
+          <button class="swatch" style="background:#9B5DE5" data-c1="#9B5DE5" data-c2="#7EDDE2" data-name="Grape" aria-label="Coloris Grape"></button>
+          <span class="color-name" id="colorName">Pomme</span>
+          <button class="btn btn--pink hero-add" id="heroAdd">Ajouter Drako — 34,90 €</button>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <span class="stat"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="15" r="3.6"/><circle cx="6" cy="9.5" r="1.9"/><circle cx="10" cy="6.8" r="1.9"/><circle cx="14" cy="6.8" r="1.9"/><circle cx="18" cy="9.5" r="1.9"/></svg> 10 créatures au comptoir</span>
+      <span class="stat"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg> PLA d’origine végétale</span>
+      <span class="stat"><svg class="ico" viewBox="0 0 24 24"><path d="M2 7h11v9H2zM13 10h4.5L21 13v3h-8"/><circle cx="6.5" cy="18.5" r="1.7"/><circle cx="16.5" cy="18.5" r="1.7"/></svg> Expédié sous 48 h</span>
+      <span class="stat"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6z"/><path d="M8.5 12l2.4 2.4L15.5 9.5"/></svg> Articulations testées une par une</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="mq-track" id="mqTrack"></div>
+</div>
+
+<!-- ============ BOUTIQUE ============ -->
+<section class="sec-pad" id="boutique">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <h2>La ménagerie</h2>
+        <p class="sub">Dix bêtes, zéro croquettes. Cliquez sur une créature pour faire connaissance, ou ajoutez-la directement au panier.</p>
+      </div>
+      <div class="filters" id="filters">
+        <button class="chip on" data-f="all">Tout voir</button>
+        <button class="chip" data-f="articule">Articulés</button>
+        <button class="chip" data-f="figurine">Figurines</button>
+        <button class="chip" data-f="aquatique">Aquatiques</button>
+      </div>
+    </div>
+    <div class="shop-grid reveal" id="shopGrid"></div>
+  </div>
+</section>
+
+<!-- ============ ATELIER ============ -->
+<section class="sec-pad" id="atelier">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Dans l’atelier</h2>
+        <p class="sub">Pas d’usine, pas de stock dormant : chaque bête naît ici, à la commande.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="n">Étape 01</span>
+        <div class="s-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg></div>
+        <h3>Modélisée à la main</h3>
+        <p>Chaque bête est dessinée, testée, raffinée à l’atelier jusqu’à ce qu’elle ait clairement l’air de vouloir un câlin.</p>
+      </div>
+      <div class="step reveal">
+        <span class="n">Étape 02</span>
+        <div class="s-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg></div>
+        <h3>Imprimée couche par couche</h3>
+        <p>PLA d’origine végétale (maïs), 0,2 mm par couche, quatre à six heures d’impression par pièce. Le bruit des ventilateurs, c’est la berceuse.</p>
+      </div>
+      <div class="step reveal">
+        <span class="n">Étape 03</span>
+        <div class="s-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M2 7h11v9H2zM13 10h4.5L21 13v3h-8"/><circle cx="6.5" cy="18.5" r="1.7"/><circle cx="16.5" cy="18.5" r="1.7"/></svg></div>
+        <h3>Contrôlée &amp; expédiée</h3>
+        <p>Chaque articulation bouge, on vérifie. Emballage carton recyclé, calage papier, départ sous 48 h avec numéro de suivi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AVIS ============ -->
+<section class="sec-pad" id="avis">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Ils ont adopté</h2>
+        <p class="sub">Quelques retours de foyers qui ont accueilli une bête (ou trois).</p>
+      </div>
+    </div>
+    <div class="reviews">
+      <div class="rev reveal">
+        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></div>
+        <p>« Le dragon de 45 cm a élu domicile sur mon étagère et terrorise gentiment mes plantes. Les articulations sont dingues. »</p>
+        <div class="who"><span class="av">M</span>Marion, Lyon — Drako coloris Pomme</div>
+      </div>
+      <div class="rev reveal">
+        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></div>
+        <p>« Commandé un mardi soir, reçu le jeudi. La pieuvre suit mon fils partout, elle a déjà survécu à dix bains de sable. »</p>
+        <div class="who"><span class="av">T</span>Thomas, Nantes — Poulpy la pieuvre</div>
+      </div>
+      <div class="rev reveal">
+        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></div>
+        <p>« Les lions stylisés sont encore plus beaux en vrai, les couleurs claquent. Paiement PayPal nickel, emballage soigné. »</p>
+        <div class="who"><span class="av">A</span>Awa, Bordeaux — Leo le lion</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec-pad" id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head reveal"><div><h2>Questions fréquentes</h2></div></div>
+    <div class="faq reveal" id="faqList">
+      <div class="faq-item">
+        <button>Vos bêtes sont-elles solides ?<svg class="ico chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="faq-a"><div><p>Le PLA est rigide mais nos articulations sont conçues pour plier sans casser : chaque pièce est testée articulation par articulation avant départ. Déconseillé aux moins de 3 ans (petites pièces), indestructible pour les grands enfants, quel que soit leur âge.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button>Quels sont les délais de livraison ?<svg class="ico chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="faq-a"><div><p>Impression sous 24 à 48 h, expédition avec suivi, livraison en 48 à 72 h ouvrées partout en France. Livraison offerte dès 35 € d’achat, sinon 4,90 €.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button>Comment se passe le paiement ?<svg class="ico chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="faq-a"><div><p>Le paiement passe par PayPal : vous pouvez payer avec votre compte PayPal ou directement par carte bancaire via PayPal, sans créer de compte. La transaction est sécurisée de bout en bout par PayPal.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button>Et si la bête ne me plaît pas ?<svg class="ico chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="faq-a"><div><p>Vous avez 14 jours pour changer d’avis : renvoyez-la en bon état, remboursée intégralement. Seules les créations personnalisées (couleurs ou gravure sur mesure) ne sont pas reprises, conformément à la loi.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button>On peut commander une couleur sur mesure ?<svg class="ico chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="faq-a"><div><p>Oui ! Écrivez-nous votre combinaison de couleurs préférée, on imprime une bête unique pour vous. Comptez 2 à 3 jours de plus et un petit supplément selon le modèle.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="news">
+  <div class="wrap">
+    <h2>Les nouveautés sortent de la buse en premier</h2>
+    <p>Une nouvelle bête arrive environ chaque mois. Inscrivez-vous pour être prévenu avant tout le monde — pas de spam, juste des bestioles.</p>
+    <form class="news-form" id="newsForm" novalidate>
+      <input type="email" id="newsEmail" placeholder="votre@email.fr" aria-label="Votre adresse email">
+      <button class="btn" type="submit">Me prévenir
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+    <div class="news-ok" id="newsOk">
+      <svg class="ico" style="width:26px;height:26px" viewBox="0 0 24 24"><path d="M4 12l5 5L20 7"/></svg>
+      C’est noté ! Surveillez votre boîte mail, la première bête arrive bientôt.
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="ft">
+      <div>
+        <a class="logo" href="#" style="text-decoration:none">POLY<b>POP</b><span class="pop">!</span></a>
+        <p class="baseline">Petites bêtes imprimées en 3D à l’atelier, en PLA d’origine végétale. Fait avec du filament et beaucoup d’entêtement.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <a href="#boutique">La ménagerie</a>
+        <a href="#atelier">L’atelier</a>
+        <a href="#avis">Ils adoptent</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h4>Infos pratiques</h4>
+        <a href="#" data-legal="mentions">Mentions légales</a>
+        <a href="#" data-legal="cgv">Conditions générales de vente</a>
+        <a href="#" data-legal="livraison">Livraison &amp; retours</a>
+        <a href="mailto:atelier@polypop.fr">atelier@polypop.fr</a>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span>© 2025 <mark class="fill" style="color:var(--paper);background:transparent;border-color:rgba(255,244,226,.6)">[RAISON SOCIALE — à compléter]</mark> — Tous droits réservés.</span>
+      <span>Paiement sécurisé via <span class="pp-logo"><span class="p1">Pay</span><span class="p2">Pal</span></span></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ PANIER ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Panier">
+  <div class="dr-head">
+    <h3>Votre panier</h3>
+    <button class="icon-btn" id="cartClose" aria-label="Fermer le panier"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="dr-items" id="drItems"></div>
+  <div class="dr-foot">
+    <div class="ship-bar">
+      <div class="lbl" id="shipLbl"></div>
+      <div class="ship-track"><div class="ship-fill" id="shipFill"></div></div>
+    </div>
+    <div class="dr-line"><span>Sous-total</span><span id="ckSub">0,00 €</span></div>
+    <div class="dr-line"><span>Livraison</span><span id="ckShip">—</span></div>
+    <div class="dr-line total"><span>Total</span><span id="ckTotal">0,00 €</span></div>
+    <div class="dr-actions">
+      <button class="btn btn--paypal btn--full" id="goCheckout">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        Commander avec <span class="pp-logo"><span class="p1">Pay</span><span class="p2">Pal</span></span>
+      </button>
+      <button class="btn btn--full" id="drContinue" style="background:var(--paper)">Continuer mes achats</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ============ FICHE PRODUIT ============ -->
+<div class="modal" id="pdModal" role="dialog" aria-modal="true">
+  <div class="scrim2" data-close="pd"></div>
+  <div class="sheet">
+    <button class="icon-btn sheet-close" data-close="pd" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="pd-grid" id="pdGrid"></div>
+  </div>
+</div>
+
+<!-- ============ CHECKOUT ============ -->
+<div class="modal" id="ckModal" role="dialog" aria-modal="true">
+  <div class="scrim2" data-close="ck"></div>
+  <div class="sheet ck-sheet">
+    <div class="ck-head">
+      <h3 id="ckTitle">Finaliser la commande</h3>
+      <button class="icon-btn" data-close="ck" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="ck-body">
+
+      <!-- Étape 1 : coordonnées -->
+      <div class="ck-step active" id="ckStepInfo">
+        <p style="font-size:14.5px;margin-bottom:18px;color:rgba(36,26,18,.8)">Où doit arriver la bête ? Deux minutes et c’est réglé.</p>
+        <div class="frow">
+          <div class="field" data-f="fname"><label for="fFname">Prénom</label><input id="fFname" type="text" autocomplete="given-name"><span class="fmsg">Champ requis</span></div>
+          <div class="field" data-f="lname"><label for="fLname">Nom</label><input id="fLname" type="text" autocomplete="family-name"><span class="fmsg">Champ requis</span></div>
+        </div>
+        <div class="field" data-f="email"><label for="fEmail">Email</label><input id="fEmail" type="email" autocomplete="email" placeholder="vous@exemple.fr"><span class="fmsg">Email invalide</span></div>
+        <div class="field" data-f="addr"><label for="fAddr">Adresse</label><input id="fAddr" type="text" autocomplete="street-address"><span class="fmsg">Champ requis</span></div>
+        <div class="frow">
+          <div class="field" data-f="zip"><label for="fZip">Code postal</label><input id="fZip" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code"><span class="fmsg">5 chiffres requis</span></div>
+          <div class="field" data-f="city"><label for="fCity">Ville</label><input id="fCity" type="text" autocomplete="address-level2"><span class="fmsg">Champ requis</span></div>
+        </div>
+        <button class="btn btn--ink btn--full" id="ckToPaypal" style="margin-top:6px">Continuer vers
+          <span class="pp-logo"><span class="p1">Pay</span><span class="p2">Pal</span></span>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
+        </button>
+        <p style="text-align:center;font-size:12px;margin-top:12px;opacity:.65">
+          En continuant, vous acceptez nos <a href="#" data-legal="cgv" style="font-weight:700">CGV</a>.
+        </p>
+      </div>
+
+      <!-- Étape 2 : connexion PayPal (simulation) -->
+      <div class="ck-step" id="ckStepLogin">
+        <div class="demo-note">
+          <svg class="ico" style="width:17px;height:17px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+          <span><b>Environnement de démonstration.</b> N’importe quel email valide et mot de passe fonctionnent — aucun paiement réel n’est effectué.</span>
+        </div>
+        <div class="paypal-frame">
+          <div class="pp-banner">
+            <span class="pp-logo" style="font-size:24px"><span class="p1">Pay</span><span class="p2">Pal</span></span>
+            <span class="amount" id="ppAmount">—</span>
+          </div>
+          <div class="pp-body">
+            <div class="field" data-f="ppmail"><label for="ppMail">Email ou numéro de mobile</label><input id="ppMail" type="email" placeholder="vous@exemple.fr"></div>
+            <div class="field" data-f="pppass"><label for="ppPass">Mot de passe</label><input id="ppPass" type="password" placeholder="••••••••"></div>
+            <div class="field" style="margin-bottom:4px" id="ppErrWrap"><span class="fmsg" id="ppErr">Email ou mot de passe requis (démo)</span></div>
+            <button class="btn pp-btn btn--full" id="ppLoginBtn">Se connecter</button>
+            <div class="pp-secure">
+              <svg class="ico" style="width:15px;height:15px" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              Connexion chiffrée · Vos données bancaires restent chez PayPal
+            </div>
+          </div>
+        </div>
+        <button class="btn btn--full" id="ppBack1" style="background:var(--paper)">Retour</button>
+      </div>
+
+      <!-- Étape 3 : connexion en cours -->
+      <div class="ck-step" id="ckStepLoad">
+        <div class="ck-loading">
+          <div class="spinner"></div>
+          <div class="lbl">Connexion sécurisée à PayPal…</div>
+        </div>
+      </div>
+
+      <!-- Étape 4 : récapitulatif & paiement -->
+      <div class="ck-step" id="ckStepPay">
+        <div class="paypal-frame">
+          <div class="pp-banner">
+            <span class="pp-logo" style="font-size:24px"><span class="p1">Pay</span><span class="p2">Pal</span></span>
+            <span class="amount" id="ppAmount2">—</span>
+          </div>
+          <div class="pp-body" style="padding:18px 20px">
+            <p style="font-size:13.5px;color:#666;margin-bottom:10px">Connecté : <b id="ppWho">—</b></p>
+            <div class="ck-summary" id="ppSummary"></div>
+            <button class="btn pp-btn btn--full" id="ppPayBtn">Payer maintenant</button>
+          </div>
+        </div>
+        <button class="btn btn--full" id="ppBack2" style="background:var(--paper)">Retour</button>
+      </div>
+
+      <!-- Étape 5 : traitement -->
+      <div class="ck-step" id="ckStepProc">
+        <div class="ck-loading">
+          <div class="spinner"></div>
+          <div class="lbl">Paiement en cours, ne fermez pas cette fenêtre…</div>
+        </div>
+      </div>
+
+      <!-- Étape 6 : succès -->
+      <div class="ck-step" id="ckStepDone">
+        <div class="ck-success">
+          <div class="success-ico"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+          <h3>Merci <span id="doneName">!</span></h3>
+          <p style="font-size:15px">Votre paiement a bien été reçu. Les bêtes sortent de l’imprimante et partent sous 48 h.</p>
+          <div class="ord-num" id="ordNum">PP-XXXXXX</div>
+          <p style="font-size:13.5px;opacity:.75;margin-bottom:20px">Un email de confirmation part vers <b id="doneMail">—</b>.</p>
+          <button class="btn btn--ink btn--full" id="doneBtn">Continuer mes achats</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ MENTIONS LÉGALES ============ -->
+<section class="legal-view" id="legalView" aria-label="Mentions légales">
+  <div class="lg-top">
+    <div class="wrap">
+      <span class="disp" style="font-family:'Fredoka';font-weight:700;font-size:19px">POLYPOP — Informations légales</span>
+      <button class="btn" id="legalClose" style="padding:9px 16px;font-size:14px">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M19 12H4M11 5l-7 7 7 7"/></svg>
+        Retour à la boutique
+      </button>
+    </div>
+  </div>
+  <div class="lg-wrap">
+    <h1 id="mentions">Mentions légales</h1>
+    <div class="lg-note">
+      <svg class="ico" style="width:22px;height:22px;flex:none;margin-top:2px" viewBox="0 0 24 24"><path d="M12 3l1.9 6.1L20 11l-6.1 1.9L12 19l-1.9-6.1L4 11l6.1-1.9z"/></svg>
+      <span><b>Document à personnaliser :</b> chaque champ surligné <mark class="fill">[ENTRE CROCHETS]</mark> est à compléter avec vos informations avant la mise en ligne du site.</span>
+    </div>
+
+    <h2>1. Éditeur du site</h2>
+    <p>Le site <b>POLYPOP</b> est édité par :</p>
+    <ul>
+      <li><b>Dénomination :</b> <mark class="fill">[DÉNOMINATION SOCIALE OU NOM]</mark></li>
+      <li><b>Forme juridique :</b> <mark class="fill">[SAS / SARL / EI / AUTO-ENTREPRISE…]</mark></li>
+      <li><b>Capital social :</b> <mark class="fill">[MONTANT DU CAPITAL]</mark> €</li>
+      <li><b>RCS :</b> <mark class="fill">[VILLE D’IMMATRICULATION + NUMÉRO SIREN/SIRET]</mark></li>
+      <li><b>N° TVA intracommunautaire :</b> <mark class="fill">[FR XX XXXXXXXX]</mark></li>
+      <li><b>Siège social :</b> <mark class="fill">[ADRESSE COMPLÈTE]</mark></li>
+      <li><b>Email :</b> <mark class="fill">[EMAIL DE CONTACT]</mark> — <b>Téléphone :</b> <mark class="fill">[NUMÉRO DE TÉLÉPHONE]</mark></li>
+      <li><b>Responsable de la publication :</b> <mark class="fill">[NOM, PRÉNOM DU DIRECTEUR DE PUBLICATION]</mark></li>
+    </ul>
+
+    <h2>2. Hébergement</h2>
+    <p>Le site est hébergé par :</p>
+    <ul>
+      <li><b>Hébergeur :</b> <mark class="fill">[NOM DE L’HÉBERGEUR]</mark></li>
+      <li><b>Adresse :</b> <mark class="fill">[ADRESSE DE L’HÉBERGEUR]</mark></li>
+      <li><b>Téléphone :</b> <mark class="fill">[NUMÉRO]</mark> — <b>Site :</b> <mark class="fill">[SITE WEB DE L’HÉBERGEUR]</mark></li>
+    </ul>
+
+    <h2>3. Propriété intellectuelle</h2>
+    <p>L’ensemble des éléments du site (textes, illustrations, logos, modèles 3D, photographies) est la propriété exclusive de <mark class="fill">[DÉNOMINATION SOCIALE]</mark>, sauf mention contraire. Toute reproduction, représentation ou adaptation, totale ou partielle, sans autorisation écrite préalable est interdite et constitue une contrefaçon au sens des articles L.335-2 et suivants du Code de la propriété intellectuelle.</p>
+
+    <h2>4. Paiement</h2>
+    <p>Les paiements sont traités exclusivement par <b>PayPal (Europe) S.à r.l. et Cie, S.C.A.</b>, 22-24 Boulevard Royal, L-2449 Luxembourg. Aucune donnée bancaire ne transite ni n’est stockée sur nos serveurs. Le paiement par carte bancaire est également possible via PayPal, sans création de compte.</p>
+
+    <h2>5. Données personnelles</h2>
+    <p>Le responsable de traitement est <mark class="fill">[DÉNOMINATION SOCIALE / NOM DU RESPONSABLE]</mark>. Les données collectées (nom, email, adresse de livraison) le sont uniquement pour :</p>
+    <ul>
+      <li>le traitement et l’expédition des commandes (base légale : exécution du contrat) ;</li>
+      <li>le service client et le suivi des retours ;</li>
+      <li>l’envoi de la newsletter, uniquement avec votre consentement explicite.</li>
+    </ul>
+    <p>Les données sont conservées <b>3 ans</b> après le dernier contact (10 ans pour les pièces comptables, obligation légale). Conformément au RGPD et à la loi Informatique et Libertés, vous disposez d’un droit d’accès, de rectification, d’effacement, de portabilité et d’opposition sur vos données, à exercer à l’adresse <mark class="fill">[EMAIL DE CONTACT RGPD]</mark>. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+
+    <h2>6. Cookies</h2>
+    <p>Le site utilise uniquement des cookies et stockages techniques strictement nécessaires (contenu du panier conservé localement). Tout outil de mesure d’audience <mark class="fill">[NOM DE L’OUTIL, LE CAS ÉCHÉANT]</mark> fera l’objet de votre consentement préalable via un bandeau dédié.</p>
+
+    <h2 id="livraison">7. Livraison &amp; retours</h2>
+    <ul>
+      <li><b>Préparation :</b> impression et contrôle sous 24 à 48 h ouvrées.</li>
+      <li><b>Expédition :</b> <mark class="fill">[TRANSPORTEUR]</mark> avec numéro de suivi, livraison en 48 à 72 h ouvrées en France métropolitaine.</li>
+      <li><b>Frais de port :</b> 4,90 € — offerts dès 35 € d’achat.</li>
+      <li><b>Retours :</b> 14 jours pour changer d’avis (article en bon état). Contactez d’abord l’atelier à <mark class="fill">[EMAIL]</mark>, puis renvoyez à <mark class="fill">[ADRESSE DE RETOUR]</mark>. Remboursement sous 14 jours après réception.</li>
+    </ul>
+
+    <h2 id="cgv">8. Conditions générales de vente (résumé)</h2>
+    <ul>
+      <li>Les prix sont indiqués en euros, toutes taxes comprises (TVA <mark class="fill">[TAUX]</mark> %), hors frais de livraison.</li>
+      <li>La commande est ferme après validation du paiement et confirmation par email à <mark class="fill">[EMAIL]</mark>.</li>
+      <li><b>Droit de rétractation :</b> 14 jours à compter de la réception (art. L221-18 du Code de la consommation). Exception légale (art. L221-28) : les créations personnalisées fabriquées selon vos spécifications ne sont ni reprises ni remboursées.</li>
+      <li><b>Garanties :</b> garantie légale de conformité (art. L217-3 et suivants) et garantie contre les vices cachés (art. 1641 et suivants du Code civil).</li>
+      <li>Références complètes des CGV disponibles sur demande et jointes à chaque confirmation de commande.</li>
+    </ul>
+
+    <h2>9. Médiation de la consommation</h2>
+    <p>Conformément à l’article L.612-1 du Code de la consommation, en cas de litige non résolu à l’amiable, le consommateur peut recourir gratuitement au médiateur : <mark class="fill">[NOM DU MÉDIATEUR + ADRESSE DU SITE DE MÉDIATION]</mark>.</p>
+
+    <h2>10. Droit applicable</h2>
+    <p>Le présent site et les ventes qui y sont réalisées sont soumis au droit français. En cas de litige, et à défaut de résolution amiable, les tribunaux français seront seuls compétents (<mark class="fill">[TRIBUNAL COMPÉTENT / VILLE]</mark>).</p>
+  </div>
+</section>
+
+<div class="toasts" id="toasts"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* =====================================================
+   POLYPOP — toute la mécanique du site
+   ===================================================== */
+
+/* ---------- Bibliothèque d’icônes ---------- */
+const ICONS = {
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  check:'<path d="M4 12l5 5L20 7"/>',
+  trash:'<path d="M4 7h16M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>',
+  ruler:'<path d="M3 17L17 3l4 4L7 21zM8 12l2 2M11 9l2 2M14 6l2 2"/>',
+  truck:'<path d="M2 7h11v9H2zM13 10h4.5L21 13v3h-8"/><circle cx="6.5" cy="18.5" r="1.7"/><circle cx="16.5" cy="18.5" r="1.7"/>',
+  cube:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/>',
+  printer:'<path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  spark:'<path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/>',
+  paw:'<circle cx="12" cy="15" r="3.6"/><circle cx="6" cy="9.5" r="1.9"/><circle cx="10" cy="6.8" r="1.9"/><circle cx="14" cy="6.8" r="1.9"/><circle cx="18" cy="9.5" r="1.9"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'
+};
+function ico(name, cls='ico'){
+  return `<svg class="${cls}" viewBox="0 0 24 24">${ICONS[name]}</svg>`;
+}
+const INK = '#241A12';
+
+/* ---------- Illustrations vectorielles des bêtes ----------
+   Chaque bête est dessinée à la main en SVG, contours épais,
+   aplats vifs : le même esprit que les pièces imprimées.   */
+function dragonSVG(){
+  return `<svg class="dragon" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <g class="dseg d6">
+      <circle cx="231" cy="76" r="9" fill="var(--c2)"/>
+      <circle cx="206" cy="82" r="14" fill="var(--c1)"/>
+      <path d="M197,70 L206,54 L215,70 Z" fill="var(--c2)"/>
+    </g>
+    <g class="dseg d5">
+      <circle cx="176" cy="92" r="19" fill="var(--c1)"/>
+      <path d="M166,77 L176,58 L186,77 Z" fill="var(--c2)"/>
+      <ellipse cx="176" cy="105" rx="10" ry="7" fill="var(--c2)" stroke="none"/>
+      <ellipse cx="176" cy="115" rx="8" ry="5.5" fill="var(--c2)"/>
+    </g>
+    <g class="dseg d4">
+      <path d="M150,62 C158,36 186,34 184,52 C182,66 162,70 150,66 Z" fill="var(--c2)"/>
+      <path d="M158,60 C164,52 172,47 179,49" stroke-width="3.5" fill="none"/>
+      <circle cx="144" cy="82" r="23" fill="var(--c1)"/>
+      <path d="M133,64 L144,43 L155,64 Z" fill="var(--c2)"/>
+    </g>
+    <g class="dseg d3">
+      <circle cx="112" cy="94" r="27" fill="var(--c1)"/>
+      <path d="M101,72 L112,50 L123,72 Z" fill="var(--c2)"/>
+      <ellipse cx="112" cy="110" rx="13" ry="9" fill="var(--c2)" stroke="none"/>
+      <ellipse cx="98" cy="124" rx="9" ry="6" fill="var(--c2)"/>
+      <path d="M94,128 v5 M103,128 v5" stroke-width="3.5" fill="none"/>
+    </g>
+    <g class="dseg d2">
+      <path d="M48,56 C42,42 50,32 60,46 Z" fill="var(--c2)"/>
+      <path d="M66,50 C64,32 76,28 80,44 Z" fill="var(--c2)"/>
+      <circle cx="66" cy="80" r="31" fill="var(--c1)"/>
+      <ellipse cx="47" cy="93" rx="18" ry="13" fill="var(--c2)"/>
+      <circle cx="39" cy="90" r="1.9" fill="${INK}" stroke="none"/>
+      <circle cx="47" cy="87" r="1.9" fill="${INK}" stroke="none"/>
+      <ellipse cx="60" cy="113" rx="9" ry="6" fill="var(--c2)"/>
+      <path d="M56,117 v5 M64,117 v5" stroke-width="3.5" fill="none"/>
+      <circle cx="61" cy="66" r="8.5" fill="#fff"/>
+      <circle class="pupil" data-bx="61.5" data-by="67" cx="61.5" cy="67" r="4.2" fill="${INK}" stroke="none"/>
+      <circle cx="63.5" cy="64.5" r="1.5" fill="#fff" stroke="none"/>
+      <circle cx="86" cy="63" r="8.5" fill="#fff"/>
+      <circle class="pupil" data-bx="86.5" data-by="64" cx="86.5" cy="64" r="4.2" fill="${INK}" stroke="none"/>
+      <circle cx="88.5" cy="61.5" r="1.5" fill="#fff" stroke="none"/>
+      <path d="M42,98 Q56,108 72,101" stroke-width="4" fill="none"/>
+      <circle cx="82" cy="87" r="5.5" fill="#FF9EC4" stroke="none"/>
+    </g>
+  </g></svg>`;
+}
+
+const ART = {
+  lion:{ name:'Leo le lion', size:'10 cm', price:15.90, cat:['figurine'],
+    bg:'#FFE18F', artColor:'#FFC531',
+    desc:'Rugit en si. Volume très raisonnable, crinière très généreuse.',
+    long:'Leo est le chef (autoproclamé) de la ménagerie. Sa crinière festonnée est imprimée d’un seul tenant, sa face bien ronde est faite pour décorer un bureau ou une chambre. Vendu seul, ou en tribu de trois coloris sur demande.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      ${[[148,102],[134,136],[100,150],[66,136],[52,102],[66,68],[100,54],[134,68]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="24" fill="#FF8A00"/>`).join('')}
+      <circle cx="100" cy="102" r="57" fill="#FF8A00" stroke="none"/>
+      <circle cx="100" cy="102" r="41" fill="#FFC531"/>
+      <ellipse cx="100" cy="120" rx="21" ry="15" fill="#FFF4E2" stroke-width="4"/>
+      <path d="M92,112 L108,112 L100,121 Z" fill="#5A2E0A" stroke-width="3"/>
+      <path d="M100,121 v5 M100,126 q-6,6 -12,2 M100,126 q6,6 12,2" stroke-width="3.5" fill="none"/>
+      <circle cx="84" cy="96" r="5" fill="${INK}" stroke="none"/><circle cx="86" cy="94" r="1.6" fill="#fff" stroke="none"/>
+      <circle cx="116" cy="96" r="5" fill="${INK}" stroke="none"/><circle cx="118" cy="94" r="1.6" fill="#fff" stroke="none"/>
+      <circle cx="72" cy="114" r="5.5" fill="#FFB1CF" stroke="none"/>
+      <circle cx="128" cy="114" r="5.5" fill="#FFB1CF" stroke="none"/>
+      <path d="M64,108 h8 M64,114 h8 M128,108 h8 M136,114 h8" stroke-width="2.5" fill="none"/>
+    </g></svg>`},
+  pieuvre:{ name:'Poulpy la pieuvre', size:'8 cm', price:12.90, cat:['articule'],
+    bg:'#E4DBFF', artColor:'#FF3D8A',
+    desc:'8 tentacules, 0 problème. articulée de la tête au bout des bras.',
+    long:'Poulpy est notre best-seller de poche : 8 tentacules articulés qui s’accrochent aux doigts, aux sacs et aux cierges magiques. Imprimée d’une pièce, sans assemblage, elle ne demande qu’à être tordue dans tous les sens.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M64,110 C40,142 24,134 30,112" stroke-width="23"/><path d="M80,122 C74,156 54,160 54,140" stroke-width="23"/>
+      <path d="M100,126 C102,160 84,162 86,144" stroke-width="23"/><path d="M120,122 C126,156 146,160 146,140" stroke-width="23"/>
+      <path d="M136,110 C160,142 176,134 170,112" stroke-width="23"/>
+      <path d="M64,110 C40,142 24,134 30,112" stroke="#FF3D8A" stroke-width="15"/>
+      <path d="M80,122 C74,156 54,160 54,140" stroke="#FF3D8A" stroke-width="15"/>
+      <path d="M100,126 C102,160 84,162 86,144" stroke="#FF3D8A" stroke-width="15"/>
+      <path d="M120,122 C126,156 146,160 146,140" stroke="#FF3D8A" stroke-width="15"/>
+      <path d="M136,110 C160,142 176,134 170,112" stroke="#FF3D8A" stroke-width="15"/>
+      <g stroke-width="5"><circle cx="100" cy="84" r="44" fill="#FF3D8A"/>
+      <ellipse cx="100" cy="102" rx="26" ry="19" fill="#FF8FBC" stroke="none"/>
+      <circle cx="83" cy="80" r="10" fill="#fff"/><circle cx="117" cy="80" r="10" fill="#fff"/>
+      <circle cx="84.5" cy="82" r="5" fill="${INK}" stroke="none"/><circle cx="118.5" cy="82" r="5" fill="${INK}" stroke="none"/>
+      <circle cx="86.5" cy="79.5" r="1.6" fill="#fff" stroke="none"/><circle cx="120.5" cy="79.5" r="1.6" fill="#fff" stroke="none"/>
+      <path d="M90,105 Q100,113 110,105" stroke-width="4"/>
+      <circle cx="68" cy="97" r="6" fill="#FFB1CF" stroke="none"/><circle cx="132" cy="97" r="6" fill="#FFB1CF" stroke="none"/></g>
+    </g></svg>`},
+  axolotl:{ name:'Axo l’axolotl', size:'11 cm', price:14.90, cat:['aquatique'],
+    bg:'#FFD6E7', artColor:'#FF9EC4',
+    desc:'Sourit en permanence. On ne sait pas pourquoi, on ne demande pas.',
+    long:'Axo détient le record de sourire par centimètre carré. Ses branchies plumeuses sont imprimées souples et frémissent quand on le déplace. Le compagnon idéal d’un aquarium… sans eau.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
+      <ellipse cx="38" cy="70" rx="17" ry="8" fill="#FF5C8A" transform="rotate(-32 38 70)"/>
+      <ellipse cx="30" cy="92" rx="7" ry="15" fill="#FF5C8A"/>
+      <ellipse cx="38" cy="114" rx="17" ry="8" fill="#FF5C8A" transform="rotate(32 38 114)"/>
+      <ellipse cx="162" cy="70" rx="17" ry="8" fill="#FF5C8A" transform="rotate(32 162 70)"/>
+      <ellipse cx="170" cy="92" rx="7" ry="15" fill="#FF5C8A"/>
+      <ellipse cx="162" cy="114" rx="17" ry="8" fill="#FF5C8A" transform="rotate(-32 162 114)"/>
+      <ellipse cx="100" cy="146" rx="30" ry="25" fill="#FF9EC4"/>
+      <ellipse cx="78" cy="166" rx="9" ry="7" fill="#FF9EC4"/><ellipse cx="94" cy="172" rx="9" ry="7" fill="#FF9EC4"/>
+      <ellipse cx="110" cy="172" rx="9" ry="7" fill="#FF9EC4"/><ellipse cx="126" cy="166" rx="9" ry="7" fill="#FF9EC4"/>
+      <ellipse cx="100" cy="92" rx="47" ry="39" fill="#FF9EC4"/>
+      <circle cx="84" cy="88" r="5.5" fill="${INK}" stroke="none"/><circle cx="86" cy="86" r="1.7" fill="#fff" stroke="none"/>
+      <circle cx="116" cy="88" r="5.5" fill="${INK}" stroke="none"/><circle cx="118" cy="86" r="1.7" fill="#fff" stroke="none"/>
+      <path d="M86,106 Q100,116 114,106" stroke-width="4" fill="none"/>
+      <circle cx="70" cy="102" r="6" fill="#FF6FA0" stroke="none"/><circle cx="130" cy="102" r="6" fill="#FF6FA0" stroke="none"/>
+    </g></svg>`},
+  renard:{ name:'Goupil le renard', size:'12 cm', price:14.90, cat:['figurine'],
+    bg:'#FFD9B3', artColor:'#FF7A1F',
+    desc:'C’est le renard. Le mot est dedans, il n’a pas aimé.',
+    long:'Goupil veille sur la bibliothèque. Oreilles pointues, museau tout blanc et une queue qu’on aimerait plus grosse — c’est déjà réglé, elle l’est. Imprimé en une pièce, stable sur sa base ronde.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <ellipse cx="164" cy="140" rx="27" ry="16" fill="#FF7A1F" transform="rotate(-22 164 140)"/>
+      <ellipse cx="184" cy="150" rx="10" ry="9" fill="#FFF4E2" stroke-width="4"/>
+      <ellipse cx="112" cy="146" rx="36" ry="27" fill="#FF7A1F"/>
+      <path d="M54,68 L58,26 L88,54 Z" fill="#FF7A1F"/><path d="M60,58 L62,38 L76,52 Z" fill="${INK}" stroke-width="3.5"/>
+      <path d="M118,68 L114,26 L84,54 Z" fill="#FF7A1F"/><path d="M112,58 L110,38 L96,52 Z" fill="${INK}" stroke-width="3.5"/>
+      <ellipse cx="86" cy="98" rx="45" ry="41" fill="#FF7A1F"/>
+      <ellipse cx="86" cy="118" rx="25" ry="18" fill="#FFF4E2" stroke-width="4"/>
+      <circle cx="86" cy="107" r="5.5" fill="${INK}" stroke="none"/>
+      <path d="M78,120 Q86,127 94,120" stroke-width="3.5" fill="none"/>
+      <circle cx="68" cy="92" r="5" fill="${INK}" stroke="none"/><circle cx="70" cy="90" r="1.6" fill="#fff" stroke="none"/>
+      <circle cx="104" cy="92" r="5" fill="${INK}" stroke="none"/><circle cx="106" cy="90" r="1.6" fill="#fff" stroke="none"/>
+      <circle cx="60" cy="110" r="5.5" fill="#FFB27A" stroke="none"/>
+    </g></svg>`},
+  tortue:{ name:'Carapops la tortue', size:'9 cm', price:11.90, cat:['figurine'],
+    bg:'#CDEFA6', artColor:'#19C37D',
+    desc:'Livrée avec sa maison. Aucun loyer, aucune garantie à signer.',
+    long:'Carapops avance à son rythme, et franchement c’est la seule ici qui a compris la vie. Sa carapace est imprimée avec ses plaques incrustées, ses pattes bougent doucement quand on la pousse.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M40,120 L22,131 L41,138 Z" fill="#19C37D"/>
+      <ellipse cx="72" cy="140" rx="11" ry="9" fill="#B7EF7C"/>
+      <ellipse cx="118" cy="140" rx="11" ry="9" fill="#B7EF7C"/>
+      <circle cx="163" cy="110" r="17" fill="#B7EF7C"/>
+      <circle cx="168" cy="105" r="2.6" fill="${INK}" stroke="none"/>
+      <path d="M164,116 q5,4 10,0" stroke-width="3" fill="none"/>
+      <path d="M42,116 A58,58 0 0 1 158,116 Z" fill="#19C37D"/>
+      <rect x="34" y="112" width="132" height="18" rx="9" fill="#19C37D"/>
+      <path d="M78,62 C74,88 74,104 76,113 M122,62 C126,88 126,104 124,113" stroke="#0E9A5F" stroke-width="4" fill="none"/>
+      <path d="M48,90 Q100,74 152,90" stroke="#0E9A5F" stroke-width="4" fill="none"/>
+    </g></svg>`},
+  trex:{ name:'Rex le T-Rex', size:'30 cm', price:26.90, cat:['articule'],
+    bg:'#C9F27E', artColor:'#84D31B',
+    desc:'Des bras courts, un cœur immense. Articulé de la gueule à la queue.',
+    long:'Rex fait 30 cm de prédateur et zéro cm de menace. Gueule articulée, queue souple, et des bras qu’on ne commentera pas. Le dino qui remplace enfin le plastique creux des supermarchés.',
+    svg:`<svg viewBox="0 0 240 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M150,120 C185,118 210,130 218,142 C200,149 170,152 144,146 Z" fill="#84D31B"/>
+      <path d="M112,84 L120,67 L128,84 Z" fill="#D9F7A1" stroke-width="4"/>
+      <path d="M138,92 L146,76 L154,92 Z" fill="#D9F7A1" stroke-width="4"/>
+      <path d="M160,108 L167,93 L174,108 Z" fill="#D9F7A1" stroke-width="4"/>
+      <ellipse cx="120" cy="120" rx="45" ry="40" fill="#84D31B"/>
+      <ellipse cx="116" cy="136" rx="25" ry="19" fill="#D9F7A1" stroke="none"/>
+      <path d="M100,106 q9,7 3,17" stroke-width="10" fill="none"/>
+      <path d="M100,106 q9,7 3,17" stroke="#84D31B" stroke-width="4.5" fill="none"/>
+      <ellipse cx="104" cy="160" rx="17" ry="12" fill="#84D31B"/>
+      <ellipse cx="138" cy="158" rx="17" ry="12" fill="#84D31B"/>
+      <ellipse cx="112" cy="170" rx="13" ry="7" fill="#84D31B"/>
+      <ellipse cx="146" cy="168" rx="13" ry="7" fill="#84D31B"/>
+      <circle cx="78" cy="64" r="34" fill="#84D31B"/>
+      <path d="M46,72 Q70,93 98,78 Q72,99 46,72 Z" fill="#4A2400" stroke-width="4"/>
+      <path d="M54,75 l5,8 5,-7 z M68,82 l5,8 5,-7 z" fill="#fff" stroke-width="2.5"/>
+      <circle cx="46" cy="55" r="2.4" fill="${INK}" stroke="none"/>
+      <circle cx="72" cy="48" r="8.5" fill="#fff"/>
+      <circle cx="71" cy="49" r="4.4" fill="${INK}" stroke="none"/><circle cx="73" cy="46.5" r="1.5" fill="#fff" stroke="none"/>
+      <circle cx="94" cy="72" r="5.5" fill="#CFF39A" stroke="none"/>
+    </g></svg>`},
+  robot:{ name:'Robo-Pop le robot', size:'12 cm', price:17.90, cat:['articule'],
+    bg:'#E9E1FF', artColor:'#FFC531',
+    desc:'Déborde d’amour. Piles non incluses, jamais nécessaires.',
+    long:'Robo-Pop a été programmé pour une seule mission : rendre service et être joli sur une étagère. Bras articulés, tête qui tourne, et trois boutons qui ne servent à rien mais qui claquent.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M100,38 V20" stroke-width="4.5" fill="none"/>
+      <circle cx="100" cy="15" r="7" fill="#FF3D8A"/>
+      <rect x="52" y="58" width="11" height="22" rx="4" fill="#12B5BC"/>
+      <rect x="137" y="58" width="11" height="22" rx="4" fill="#12B5BC"/>
+      <rect x="62" y="38" width="76" height="54" rx="14" fill="#FFC531"/>
+      <circle cx="82" cy="62" r="10" fill="#fff"/><circle cx="83" cy="63" r="4.8" fill="${INK}" stroke="none"/>
+      <circle cx="118" cy="62" r="10" fill="#fff"/><circle cx="119" cy="63" r="4.8" fill="${INK}" stroke="none"/>
+      <path d="M90,82 v8 M100,82 v8 M110,82 v8" stroke-width="4" fill="none"/>
+      <path d="M54,116 C40,118 35,132 40,145" stroke-width="11" fill="none"/>
+      <path d="M54,116 C40,118 35,132 40,145" stroke="#FF5A1F" stroke-width="5" fill="none"/>
+      <circle cx="41" cy="149" r="7" fill="#FFC531"/>
+      <path d="M146,116 C160,118 165,132 160,145" stroke-width="11" fill="none"/>
+      <path d="M146,116 C160,118 165,132 160,145" stroke="#FF5A1F" stroke-width="5" fill="none"/>
+      <circle cx="159" cy="149" r="7" fill="#FFC531"/>
+      <rect x="90" y="90" width="20" height="12" fill="${INK}" stroke="none"/>
+      <rect x="54" y="100" width="92" height="60" rx="16" fill="#FF5A1F"/>
+      <circle cx="78" cy="126" r="11" fill="#19C37D" stroke-width="4"/>
+      <circle cx="108" cy="126" r="6.5" fill="#FF3D8A" stroke-width="4"/>
+      <circle cx="127" cy="126" r="6.5" fill="#12B5BC" stroke-width="4"/>
+      <path d="M74,146 h52" stroke-width="4" fill="none"/>
+      <rect x="72" y="160" width="16" height="16" rx="5" fill="${INK}" stroke="none"/>
+      <rect x="112" y="160" width="16" height="16" rx="5" fill="${INK}" stroke="none"/>
+      <rect x="62" y="174" width="34" height="13" rx="6" fill="#12B5BC"/>
+      <rect x="104" y="174" width="34" height="13" rx="6" fill="#12B5BC"/>
+    </g></svg>`},
+  paresseux:{ name:'Nanuk le paresseux', size:'10 cm', price:13.90, cat:['figurine'],
+    bg:'#F5E3C8', artColor:'#E0A34F',
+    desc:'Champion du monde du lundi. Et du mardi. Et du reste.',
+    long:'Nanuk pend à sa branche avec une philosophie imparable : ne rien faire, magnifiquement. Bras crochus, sourire béat, il est le cadeau parfait pour la personne qui repousse tout à demain.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="28" y="24" width="144" height="15" rx="7.5" fill="#8A5A24"/>
+      <ellipse cx="100" cy="128" rx="36" ry="28" fill="#E0A34F"/>
+      <path d="M74,112 q-4,8 0,16 M100,118 v14 M126,112 q4,8 0,16" stroke-width="3" fill="none"/>
+      <path d="M72,114 C58,96 62,64 78,44" stroke-width="12" fill="none"/>
+      <path d="M72,114 C58,96 62,64 78,44" stroke="#E0A34F" stroke-width="6" fill="none"/>
+      <path d="M128,114 C142,96 138,64 122,44" stroke-width="12" fill="none"/>
+      <path d="M128,114 C142,96 138,64 122,44" stroke="#E0A34F" stroke-width="6" fill="none"/>
+      <circle cx="78" cy="43" r="6.5" fill="#E0A34F"/>
+      <circle cx="122" cy="43" r="6.5" fill="#E0A34F"/>
+      <circle cx="100" cy="76" r="35" fill="#E0A34F"/>
+      <ellipse cx="86" cy="72" rx="14" ry="17" fill="#FFF1D6" stroke="none" transform="rotate(12 86 72)"/>
+      <ellipse cx="114" cy="72" rx="14" ry="17" fill="#FFF1D6" stroke="none" transform="rotate(-12 114 72)"/>
+      <circle cx="86" cy="73" r="4.6" fill="${INK}" stroke="none"/><circle cx="87.5" cy="71.5" r="1.5" fill="#fff" stroke="none"/>
+      <circle cx="114" cy="73" r="4.6" fill="${INK}" stroke="none"/><circle cx="115.5" cy="71.5" r="1.5" fill="#fff" stroke="none"/>
+      <ellipse cx="100" cy="87" rx="6" ry="4.5" fill="#4A2400" stroke="none"/>
+      <path d="M92,96 Q100,102 108,96" stroke-width="3.5" fill="none"/>
+    </g></svg>`},
+  baleine:{ name:'Bulle la baleine', size:'14 cm', price:16.90, cat:['aquatique'],
+    bg:'#C3E8F5', artColor:'#12B5BC',
+    desc:'Ne mouille pas le tapis, promis. Souffle quand même un peu.',
+    long:'Bulle déborde de tendresse et de jet d’eau (décoratif). Imprimée en une pièce, ses stries de ventre et sa queue font tout le charme. Grande favorite des chambres bleues… et des autres.',
+    svg:`<svg viewBox="0 0 200 200"><g stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <ellipse cx="166" cy="86" rx="16" ry="9" fill="#12B5BC" transform="rotate(-38 166 86)"/>
+      <ellipse cx="170" cy="108" rx="16" ry="9" fill="#12B5BC" transform="rotate(28 170 108)"/>
+      <ellipse cx="96" cy="112" rx="62" ry="45" fill="#12B5BC"/>
+      <ellipse cx="96" cy="134" rx="41" ry="17" fill="#A5EEF1" stroke="none"/>
+      <path d="M64,130 Q96,140 128,130 M68,141 Q96,150 124,141" stroke="#0B8F94" stroke-width="3" fill="none"/>
+      <ellipse cx="82" cy="140" rx="15" ry="9" fill="#0FA3AB" transform="rotate(24 82 140)"/>
+      <circle cx="56" cy="100" r="4.4" fill="${INK}" stroke="none"/><circle cx="57.5" cy="98.5" r="1.5" fill="#fff" stroke="none"/>
+      <path d="M48,112 Q58,121 70,117" stroke-width="4" fill="none"/>
+      <circle cx="70" cy="106" r="5" fill="#FF9EC4" stroke="none"/>
+      <path d="M96,68 q-2,-6 2,-9" stroke-width="3.5" fill="none"/>
+      <circle cx="96" cy="46" r="4.5" fill="#7EDDE2" stroke-width="3.5"/>
+      <circle cx="82" cy="38" r="3.5" fill="#7EDDE2" stroke-width="3.5"/>
+      <circle cx="110" cy="38" r="3.5" fill="#7EDDE2" stroke-width="3.5"/>
+      <circle cx="96" cy="27" r="3.5" fill="#7EDDE2" stroke-width="3.5"/>
+    </g></svg>`},
+  dragon:{ name:'Drako le dragon', size:'45 cm', price:34.90, cat:['articule'],
+    bg:'#D3F2A5', artColor:'#6FCF2E',
+    desc:'45 cm d’envergure à câlin. Notre pièce maîtresse, articulée partout.',
+    long:'Drako est la star : 45 cm de dragon articulé qui serpente, s’enroule autour d’un poignet, d’une rampe d’escalier ou d’un cou de tamagotchi. Trois coloris, une impression de plus de 12 heures, zéro pièce à assembler.',
+    svg:dragonSVG()}
+};
+
+/* ---------- Utilitaires ---------- */
+const eur = n => n.toFixed(2).replace('.',',') + ' €';
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+function toast(msg, ic='check'){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="t-ico">${ico(ic)}</span><span>${msg}</span>`;
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(), 320); }, 2600);
+}
+
+/* ---------- Panier ---------- */
+let cart = {};
+try{ cart = JSON.parse(localStorage.getItem('polypop_cart') || '{}'); }catch(e){ cart = {}; }
+const saveCart = () => { try{ localStorage.setItem('polypop_cart', JSON.stringify(cart)); }catch(e){} };
+const key = (id,v) => id + (v ? '|'+v : '');
+const cartCount = () => Object.values(cart).reduce((s,e)=>s+e.qty,0);
+const cartSub   = () => Object.values(cart).reduce((s,e)=>s + ART[e.id].price*e.qty, 0);
+const SHIP = 4.90, FREE_AT = 35;
+const shipCost = () => { const s = cartSub(); return (s>0 && s<FREE_AT) ? SHIP : 0; };
+
+function addToCart(id, qty=1, variant=''){
+  const k = key(id, variant);
+  if(cart[k]) cart[k].qty += qty; else cart[k] = {id, qty, variant};
+  saveCart(); renderCart();
+  const b = $('#cartBadge'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+  toast(`${ART[id].name} rejoint le panier${variant ? ' · '+variant : ''}`);
+}
+
+function renderCart(){
+  const n = cartCount();
+  const badge = $('#cartBadge');
+  badge.hidden = n === 0;
+  badge.textContent = n;
+  const box = $('#drItems');
+  if(n === 0){
+    box.innerHTML = `<div class="dr-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"><path d="M3 4h2l2.6 11.2a1.5 1.5 0 0 0 1.5 1.1h7.9a1.5 1.5 0 0 0 1.4-1L21 8H6.2"/><circle cx="10" cy="20.2" r="1.6"/><circle cx="17" cy="20.2" r="1.6"/></svg>
+      <p><b>Votre panier est vide.</b><br>Une petite bête vous attend sûrement.</p></div>`;
+  } else {
+    box.innerHTML = Object.entries(cart).map(([k,e])=>{
+      const p = ART[e.id];
+      return `<div class="ci">
+        <div class="ci-art" style="background:${p.bg}">${p.svg}</div>
+        <div class="ci-mid"><b>${p.name}</b><span class="v">${p.size}${e.variant ? ' · '+e.variant : ''}</span></div>
+        <div class="ci-right">
+          <span class="price" style="font-size:15.5px">${eur(p.price*e.qty)}</span>
+          <div class="qty">
+            <button data-dec="${k}" aria-label="Diminuer">${ico('minus','ico')}</button>
+            <span>${e.qty}</span>
+            <button data-inc="${k}" aria-label="Augmenter">${ico('plus','ico')}</button>
+          </div>
+        </div>
+        <button class="del" data-del="${k}" aria-label="Retirer">${ico('trash')}</button>
+      </div>`;
+    }).join('');
+  }
+  const sub = cartSub(), sc = shipCost();
+  $('#ckSub').textContent = eur(sub);
+  $('#ckShip').textContent = sub === 0 ? '—' : (sc === 0 ? 'Offerte' : eur(sc));
+  $('#ckTotal').textContent = eur(sub + sc);
+  $('#shipFill').style.width = clamp(sub/FREE_AT*100, 0, 100) + '%';
+  $('#shipLbl').innerHTML = sub >= FREE_AT
+    ? `${ico('truck')} Livraison offerte, bravo !`
+    : `${ico('truck')} Plus que <u>&nbsp;${eur(FREE_AT-sub)}&nbsp;</u> pour la livraison offerte`;
+  $('#goCheckout').disabled = n === 0;
+}
+
+ $('#drItems').addEventListener('click', e=>{
+  const inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]'), del = e.target.closest('[data-del]');
+  if(inc){ cart[inc.dataset.inc].qty++; }
+  if(dec){ const k = dec.dataset.dec; cart[k].qty--; if(cart[k].qty<=0) delete cart[k]; }
+  if(del){ delete cart[del.dataset.del]; }
+  if(inc||dec||del){ saveCart(); renderCart(); }
+});
+
+/* Ouverture / fermeture des couches */
+const scrim = $('#scrim'), drawer = $('#drawer');
+function openDrawer(){ drawer.classList.add('open'); scrim.classList.add('show'); document.body.style.overflow='hidden'; }
+function closeDrawer(){ drawer.classList.remove('open'); scrim.classList.remove('show'); document.body.style.overflow=''; }
+ $('#cartOpen').onclick = openDrawer;
+ $('#cartClose').onclick = closeDrawer;
+ $('#drContinue').onclick = closeDrawer;
+scrim.onclick = closeDrawer;
+
+/* ---------- Grille boutique ---------- */
+const SIZES = { lion:'card--big', trex:'card--wide' };
+function buildGrid(){
+  const grid = $('#shopGrid');
+  let html = '';
+  for(const [id,p] of Object.entries(ART)){
+    const cls = SIZES[id] || '';
+    html += `<article class="card ${cls}" data-id="${id}" data-cat="${p.cat.join(' ')}" tabindex="0" role="button" aria-label="${p.name}, ${eur(p.price)}">
+      <div class="art" style="background:${p.bg}">
+        <span class="tag-num">${p.size}</span>
+        ${p.svg}
+      </div>
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p class="desc">${p.desc}</p>
+        <div class="card-row">
+          <span class="price">${eur(p.price)}</span>
+          <button class="add-mini" data-add="${id}" aria-label="Ajouter ${p.name} au panier">${ico('plus')}</button>
+        </div>
+      </div>
+    </article>`;
+  }
+  html += `<div class="tile">
+      <h3>Une idée de créature ?</h3>
+      <p>On imprime votre bête sur mesure : couleurs, taille, prénom incrusté. Écrivez-nous, la buse est chaude.</p>
+      <a class="btn" href="mailto:atelier@polypop.fr?subject=Création sur mesure">${ico('mail')} Écrire à l’atelier</a>
+    </div>`;
+  grid.innerHTML = html;
+}
+buildGrid();
+
+ $('#shopGrid').addEventListener('click', e=>{
+  const add = e.target.closest('[data-add]');
+  if(add){
+    e.stopPropagation();
+    addToCart(add.dataset.add);
+    return;
+  }
+  const card = e.target.closest('.card');
+  if(card) openProduct(card.dataset.id);
+});
+ $('#shopGrid').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){
+    const card = e.target.closest('.card');
+    if(card) openProduct(card.dataset.id);
+  }
+});
+
+/* Filtres */
+ $('#filters').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  $$('#filters .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on');
+  const f = chip.dataset.f;
+  const grid = $('#shopGrid');
+  grid.classList.toggle('filtered', f !== 'all');
+  $$('#shopGrid .card').forEach(c=>{
+    c.classList.toggle('hidden', f !== 'all' && !c.dataset.cat.split(' ').includes(f));
+  });
+});
+
+/* ---------- Fiche produit ---------- */
+let pdQty = 1, pdId = null, pdVariant = '';
+function openProduct(id){
+  pdId = id; pdQty = 1; pdVariant = '';
+  const p = ART[id];
+  const swatches = id === 'dragon'
+    ? `<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <span style="font-weight:700;font-size:14px">Coloris :</span>
+        <button class="swatch on" style="background:#6FCF2E" data-c1="#6FCF2E" data-c2="#FF8A00" data-name="Pomme"></button>
+        <button class="swatch" style="background:#FF5CA8" data-c1="#FF5CA8" data-c2="#FFC531" data-name="Flamingo"></button>
+        <button class="swatch" style="background:#9B5DE5" data-c1="#9B5DE5" data-c2="#7EDDE2" data-name="Grape"></button>
+        <span class="color-name" id="pdColor">Pomme</span></div>`
+    : '';
+  $('#pdGrid').innerHTML = `
+    <div class="pd-art" style="background:${p.bg}"><div id="pdArtWrap" style="--c1:#6FCF2E;--c2:#FF8A00;width:100%;display:flex;justify-content:center">${p.svg}</div></div>
+    <div class="pd-info">
+      <span class="kicker" style="margin-bottom:10px">${ico('ruler','ico')} ${p.size} · ${p.cat[0]==='articule'?'articulé':p.cat[0]==='aquatique'?'aquatique':'figurine'}</span>
+      <h3>${p.name}</h3>
+      <span class="price">${eur(p.price)}</span>
+      <p class="pd-desc">${p.long}</p>
+      ${swatches}
+      <ul class="pd-specs">
+        <li>${ico('cube')} PLA végétal</li>
+        <li>${ico('printer')} Imprimé à la commande</li>
+        <li>${ico('truck')} Expédié sous 48 h</li>
+        <li>${ico('paw')} Dès 3 ans</li>
+      </ul>
+      <div class="pd-actions">
+        <div class="qty-lg">
+          <button id="pdMinus" aria-label="Diminuer">${ico('minus')}</button>
+          <span id="pdQty">1</span>
+          <button id="pdPlus" aria-label="Augmenter">${ico('plus')}</button>
+        </div>
+        <button class="btn btn--pink" id="pdAdd" style="flex:1;justify-content:center">Ajouter au panier</button>
+      </div>
+    </div>`;
+  $('#pdModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  const minus = $('#pdMinus'), plus = $('#pdPlus');
+  minus.onclick = ()=>{ pdQty = Math.max(1, pdQty-1); $('#pdQty').textContent = pdQty; };
+  plus.onclick  = ()=>{ pdQty = Math.min(20, pdQty+1); $('#pdQty').textContent = pdQty; };
+  $('#pdAdd').onclick = ()=>{ addToCart(pdId, pdQty, pdVariant); closeProduct(); };
+  $$('#pdGrid .swatch').forEach(s=>{
+    s.onclick = ()=>{
+      $$('#pdGrid .swatch').forEach(x=>x.classList.remove('on'));
+      s.classList.add('on');
+      pdVariant = s.dataset.name;
+      const w = $('#pdArtWrap');
+      w.style.setProperty('--c1', s.dataset.c1);
+      w.style.setProperty('--c2', s.dataset.c2);
+      $('#pdColor').textContent = s.dataset.name;
+    };
+  });
+}
+function closeProduct(){
+  $('#pdModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+ $$('#pdModal [data-close="pd"]').forEach(el=>el.onclick = closeProduct);
+
+/* ---------- Checkout (simulation PayPal) ---------- */
+const ckModal = $('#ckModal');
+function goStep(id){
+  $$('.ck-step').forEach(s=>s.classList.remove('active'));
+  $('#'+id).classList.add('active');
+}
+function openCheckout(){
+  if(cartCount() === 0) return;
+  ckModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  goStep('ckStepInfo');
+}
+function closeCheckout(){
+  ckModal.classList.remove('show');
+  document.body.style.overflow = '';
+  if(!$('#ckStepDone').classList.contains('active')) return;
+}
+ $('#goCheckout').onclick = ()=>{ closeDrawer(); openCheckout(); };
+ $$('#ckModal [data-close="ck"]').forEach(el=>el.onclick = ()=>{ closeCheckout(); });
+
+/* Validation du formulaire de livraison */
+function checkField(fId, ok){
+  const f = $(`[data-f="${fId}"]`);
+  f.classList.toggle('err', !ok);
+  return ok;
+}
+ $('#ckToPaypal').onclick = ()=>{
+  const email = $('#fEmail').value.trim();
+  let ok = true;
+  ok = checkField('fname', $('#fFname').value.trim().length > 1) && ok;
+  ok = checkField('lname', $('#fLname').value.trim().length > 1) && ok;
+  ok = checkField('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) && ok;
+  ok = checkField('addr',  $('#fAddr').value.trim().length > 4) && ok;
+  ok = checkField('zip',   /^\d{5}$/.test($('#fZip').value.trim())) && ok;
+  ok = checkField('city',  $('#fCity').value.trim().length > 1) && ok;
+  if(!ok) return;
+  $('#ppAmount').textContent = eur(cartSub() + shipCost());
+  goStep('ckStepLogin');
+  setTimeout(()=>$('#ppMail').focus(), 350);
+};
+
+/* Connexion PayPal simulée */
+ $('#ppLoginBtn').onclick = ()=>{
+  const mail = $('#ppMail').value.trim();
+  const pass = $('#ppPass').value;
+  const okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail);
+  $('#ppErrWrap').classList.remove('err');
+  if(!okMail || pass.length < 1){
+    $('#ppErrWrap').classList.add('err');
+    return;
+  }
+  goStep('ckStepLoad');
+  /* Simulation du handshake PayPal : à remplacer par le SDK officiel
+     (www.paypal.com/sdk/js?client-id=VOTRE_CLIENT_ID) quand le compte
+     marchand sera prêt — voir note en bas de fichier. */
+  setTimeout(()=>{
+    $('#ppAmount2').textContent = eur(cartSub() + shipCost());
+    $('#ppWho').textContent = mail;
+    const sub = cartSub(), sc = shipCost();
+    $('#ppSummary').innerHTML = Object.values(cart).map(e=>
+      `<div class="dr-line"><span>${ART[e.id].name}${e.variant?' · '+e.variant:''} × ${e.qty}</span><span>${eur(ART[e.id].price*e.qty)}</span></div>`
+    ).join('')
+    + `<div class="dr-line"><span>Livraison</span><span>${sc===0?'Offerte':eur(sc)}</span></div>
+       <div class="dr-line total"><span>Total</span><span>${eur(sub+sc)}</span></div>`;
+    goStep('ckStepPay');
+  }, 1400);
+};
+ $('#ppBack1').onclick = ()=>goStep('ckStepInfo');
+
+/* Paiement simulé */
+ $('#ppPayBtn').onclick = ()=>{
+  goStep('ckStepProc');
+  setTimeout(()=>{
+    const num = 'PP-' + Date.now().toString(36).toUpperCase().slice(-6);
+    $('#ordNum').textContent = num;
+    $('#doneName').textContent = $('#fFname').value.trim() + ' !';
+    $('#doneMail').textContent = $('#ppMail').value.trim();
+    goStep('ckStepDone');
+    cart = {}; saveCart(); renderCart();
+    confettiBurst();
+    setTimeout(confettiBurst, 500);
+  }, 1600);
+};
+ $('#ppBack2').onclick = ()=>goStep('ckStepLogin');
+ $('#doneBtn').onclick = ()=>{ closeCheckout(); };
+
+/* ---------- Mentions légales (vue dédiée) ---------- */
+const legalView = $('#legalView');
+function openLegal(anchor){
+  legalView.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  legalView.scrollTop = 0;
+  history.replaceState(null, '', '#mentions-legales');
+  if(anchor){
+    const t = document.getElementById(anchor);
+    if(t) setTimeout(()=>t.scrollIntoView({behavior:'smooth', block:'start'}), 60);
+  }
+}
+function closeLegal(){
+  legalView.classList.remove('open');
+  document.body.style.overflow = '';
+  history.replaceState(null, '', ' ');
+}
+document.addEventListener('click', e=>{
+  const l = e.target.closest('[data-legal]');
+  if(l){ e.preventDefault(); openLegal(l.dataset.legal); }
+});
+ $('#legalClose').onclick = closeLegal;
+if(location.hash === '#mentions-legales') openLegal('mentions');
+
+/* ---------- Divers : marquee, FAQ, newsletter, menu ---------- */
+(function buildMarquee(){
+  const items = ['IMPRIMÉ EN PLA VÉGÉTAL','ARTICULATIONS GARANTIES À VIE*','EXPÉDIÉ SOUS 48 H','FABRIQUÉ À L’ATELIER','COULEURS QUI PIQUENT','(* LA VIE DE LA BÊTE)','LIVRAISON OFFERTE DÈS 35 €','PAIEMENT PAYPAL SÉCURISÉ'];
+  const one = items.map(t=>`<span class="mq-item">${t} <svg viewBox="0 0 24 24" fill="${'#FFC531'}"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/></svg></span>`).join('');
+  $('#mqTrack').innerHTML = one + one;
+})();
+
+ $$('#faqList .faq-item button').forEach(b=>{
+  b.onclick = ()=>{
+    const item = b.parentElement;
+    const wasOpen = item.classList.contains('open');
+    $$('#faqList .faq-item').forEach(i=>i.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+  };
+});
+
+ $('#newsForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const v = $('#newsEmail').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){
+    toast('Cette adresse email semble bizarre…', 'mail');
+    $('#newsEmail').focus();
+    return;
+  }
+  $('#newsForm').parentElement.classList.add('done');
+  toast('Inscription confirmée, à très vite !');
+});
+
+ $('#burger').onclick = ()=>$('#mnav').classList.toggle('open');
+ $$('#mnav a').forEach(a=>a.onclick = ()=>$('#mnav').classList.remove('open'));
+
+/* ---------- Hero : coloris du dragon ---------- */
+const heroStage = $('#heroStage');
+ $('#heroDragon').innerHTML = dragonSVG();
+ $$('.hero-panel .swatch').forEach(s=>{
+  s.onclick = ()=>{
+    $$('.hero-panel .swatch').forEach(x=>x.classList.remove('on'));
+    s.classList.add('on');
+    heroStage.style.setProperty('--c1', s.dataset.c1);
+    heroStage.style.setProperty('--c2', s.dataset.c2);
+    $('#colorName').textContent = s.dataset.name;
+  };
+});
+ $('#heroAdd').onclick = ()=>{
+  const on = $('.hero-panel .swatch.on');
+  addToCart('dragon', 1, on.dataset.name);
+};
+
+/* ---------- Le dragon suit le curseur du regard ---------- */
+(function eyeTracking(){
+  let raf = null;
+  document.addEventListener('mousemove', e=>{
+    if(raf) return;
+    raf = requestAnimationFrame(()=>{
+      raf = null;
+      const svg = $('#heroDragon svg');
+      if(!svg) return;
+      const r = svg.getBoundingClientRect();
+      if(r.width === 0) return;
+      const cx = r.left + r.width*0.26, cy = r.top + r.height*0.32;
+      const dx = clamp((e.clientX - cx) / 22, -3.6, 3.6);
+      const dy = clamp((e.clientY - cy) / 22, -3, 3);
+      svg.querySelectorAll('.pupil').forEach(p=>{
+        p.setAttribute('transform', `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
+      });
+    });
+  });
+})();
+
+/* ---------- Apparition au scroll ---------- */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+},{threshold:.12});
+ $$('.reveal').forEach(el=>io.observe(el));
+
+/* ---------- Confettis (canvas) ---------- */
+const cv = $('#confetti'), ctx = cv.getContext('2d');
+let parts = [], raf = null;
+function sizeCanvas(){ cv.width = innerWidth; cv.height = innerHeight; }
+addEventListener('resize', sizeCanvas); sizeCanvas();
+function confettiBurst(){
+  const colors = ['#FF5A1F','#FF3D8A','#FFC531','#19C37D','#12B5BC','#9B5DE5'];
+  const sides = [{x:innerWidth*0.12, y:innerHeight+10, vx:9+Math.random()*3},{x:innerWidth*0.88, y:innerHeight+10, vx:-9-Math.random()*3}];
+  sides.forEach(s=>{
+    for(let i=0;i<70;i++){
+      parts.push({
+        x:s.x, y:s.y,
+        vx:s.vx*(0.5+Math.random()), vy:-(11+Math.random()*8),
+        g:0.42, w:6+Math.random()*7, h:4+Math.random()*5,
+        r:Math.random()*Math.PI, vr:(Math.random()-.5)*0.28,
+        c:colors[(Math.random()*colors.length)|0],
+        round:Math.random()<0.25, life:110+Math.random()*40
+      });
+    }
+  });
+  if(!raf) loop();
+}
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  parts = parts.filter(p=>p.life > 0 && p.y < cv.height + 40);
+  parts.forEach(p=>{
+    p.vy += p.g; p.vx *= 0.992; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life--;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+    ctx.globalAlpha = clamp(p.life/40, 0, 1);
+    ctx.fillStyle = p.c;
+    if(p.round){ ctx.beginPath(); ctx.arc(0,0,p.w/2,0,7); ctx.fill(); }
+    else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  });
+  if(parts.length){ raf = requestAnimationFrame(loop); }
+  else { raf = null; ctx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ---------- Échap ferme tout ---------- */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    closeDrawer(); closeProduct(); closeCheckout(); closeLegal();
+  }
+});
+
+/* Rendu initial */
+renderCart();
+</script>
+
+<!--
+  ════════════════════════════════════════════════════════════
+  NOTE INTÉGRATION PAYPAL (pour la mise en production)
+  ════════════════════════════════════════════════════════════
+  Le tunnel de paiement ci-dessus est une SIMULATION locale :
+  aucun identifiant, aucun appel réseau, aucune donnée envoyée.
+  Pour brancher le vrai PayPal une fois votre compte marchand créé :
+    1. Récupérez votre Client ID sur developer.paypal.com.
+    2. Ajoutez avant </body> :
+       <script src="https://www.paypal.com/sdk/js?client-id=VOTRE_CLIENT_ID&currency=EUR"></script>
+    3. Créez un conteneur <div id="paypal-buttons"></div> dans l'étape
+       #ckStepPay et remplacez le handler de #ppPayBtn par :
+       paypal.Buttons({ createOrder, onApprove }).render('#paypal-buttons');
+  Aucune clé n'est codée en dur dans ce fichier.
+-->
 </body>
 </html>
